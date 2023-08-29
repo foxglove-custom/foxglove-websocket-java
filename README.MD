@@ -1,0 +1,22 @@
+# Foxglove WebSocket Protocol in Java
+
+Base on official document, Foxglove websocket protocol in Java has been implemented.
+
+This repository provides a protocol specification and reference implementations enabling Foxglove Studio to ingest arbitrary “live” streamed data.
+
+A Foxglove WebSocket server can provide multiple data streams, called channels. When a client subscribes to a channel, it begins receiving messages on that channel. This protocol does not prescribe the messages' data format. Instead, the server specifies each channel's encoding, and the client uses this information to determine whether it can decode that channel's messages. Read the Foxglove Studio documentation for more information on which encodings Studio supports.
+
+Implementations are available in the following languages:
+
+
+|  Language   | Includes  | Package name |
+|  ----  | ----  | ----| 
+| Python  | server + examples | foxglove-websocket |
+| JavaScript/TypeScript  | server + client | @foxglove/ws-protocol |
+| JavaScript/TypeScript  | examples | @foxglove/ws-protocol-examples |
+| C++  | server + examples | foxglove-websocket |
+
+
+## reference
+
+> https://github.com/foxglove/ws-protocol
