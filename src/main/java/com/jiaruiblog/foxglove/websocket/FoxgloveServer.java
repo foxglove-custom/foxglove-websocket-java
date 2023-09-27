@@ -3,6 +3,11 @@ package com.jiaruiblog.foxglove.websocket;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jiaruiblog.foxglove.entity.Advertise;
+import com.jiaruiblog.foxglove.entity.ChannelInfo;
+import com.jiaruiblog.foxglove.entity.ServerInfo;
+import com.jiaruiblog.foxglove.schema.SceneEntity;
 import com.jiaruiblog.foxglove.util.SystemUtil;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.timeout.IdleStateEvent;
@@ -12,7 +17,11 @@ import org.springframework.util.MultiValueMap;
 import org.yeauty.annotation.*;
 import org.yeauty.pojo.Session;
 
+import javax.xml.crypto.Data;
+import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.Map;
 import java.util.Random;
 
@@ -64,9 +73,43 @@ public class FoxgloveServer {
         // 指定的用户信息赋给uid信息
         this.uid =  uid;
 
-        this.session.sendText(serverInfo().toString());
-        this.session.sendText(advertise().toString());
-        this.session.sendText(advertiseServices().toString());
+        ServerInfo serverInfo = new ServerInfo();
+        serverInfo.setOp("serverInfo");
+        serverInfo.setName("example server");
+        serverInfo.setCapabilities(Arrays.asList("clientPublish","services"));
+        serverInfo.setSupportedEncodings(Arrays.asList("json"));
+
+        String severInfoString = JSON.toJSONString(serverInfo);
+
+        this.session.sendText(severInfoString);
+
+        Advertise advertise = new Advertise();
+        advertise.setOp("advertise");
+        ChannelInfo channelInfo = new ChannelInfo();
+        channelInfo.setId(1);
+        channelInfo.setTopic("example_msg");
+        channelInfo.setEncoding("json");
+        channelInfo.setSchemaName("ExampleMsg");
+        channelInfo.setSchema("{\"type\": \"object\", \"properties\": {\"msg\": {\"type\": \"string\"}, \"count\": {\"type\": \"number\"}}}");
+        channelInfo.setSchemaEncoding("jsonschema");
+
+        ChannelInfo channelInfo1 = new ChannelInfo();
+        channelInfo1.setId(2);
+        channelInfo1.setTopic("sceneEntity");
+        channelInfo1.setEncoding("json");
+        channelInfo1.setSchemaName("SceneEntity");
+
+        String s = loadJson();
+//        new File("./json/SceneSchema.")
+        channelInfo1.setSchema(s);
+        channelInfo1.setSchemaEncoding("jsonschema");
+
+        advertise.setChannels(Arrays.asList(channelInfo, channelInfo1));
+
+//        this.session.sendText(advertise().toString());
+        this.session.sendText(JSON.toJSONString(advertise));
+//        this.session.sendText(advertiseServices().toString());
+//        this.session.sendText(advertiseServices().toString());
 //        this.session.sendText(xxx().toString());
 
     }
@@ -90,6 +133,28 @@ public class FoxgloveServer {
         if ("subscribe".equals(msg.get("op"))) {
             JSONArray subscriptions = msg.getJSONArray("subscriptions");
             System.out.println(subscriptions);
+
+            SendCountThread sendCountThread = new SendCountThread(session);
+            sendCountThread.start();
+
+            SendSceneThread sendSceneThread = new SendSceneThread(session);
+            sendSceneThread.start();
+        }
+
+
+        }
+
+
+    class SendCountThread extends Thread {
+
+        private Session session;
+
+        SendCountThread(Session session) {
+            this.session = session;
+        }
+
+        @Override
+        public void run() {
 
             String str = "AQAAAABoXkDl4Uh3F3sibXNnIjogIkhlbGxvISIsICJjb3VudCI6IDU0fQ==";
 
@@ -164,16 +229,67 @@ public class FoxgloveServer {
 
 
 //            session.sendBinary(str.getBytes());
-                session.sendBinary(pack2);
-                Thread.sleep(1000);
-                i ++;
+                this.session.sendBinary(pack2);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                i++;
             }
 
+        }
+    }
 
+    class SendSceneThread extends Thread {
 
+        private Session session;
+
+        SendSceneThread(Session session) {
+            this.session = session;
         }
 
+        @Override
+        public void run() {
+            while (true) {
+
+                SceneEntity sceneEntity = new SceneEntity();
+                SceneEntity.SceneTimestamp sceneTimestamp = sceneEntity.new SceneTimestamp();
+                sceneTimestamp.setSec(0);
+                sceneTimestamp.setNsec(0);
+                sceneEntity.setTimestamp(sceneTimestamp);
+                JSONObject jsonObject = (JSONObject) JSON.toJSON(sceneEntity);
+
+                // 通道id，小端
+                byte[] channelId = getIntBytes(0);
+                // 当前ns时间戳，小端
+                byte[] timestamp = getLongBytes2(System.currentTimeMillis() * 1000 * 1000);
+                byte[] bytes2 = jsonObject.toJSONString().getBytes();
+
+
+
+                Long ns = 1692891094326598000L;
+                byte constantInfo = 1;
+                byte[] constantInfoByte = new byte[]{constantInfo};
+
+                byte[] dataType = getIntBytes(1);
+
+                byte[] nsTime = getLongBytes(ns);
+
+                byte[] packz1 = byteConcat(constantInfoByte, dataType, nsTime);
+
+                byte[] pack2 = byteConcat(packz1, bytes2);
+                this.session.sendBinary(pack2);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
     }
+
 
     static final long fx = 0xffL;
 
@@ -247,6 +363,7 @@ public class FoxgloveServer {
 
     @OnBinary
     public void onBinary(Session session, byte[] bytes) {
+        // 这里接收到用户指令
         for (byte b : bytes) {
             System.out.println("发的是非得失" + b);
         }
@@ -377,30 +494,57 @@ public class FoxgloveServer {
         return sb.toString();
     }
 
+    private String loadJson() {
+        File file = new File("src/main/java/com/jiaruiblog/foxglove/json/SceneSchema.json");
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map map = null;
+        try {
+            map = objectMapper.readValue(file, Map.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return JSON.toJSONString(map);
+    }
+
     public static void main(String[] args) {
 
-        Long ns = 1692891094326598000L;
-
-        byte[] longBytes2 = getLongBytes2(ns);
+        File file = new File("src/main/java/com/jiaruiblog/foxglove/json/SceneSchema.json");
 
 
-        for (byte b : longBytes2) {
-            System.out.println(byteToHex(b));
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map map = null;
+        try {
+            map = objectMapper.readValue(file, Map.class);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        String s = JSON.toJSONString(map);
+        System.out.println("jslfjd" + s);
+        System.out.println(map);
 
-        System.out.println("*******");
-        short shortData = 0;
-        byte[] shortBytes = getShortBytes(shortData);
-
-        for (byte shortByte : shortBytes) {
-            System.out.println(byteToHex(shortByte));
-        }
-
-        System.out.println("&&&&");
-
-        byte a = 1;
-
-        System.out.println(byteToHex(a));
+//        Long ns = 1692891094326598000L;
+//
+//        byte[] longBytes2 = getLongBytes2(ns);
+//
+//
+//        for (byte b : longBytes2) {
+//            System.out.println(byteToHex(b));
+//        }
+//
+//        System.out.println("*******");
+//        short shortData = 0;
+//        byte[] shortBytes = getShortBytes(shortData);
+//
+//        for (byte shortByte : shortBytes) {
+//            System.out.println(byteToHex(shortByte));
+//        }
+//
+//        System.out.println("&&&&");
+//
+//        byte a = 1;
+//
+//        System.out.println(byteToHex(a));
 
     }
 
