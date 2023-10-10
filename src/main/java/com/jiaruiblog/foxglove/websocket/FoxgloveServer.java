@@ -8,6 +8,7 @@ import com.jiaruiblog.foxglove.entity.Advertise;
 import com.jiaruiblog.foxglove.entity.ChannelInfo;
 import com.jiaruiblog.foxglove.entity.ServerInfo;
 import com.jiaruiblog.foxglove.schema.SceneEntity;
+import com.jiaruiblog.foxglove.schema.SceneUpdate;
 import com.jiaruiblog.foxglove.util.SystemUtil;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.timeout.IdleStateEvent;
@@ -98,13 +99,20 @@ public class FoxgloveServer {
         channelInfo1.setTopic("sceneEntity");
         channelInfo1.setEncoding("json");
         channelInfo1.setSchemaName("SceneEntity");
-
         String s = loadJson();
-//        new File("./json/SceneSchema.")
         channelInfo1.setSchema(s);
         channelInfo1.setSchemaEncoding("jsonschema");
 
-        advertise.setChannels(Arrays.asList(channelInfo, channelInfo1));
+        ChannelInfo channelInfo2 = new ChannelInfo();
+        channelInfo2.setId(3);
+        channelInfo2.setTopic("FrameTransforms");
+        channelInfo2.setEncoding("json");
+        channelInfo2.setSchemaName("FrameTransforms");
+        String s2 = loadJson2();
+        channelInfo2.setSchema(s2);
+        channelInfo2.setSchemaEncoding("jsonschema");
+
+        advertise.setChannels(Arrays.asList(channelInfo, channelInfo1, channelInfo2));
 
 //        this.session.sendText(advertise().toString());
         this.session.sendText(JSON.toJSONString(advertise));
@@ -258,7 +266,10 @@ public class FoxgloveServer {
                 sceneTimestamp.setSec(0);
                 sceneTimestamp.setNsec(0);
                 sceneEntity.setTimestamp(sceneTimestamp);
-                JSONObject jsonObject = (JSONObject) JSON.toJSON(sceneEntity);
+
+                SceneUpdate sceneUpdate = new SceneUpdate();
+                sceneUpdate.setEntities(Arrays.asList(sceneEntity));
+                JSONObject jsonObject = (JSONObject) JSON.toJSON(sceneUpdate);
 
                 // 通道id，小端
                 byte[] channelId = getIntBytes(0);
@@ -495,7 +506,22 @@ public class FoxgloveServer {
     }
 
     private String loadJson() {
-        File file = new File("src/main/java/com/jiaruiblog/foxglove/json/SceneSchema.json");
+//        File file = new File("src/main/java/com/jiaruiblog/foxglove/json/SceneSchema.json");
+        File file = new File("src/main/java/com/jiaruiblog/foxglove/json/SceneUpdate.json");
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map map = null;
+        try {
+            map = objectMapper.readValue(file, Map.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return JSON.toJSONString(map);
+    }
+
+    private String loadJson2() {
+//        File file = new File("src/main/java/com/jiaruiblog/foxglove/json/SceneSchema.json");
+        File file = new File("src/main/java/com/jiaruiblog/foxglove/json/FrameTransforms.json");
         ObjectMapper objectMapper = new ObjectMapper();
         Map map = null;
         try {
