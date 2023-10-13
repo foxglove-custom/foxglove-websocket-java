@@ -20,3 +20,11 @@ Implementations are available in the following languages:
 ## reference
 
 > https://github.com/foxglove/ws-protocol
+
+
+## RoadMap
+
+- 接收用户的设置信息
+- Panel： 3D， Plot， Image， Table， Map
+- Schema： 
+
