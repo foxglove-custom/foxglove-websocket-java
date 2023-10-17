@@ -3,23 +3,23 @@ package com.jiaruiblog.foxglove.websocket;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jiaruiblog.foxglove.entity.Advertise;
 import com.jiaruiblog.foxglove.entity.ChannelInfo;
 import com.jiaruiblog.foxglove.entity.ServerInfo;
 import com.jiaruiblog.foxglove.schema.SceneEntity;
 import com.jiaruiblog.foxglove.schema.SceneUpdate;
-import com.jiaruiblog.foxglove.util.SystemUtil;
+import com.jiaruiblog.foxglove.util.DataUtil;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.timeout.IdleStateEvent;
 import org.springframework.util.MultiValueMap;
 import org.yeauty.annotation.*;
 import org.yeauty.pojo.Session;
 
-import java.io.File;
 import java.io.IOException;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Random;
 
 import static com.jiaruiblog.foxglove.util.DataUtil.*;
 
@@ -30,7 +30,7 @@ import static com.jiaruiblog.foxglove.util.DataUtil.*;
  * @Date 2023/7/31 21:55
  * @Version 1.0
  **/
-@ServerEndpoint(port = "8766")
+@ServerEndpoint(port = "8767")
 public class FoxgloveServer {
 
     /**
@@ -87,9 +87,9 @@ public class FoxgloveServer {
         advertise.setOp("advertise");
         ChannelInfo channelInfo = new ChannelInfo();
         channelInfo.setId(1);
-        channelInfo.setTopic("example_msg");
+        channelInfo.setTopic("示例消息");
         channelInfo.setEncoding("json");
-        channelInfo.setSchemaName("ExampleMsg");
+        channelInfo.setSchemaName("示例消息(只展示字符串)");
         channelInfo.setSchema("{\"type\": \"object\", \"properties\": {\"msg\": {\"type\": \"string\"}, \"count\": {\"type\": \"number\"}}}");
         channelInfo.setSchemaEncoding("jsonschema");
 
@@ -98,8 +98,8 @@ public class FoxgloveServer {
         channelInfo1.setTopic("sceneEntity");
         channelInfo1.setEncoding("json");
         channelInfo1.setSchemaName("SceneEntity");
-        String s = loadJson();
-        channelInfo1.setSchema(s);
+        String schema = DataUtil.loadSchemaJson("SceneUpdate.json");
+        channelInfo1.setSchema(schema);
         channelInfo1.setSchemaEncoding("jsonschema");
 
         ChannelInfo channelInfo2 = new ChannelInfo();
@@ -107,8 +107,8 @@ public class FoxgloveServer {
         channelInfo2.setTopic("FrameTransforms");
         channelInfo2.setEncoding("json");
         channelInfo2.setSchemaName("FrameTransforms");
-        String s2 = loadJson2();
-        channelInfo2.setSchema(s2);
+        schema = DataUtil.loadSchemaJson("FrameTransforms.json");
+        channelInfo2.setSchema(schema);
         channelInfo2.setSchemaEncoding("jsonschema");
 
         advertise.setChannels(Arrays.asList(channelInfo, channelInfo1, channelInfo2));
@@ -132,9 +132,11 @@ public class FoxgloveServer {
         System.out.println("接受到消息" + message);
 
         JSONObject msg = JSON.parseObject(message);
-        if ("subscribe".equals(msg.get("op"))) {
+        Object op = msg.get("op");
+        System.out.println("-------------op:\t" + op);
+        if ("advertise".equals(op)) {
             JSONArray subscriptions = msg.getJSONArray("subscriptions");
-            System.out.println(subscriptions);
+            System.out.println("subscriptions: " + subscriptions);
 
             SendCountThread sendCountThread = new SendCountThread(session);
             sendCountThread.start();
@@ -142,8 +144,6 @@ public class FoxgloveServer {
             SendSceneThread sendSceneThread = new SendSceneThread(session);
             sendSceneThread.start();
         }
-
-
     }
 
 
@@ -160,12 +160,12 @@ public class FoxgloveServer {
 
             while (true) {
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("msg", "hello");
+                jsonObject.put("msg", "hello at " + LocalTime.now());
 
-                double systemCpuLoad = SystemUtil.getSystemCpuLoad();
-                jsonObject.put("count", systemCpuLoad);
+                jsonObject.put("count", new Random().nextInt(1000));
+                jsonObject.put("number", new Random().nextInt(1000));
+
                 byte[] bytes2 = jsonObject.toJSONString().getBytes();
-
                 byte[] pack1 = new byte[5];
                 for (int j = 0; j < pack1.length; j++) {
                     if (j == 0) {
@@ -184,7 +184,6 @@ public class FoxgloveServer {
                 byte[] pack2 = byteConcat(packz1, bytes2);
 
 
-//            session.sendBinary(str.getBytes());
                 this.session.sendBinary(pack2);
                 try {
                     Thread.sleep(1000);
@@ -206,25 +205,20 @@ public class FoxgloveServer {
 
         @Override
         public void run() {
+            int i = 0;
             while (true) {
 
                 SceneEntity sceneEntity = new SceneEntity();
                 SceneEntity.SceneTimestamp sceneTimestamp = sceneEntity.new SceneTimestamp();
-                sceneTimestamp.setSec(0);
-                sceneTimestamp.setNsec(0);
+                sceneTimestamp.setSec(i * i * i % 20);
+                sceneTimestamp.setNsec(i++ % 20);
                 sceneEntity.setTimestamp(sceneTimestamp);
 
                 SceneUpdate sceneUpdate = new SceneUpdate();
                 sceneUpdate.setEntities(Arrays.asList(sceneEntity));
                 JSONObject jsonObject = (JSONObject) JSON.toJSON(sceneUpdate);
 
-                // 通道id，小端
-                byte[] channelId = getIntBytes(0);
-                // 当前ns时间戳，小端
-                byte[] timestamp = getLongBytes2(System.currentTimeMillis() * 1000 * 1000);
                 byte[] bytes2 = jsonObject.toJSONString().getBytes();
-
-
                 Long ns = 1692891094326598000L;
                 byte constantInfo = 1;
                 byte[] constantInfoByte = new byte[]{constantInfo};
@@ -251,7 +245,7 @@ public class FoxgloveServer {
     public void onBinary(Session session, byte[] bytes) {
         // 这里接收到用户指令
         for (byte b : bytes) {
-            System.out.println("发的是非得失" + b);
+            System.out.println("----byte:\t" + b);
         }
         session.sendBinary(bytes);
     }
@@ -279,34 +273,5 @@ public class FoxgloveServer {
     public void sendMessage(String message) throws IOException {
         this.session.sendText(message);
     }
-
-    private String loadJson() {
-//        File file = new File("src/main/java/com/jiaruiblog/foxglove/json/SceneSchema.json");
-        File file = new File("src/main/java/com/jiaruiblog/foxglove/json/SceneUpdate.json");
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map map = null;
-        try {
-            map = objectMapper.readValue(file, Map.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return JSON.toJSONString(map);
-    }
-
-    private String loadJson2() {
-//        File file = new File("src/main/java/com/jiaruiblog/foxglove/json/SceneSchema.json");
-        File file = new File("src/main/java/com/jiaruiblog/foxglove/json/FrameTransforms.json");
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map map = null;
-        try {
-            map = objectMapper.readValue(file, Map.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return JSON.toJSONString(map);
-    }
-
 
 }

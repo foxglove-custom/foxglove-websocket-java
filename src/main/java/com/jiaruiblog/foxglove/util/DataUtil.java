@@ -1,6 +1,26 @@
 package com.jiaruiblog.foxglove.util;
 
+import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+
 public class DataUtil {
+
+    public static String loadSchemaJson(String schemaFile) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map map = null;
+        try {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            InputStream stream = classLoader.getResourceAsStream("schema/" + schemaFile);
+            map = objectMapper.readValue(stream, Map.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return JSON.toJSONString(map);
+    }
 
     public static final long fx = 0xffL;
 
