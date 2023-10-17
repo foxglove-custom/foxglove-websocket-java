@@ -25,6 +25,6 @@ Implementations are available in the following languages:
 ## RoadMap
 
 - 接收用户的设置信息
-- Panel： 3D， Plot， Image， Table， Map
-- Schema： 
+- Panel： 3D， Plot， Image， Table， Map(要实现这五种组件的信息发送)
+- Schema：(将东风的数据基于schema转化foxglove数据)
 
