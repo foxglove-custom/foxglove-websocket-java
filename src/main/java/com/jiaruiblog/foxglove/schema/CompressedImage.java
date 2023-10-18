@@ -10,19 +10,13 @@ import lombok.Data;
  * @Version 1.0
  **/
 @Data
-public class RawImage {
+public class CompressedImage {
 
     private Timestamp timestamp;
 
-    private String frameId;
+    private String frame_id;
 
-    private Integer width;
-
-    private Integer height;
-
-    private String encoding;
-
-    private Integer step;
+    private String format;
 
     private String data;
 
