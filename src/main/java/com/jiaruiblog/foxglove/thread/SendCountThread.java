@@ -9,9 +9,11 @@ import java.util.Random;
 import static com.jiaruiblog.foxglove.util.DataUtil.getFormatedBytes;
 
 public class SendCountThread implements Runnable {
+    private int index;
     private Session session;
 
-    public SendCountThread(Session session) {
+    public SendCountThread(int index, Session session) {
+        this.index = index;
         this.session = session;
     }
 
@@ -26,7 +28,7 @@ public class SendCountThread implements Runnable {
             jsonObject.put("number", new Random().nextInt(1000));
 
             Long ns = 1692891094326598000L;
-            byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), ns, 0);
+            byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), ns, index);
             this.session.sendBinary(bytes);
             try {
                 Thread.sleep(1000);

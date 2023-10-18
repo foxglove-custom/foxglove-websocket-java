@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.jiaruiblog.foxglove.entity.Advertise;
 import com.jiaruiblog.foxglove.entity.ServerInfo;
 import com.jiaruiblog.foxglove.thread.SendCountThread;
+import com.jiaruiblog.foxglove.thread.SendImageThread;
 import com.jiaruiblog.foxglove.thread.SendSceneThread;
 import com.jiaruiblog.foxglove.util.ChannelUtil;
 import io.netty.handler.codec.http.HttpHeaders;
@@ -43,6 +44,8 @@ public class FoxgloveServer {
      * @date 2022/04/22
      */
     private String uid;
+
+    private boolean connected;
 
     @BeforeHandshake
     public void handshake(Session session, HttpHeaders headers, @RequestParam String req,
@@ -101,16 +104,21 @@ public class FoxgloveServer {
 
         JSONObject msg = JSON.parseObject(message);
         Object op = msg.get("op");
-        System.out.println("-------------op:\t" + op);
-        if ("advertise".equals(op)) {
+        System.out.println("-------------op:\t" + op + "\t" + connected);
+        if ("subscribe".equals(op) && !connected) {
+            System.out.println("----------开启多线程，循环发送-------------");
+            connected = true;
             JSONArray subscriptions = msg.getJSONArray("subscriptions");
             System.out.println("subscriptions: " + subscriptions);
 
-            Thread sendCountThread = new Thread(new SendCountThread(session));
+            Thread sendCountThread = new Thread(new SendCountThread(0, session));
             sendCountThread.start();
 
-            Thread sendSceneThread = new Thread(new SendSceneThread(session));
+            Thread sendSceneThread = new Thread(new SendSceneThread(1, session));
             sendSceneThread.start();
+
+            Thread sendImageThread = new Thread(new SendImageThread(0, session));
+            sendImageThread.start();
         }
     }
 

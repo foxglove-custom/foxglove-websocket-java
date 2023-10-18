@@ -2,8 +2,6 @@ package com.jiaruiblog.foxglove.schema;
 
 import lombok.Data;
 
-import java.util.Base64;
-
 /**
  * @ClassName RawImage
  * @Description TODO
@@ -14,7 +12,7 @@ import java.util.Base64;
 @Data
 public class RawImage {
 
-    private String timestamp;
+    private Timestamp timestamp;
 
     private String frameId;
 
@@ -26,6 +24,13 @@ public class RawImage {
 
     private Integer step;
 
-    private Base64 data;
+    private String data;
+
+    @Data
+    public class Timestamp {
+        Integer sec;
+
+        Integer nsec;
+    }
 
 }
