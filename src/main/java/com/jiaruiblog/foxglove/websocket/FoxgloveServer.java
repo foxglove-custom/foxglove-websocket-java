@@ -8,6 +8,8 @@ import com.jiaruiblog.foxglove.entity.ChannelInfo;
 import com.jiaruiblog.foxglove.entity.ServerInfo;
 import com.jiaruiblog.foxglove.schema.SceneEntity;
 import com.jiaruiblog.foxglove.schema.SceneUpdate;
+import com.jiaruiblog.foxglove.thread.SendCountThread;
+import com.jiaruiblog.foxglove.thread.SendSceneThread;
 import com.jiaruiblog.foxglove.util.DataUtil;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.timeout.IdleStateEvent;
@@ -147,81 +149,14 @@ public class FoxgloveServer {
             JSONArray subscriptions = msg.getJSONArray("subscriptions");
             System.out.println("subscriptions: " + subscriptions);
 
-            SendCountThread sendCountThread = new SendCountThread(session);
+            Thread sendCountThread = new Thread(new SendCountThread(session));
             sendCountThread.start();
 
-            SendSceneThread sendSceneThread = new SendSceneThread(session);
+            Thread sendSceneThread = new Thread(new SendSceneThread(session));
             sendSceneThread.start();
         }
     }
 
-
-    class SendCountThread extends Thread {
-
-        private Session session;
-
-        SendCountThread(Session session) {
-            this.session = session;
-        }
-
-        @Override
-        public void run() {
-
-            while (true) {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("msg", "hello at " + LocalTime.now());
-
-                jsonObject.put("count", new Random().nextInt(1000));
-                jsonObject.put("number", new Random().nextInt(1000));
-
-                Long ns = 1692891094326598000L;
-                byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), ns, 0);
-                this.session.sendBinary(bytes);
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-        }
-    }
-
-    class SendSceneThread extends Thread {
-
-        private Session session;
-
-        SendSceneThread(Session session) {
-            this.session = session;
-        }
-
-        @Override
-        public void run() {
-            int i = 0;
-            while (true) {
-
-                SceneEntity sceneEntity = new SceneEntity();
-                SceneEntity.SceneTimestamp sceneTimestamp = sceneEntity.new SceneTimestamp();
-                sceneTimestamp.setSec(i * i * i % 20);
-                sceneTimestamp.setNsec(i++ % 20);
-                sceneEntity.setTimestamp(sceneTimestamp);
-
-                SceneUpdate sceneUpdate = new SceneUpdate();
-                sceneUpdate.setEntities(Arrays.asList(sceneEntity));
-                JSONObject jsonObject = (JSONObject) JSON.toJSON(sceneUpdate);
-
-                Long ns = 1692891094326598000L;
-                byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), ns, 2);
-                this.session.sendBinary(bytes);
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-        }
-    }
 
     @OnBinary
     public void onBinary(Session session, byte[] bytes) {
