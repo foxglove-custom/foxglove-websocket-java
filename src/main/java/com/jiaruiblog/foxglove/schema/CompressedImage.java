@@ -14,7 +14,7 @@ public class CompressedImage {
 
     private Timestamp timestamp;
 
-    private String frameId;
+    private String frame_id;
 
     private String format;
 

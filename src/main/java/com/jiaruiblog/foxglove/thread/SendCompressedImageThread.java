@@ -10,7 +10,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
@@ -54,15 +53,13 @@ public class SendCompressedImageThread implements Runnable {
         String filePath = "E:\\foxglove\\image\\" + index + ".jpg";
         try (InputStream is = new FileInputStream(filePath)) {
             byte[] bytes = IOUtils.toByteArray(is);
-            int size = bytes.length;
-            byte[] newBytes = Arrays.copyOfRange(bytes, 0, size);
             image.setFormat("jpeg");
-            image.setFrameId(String.valueOf(index));
+            image.setFrame_id(String.valueOf(index));
             CompressedImage.Timestamp timestamp = image.new Timestamp();
             timestamp.setSec(index * index * index % 20);
             timestamp.setNsec(index);
             image.setTimestamp(timestamp);
-            byte[] encode = Base64.getEncoder().encode(newBytes);
+            byte[] encode = Base64.getEncoder().encode(bytes);
             String data = new String(encode);
             image.setData(data);
         } catch (FileNotFoundException e) {

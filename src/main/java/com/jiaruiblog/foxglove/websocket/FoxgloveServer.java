@@ -6,6 +6,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.jiaruiblog.foxglove.entity.Advertise;
 import com.jiaruiblog.foxglove.entity.ServerInfo;
 import com.jiaruiblog.foxglove.thread.SendCompressedImageThread;
+import com.jiaruiblog.foxglove.thread.SendCountThread;
+import com.jiaruiblog.foxglove.thread.SendRawImageThread;
+import com.jiaruiblog.foxglove.thread.SendSceneThread;
 import com.jiaruiblog.foxglove.util.ChannelUtil;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.timeout.IdleStateEvent;
@@ -97,7 +100,7 @@ public class FoxgloveServer {
     }
 
     @OnMessage
-    public void onMessage(Session session, String message) throws Exception {
+    public void onMessage(Session session, String message) {
         System.out.println("接受到消息" + message);
 
         JSONObject msg = JSON.parseObject(message);
@@ -110,13 +113,13 @@ public class FoxgloveServer {
             JSONArray subscriptions = msg.getJSONArray("subscriptions");
             System.out.println("subscriptions: " + subscriptions);
 
-//            Thread sendCountThread = new Thread(new SendCountThread(0, session));
+//            Thread sendCountThread = new Thread(new SendCountThread(1, session));
 //            sendCountThread.start();
 //
-//            Thread sendSceneThread = new Thread(new SendSceneThread(1, session));
+//            Thread sendSceneThread = new Thread(new SendSceneThread(2, session));
 //            sendSceneThread.start();
 //
-//            Thread sendRawImageThread = new Thread(new SendRawImageThread(0, session));
+//            Thread sendRawImageThread = new Thread(new SendRawImageThread(3, session));
 //            sendRawImageThread.start();
 
             Thread sendCompressedImageThread = new Thread(new SendCompressedImageThread(0, session));
