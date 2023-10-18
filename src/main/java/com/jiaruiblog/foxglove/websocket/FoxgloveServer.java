@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
 
-import static com.jiaruiblog.foxglove.util.DataUtil.*;
+import static com.jiaruiblog.foxglove.util.DataUtil.getFormatedBytes;
 
 /**
  * @ClassName FoxgloveServer
@@ -85,33 +85,42 @@ public class FoxgloveServer {
 
         Advertise advertise = new Advertise();
         advertise.setOp("advertise");
-        ChannelInfo channelInfo = new ChannelInfo();
-        channelInfo.setId(1);
-        channelInfo.setTopic("示例消息");
-        channelInfo.setEncoding("json");
-        channelInfo.setSchemaName("示例消息(只展示字符串)");
-        channelInfo.setSchema("{\"type\": \"object\", \"properties\": {\"msg\": {\"type\": \"string\"}, \"count\": {\"type\": \"number\"}}}");
-        channelInfo.setSchemaEncoding("jsonschema");
+        ChannelInfo channelDemo = new ChannelInfo();
+        channelDemo.setId(1);
+        channelDemo.setTopic("示例消息");
+        channelDemo.setEncoding("json");
+        channelDemo.setSchemaName("示例消息(只展示字符串)");
+        channelDemo.setSchema("{\"type\": \"object\", \"properties\": {\"msg\": {\"type\": \"string\"}, \"count\": {\"type\": \"number\"}}}");
+        channelDemo.setSchemaEncoding("jsonschema");
 
-        ChannelInfo channelInfo1 = new ChannelInfo();
-        channelInfo1.setId(2);
-        channelInfo1.setTopic("sceneEntity");
-        channelInfo1.setEncoding("json");
-        channelInfo1.setSchemaName("SceneEntity");
-        String schema = DataUtil.loadSchemaJson("SceneUpdate.json");
-        channelInfo1.setSchema(schema);
-        channelInfo1.setSchemaEncoding("jsonschema");
+        ChannelInfo channelImage = new ChannelInfo();
+        channelImage.setId(2);
+        channelImage.setTopic("原始图片");
+        channelImage.setEncoding("json");
+        channelImage.setSchemaName("原始图片");
+        String schema = DataUtil.loadSchemaJson("RawImage.json");
+        channelImage.setSchema(schema);
+        channelImage.setSchemaEncoding("jsonschema");
 
-        ChannelInfo channelInfo2 = new ChannelInfo();
-        channelInfo2.setId(3);
-        channelInfo2.setTopic("FrameTransforms");
-        channelInfo2.setEncoding("json");
-        channelInfo2.setSchemaName("FrameTransforms");
+        ChannelInfo channelScene = new ChannelInfo();
+        channelScene.setId(3);
+        channelScene.setTopic("sceneEntity");
+        channelScene.setEncoding("json");
+        channelScene.setSchemaName("SceneEntity");
+        schema = DataUtil.loadSchemaJson("SceneUpdate.json");
+        channelScene.setSchema(schema);
+        channelScene.setSchemaEncoding("jsonschema");
+
+        ChannelInfo channelFrame = new ChannelInfo();
+        channelFrame.setId(4);
+        channelFrame.setTopic("FrameTransforms");
+        channelFrame.setEncoding("json");
+        channelFrame.setSchemaName("FrameTransforms");
         schema = DataUtil.loadSchemaJson("FrameTransforms.json");
-        channelInfo2.setSchema(schema);
-        channelInfo2.setSchemaEncoding("jsonschema");
+        channelFrame.setSchema(schema);
+        channelFrame.setSchemaEncoding("jsonschema");
 
-        advertise.setChannels(Arrays.asList(channelInfo, channelInfo1, channelInfo2));
+        advertise.setChannels(Arrays.asList(channelDemo, channelImage, channelScene, channelFrame));
 
         this.session.sendText(JSON.toJSONString(advertise));
     }
@@ -165,26 +174,9 @@ public class FoxgloveServer {
                 jsonObject.put("count", new Random().nextInt(1000));
                 jsonObject.put("number", new Random().nextInt(1000));
 
-                byte[] bytes2 = jsonObject.toJSONString().getBytes();
-                byte[] pack1 = new byte[5];
-                for (int j = 0; j < pack1.length; j++) {
-                    if (j == 0) {
-                        pack1[j] = Byte.parseByte("1");
-                    } else {
-                        pack1[j] = Byte.parseByte("0");
-                    }
-                }
-
                 Long ns = 1692891094326598000L;
-                byte constantInfo = 1;
-                byte[] constantInfoByte = new byte[]{constantInfo};
-                byte[] dataType = getIntBytes(0);
-                byte[] nsTime = getLongBytes(ns);
-                byte[] packz1 = byteConcat(constantInfoByte, dataType, nsTime);
-                byte[] pack2 = byteConcat(packz1, bytes2);
-
-
-                this.session.sendBinary(pack2);
+                byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), ns, 0);
+                this.session.sendBinary(bytes);
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -218,19 +210,9 @@ public class FoxgloveServer {
                 sceneUpdate.setEntities(Arrays.asList(sceneEntity));
                 JSONObject jsonObject = (JSONObject) JSON.toJSON(sceneUpdate);
 
-                byte[] bytes2 = jsonObject.toJSONString().getBytes();
                 Long ns = 1692891094326598000L;
-                byte constantInfo = 1;
-                byte[] constantInfoByte = new byte[]{constantInfo};
-
-                byte[] dataType = getIntBytes(1);
-
-                byte[] nsTime = getLongBytes(ns);
-
-                byte[] packz1 = byteConcat(constantInfoByte, dataType, nsTime);
-
-                byte[] pack2 = byteConcat(packz1, bytes2);
-                this.session.sendBinary(pack2);
+                byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), ns, 2);
+                this.session.sendBinary(bytes);
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {

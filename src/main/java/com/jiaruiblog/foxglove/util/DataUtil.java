@@ -9,6 +9,16 @@ import java.util.Map;
 
 public class DataUtil {
 
+    public static byte[] getFormatedBytes(byte[] data, long ns,int index) {
+        byte constantInfo = 1;
+        byte[] constantInfoByte = new byte[]{constantInfo};
+        byte[] dataType = getIntBytes(index);
+        byte[] nsTime = getLongBytes(ns);
+        byte[] packz1 = byteConcat(constantInfoByte, dataType, nsTime);
+        byte[] pack2 = byteConcat(packz1, data);
+        return pack2;
+    }
+
     public static String loadSchemaJson(String schemaFile) {
         ObjectMapper objectMapper = new ObjectMapper();
         Map map = null;
