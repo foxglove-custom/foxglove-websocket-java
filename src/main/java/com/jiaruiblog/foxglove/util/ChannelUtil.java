@@ -18,9 +18,9 @@ public class ChannelUtil {
 
         ChannelInfo channelImage = new ChannelInfo();
         channelImage.setId(2);
-        channelImage.setTopic("原始图片");
+        channelImage.setTopic("rawImage");
         channelImage.setEncoding("json");
-        channelImage.setSchemaName("原始图片");
+        channelImage.setSchemaName("原始图片(非压缩的原始图片)");
         String schema = DataUtil.loadSchemaJson("RawImage.json");
         channelImage.setSchema(schema);
         channelImage.setSchemaEncoding("jsonschema");
@@ -42,7 +42,18 @@ public class ChannelUtil {
         schema = DataUtil.loadSchemaJson("FrameTransforms.json");
         channelFrame.setSchema(schema);
         channelFrame.setSchemaEncoding("jsonschema");
-        List<ChannelInfo> channelList = Arrays.asList(channelDemo, channelImage, channelScene, channelFrame);
+
+        ChannelInfo channelCompressImage = new ChannelInfo();
+        channelCompressImage.setId(5);
+        channelCompressImage.setTopic("CompressImage");
+        channelCompressImage.setEncoding("json");
+        channelCompressImage.setSchemaName("CompressImage(压缩图片)");
+        schema = DataUtil.loadSchemaJson("CompressedImage.json");
+        channelCompressImage.setSchema(schema);
+        channelCompressImage.setSchemaEncoding("jsonschema");
+
+
+        List<ChannelInfo> channelList = Arrays.asList(channelDemo, channelImage, channelScene, channelFrame, channelCompressImage);
         return channelList;
     }
 }
