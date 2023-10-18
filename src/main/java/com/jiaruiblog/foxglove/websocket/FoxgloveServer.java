@@ -4,13 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jiaruiblog.foxglove.entity.Advertise;
-import com.jiaruiblog.foxglove.entity.ChannelInfo;
 import com.jiaruiblog.foxglove.entity.ServerInfo;
-import com.jiaruiblog.foxglove.schema.SceneEntity;
-import com.jiaruiblog.foxglove.schema.SceneUpdate;
 import com.jiaruiblog.foxglove.thread.SendCountThread;
 import com.jiaruiblog.foxglove.thread.SendSceneThread;
-import com.jiaruiblog.foxglove.util.DataUtil;
+import com.jiaruiblog.foxglove.util.ChannelUtil;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.timeout.IdleStateEvent;
 import org.springframework.util.MultiValueMap;
@@ -18,12 +15,8 @@ import org.yeauty.annotation.*;
 import org.yeauty.pojo.Session;
 
 import java.io.IOException;
-import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Random;
-
-import static com.jiaruiblog.foxglove.util.DataUtil.getFormatedBytes;
 
 /**
  * @ClassName FoxgloveServer
@@ -84,45 +77,9 @@ public class FoxgloveServer {
         String severInfoString = JSON.toJSONString(serverInfo);
 
         this.session.sendText(severInfoString);
-
         Advertise advertise = new Advertise();
         advertise.setOp("advertise");
-        ChannelInfo channelDemo = new ChannelInfo();
-        channelDemo.setId(1);
-        channelDemo.setTopic("示例消息");
-        channelDemo.setEncoding("json");
-        channelDemo.setSchemaName("示例消息(只展示字符串)");
-        channelDemo.setSchema("{\"type\": \"object\", \"properties\": {\"msg\": {\"type\": \"string\"}, \"count\": {\"type\": \"number\"}}}");
-        channelDemo.setSchemaEncoding("jsonschema");
-
-        ChannelInfo channelImage = new ChannelInfo();
-        channelImage.setId(2);
-        channelImage.setTopic("原始图片");
-        channelImage.setEncoding("json");
-        channelImage.setSchemaName("原始图片");
-        String schema = DataUtil.loadSchemaJson("RawImage.json");
-        channelImage.setSchema(schema);
-        channelImage.setSchemaEncoding("jsonschema");
-
-        ChannelInfo channelScene = new ChannelInfo();
-        channelScene.setId(3);
-        channelScene.setTopic("sceneEntity");
-        channelScene.setEncoding("json");
-        channelScene.setSchemaName("SceneEntity");
-        schema = DataUtil.loadSchemaJson("SceneUpdate.json");
-        channelScene.setSchema(schema);
-        channelScene.setSchemaEncoding("jsonschema");
-
-        ChannelInfo channelFrame = new ChannelInfo();
-        channelFrame.setId(4);
-        channelFrame.setTopic("FrameTransforms");
-        channelFrame.setEncoding("json");
-        channelFrame.setSchemaName("FrameTransforms");
-        schema = DataUtil.loadSchemaJson("FrameTransforms.json");
-        channelFrame.setSchema(schema);
-        channelFrame.setSchemaEncoding("jsonschema");
-
-        advertise.setChannels(Arrays.asList(channelDemo, channelImage, channelScene, channelFrame));
+        advertise.setChannels(ChannelUtil.createChannels());
 
         this.session.sendText(JSON.toJSONString(advertise));
     }
