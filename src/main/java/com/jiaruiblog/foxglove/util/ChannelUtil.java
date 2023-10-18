@@ -47,7 +47,7 @@ public class ChannelUtil {
         channelCompressImage.setId(5);
         channelCompressImage.setTopic("CompressImage");
         channelCompressImage.setEncoding("json");
-        channelCompressImage.setSchemaName("CompressImage(压缩图片)");
+        channelCompressImage.setSchemaName("foxglove.CompressedImage");
         schema = DataUtil.loadSchemaJson("CompressedImage.json");
         channelCompressImage.setSchema(schema);
         channelCompressImage.setSchemaEncoding("jsonschema");
