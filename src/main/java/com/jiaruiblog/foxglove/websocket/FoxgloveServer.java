@@ -106,7 +106,7 @@ public class FoxgloveServer {
         JSONObject msg = JSON.parseObject(message);
         Object op = msg.get("op");
         System.out.println("-------------op:\t" + op + "\t" + connected);
-        boolean opCheck = "subscribe".equals(op) || "advertise".equals(op);
+        boolean opCheck = "subscribe".equals(op);
         if (opCheck && !connected) {
             System.out.println("----------开启多线程，循环发送-------------");
             connected = true;
@@ -119,11 +119,11 @@ public class FoxgloveServer {
 //            Thread sendSceneThread = new Thread(new SendSceneThread(2, session));
 //            sendSceneThread.start();
 //
-//            Thread sendRawImageThread = new Thread(new SendRawImageThread(3, session));
-//            sendRawImageThread.start();
+            Thread sendRawImageThread = new Thread(new SendRawImageThread(0, session));
+            sendRawImageThread.start();
 
-            Thread sendCompressedImageThread = new Thread(new SendCompressedImageThread(0, session));
-            sendCompressedImageThread.start();
+//            Thread sendCompressedImageThread = new Thread(new SendCompressedImageThread(0, session));
+//            sendCompressedImageThread.start();
         }
     }
 

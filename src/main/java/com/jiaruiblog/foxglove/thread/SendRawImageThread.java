@@ -9,6 +9,7 @@ import org.yeauty.pojo.Session;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.concurrent.TimeUnit;
@@ -37,7 +38,7 @@ public class SendRawImageThread implements Runnable {
                 }
                 RawImage rawImage = readImage(count);
                 JSONObject jsonObject = (JSONObject) JSON.toJSON(rawImage);
-                long ns = 1692891094326598000L;
+                Integer ns = rawImage.getTimestamp().getNsec();
                 byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), ns, index);
                 this.session.sendBinary(bytes);
                 TimeUnit.SECONDS.sleep(1);
@@ -58,13 +59,16 @@ public class SendRawImageThread implements Runnable {
             int height = buf.getHeight();
             int width = buf.getWidth();
             image.setStep(size);
+            System.out.println(buf.getType() + "-----size:\t" + size);
             image.setWidth(width);
             image.setHeight(height);
-            image.setEncoding("jpeg");
-            image.setFrameId(String.valueOf(index));
+            image.setEncoding("8UC1");
+            image.setFrame_id(String.valueOf(index));
             RawImage.Timestamp timestamp = image.new Timestamp();
-            timestamp.setSec(index * index * index % 20);
-            timestamp.setNsec(index);
+            int nano = Instant.now().getNano();
+            long second = Instant.now().getEpochSecond();
+            timestamp.setSec((int) second);
+            timestamp.setNsec(nano);
             image.setTimestamp(timestamp);
             byte[] encode = Base64.getEncoder().encode(newBytes);
             String data = new String(encode);

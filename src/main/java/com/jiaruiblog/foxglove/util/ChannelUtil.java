@@ -20,8 +20,8 @@ public class ChannelUtil {
         channelImage.setId(2);
         channelImage.setTopic("rawImage");
         channelImage.setEncoding("json");
-        channelImage.setSchemaName("原始图片(非压缩的原始图片)");
-        String schema = DataUtil.loadSchemaJson("RawImage.json");
+        channelImage.setSchemaName("foxglove.RawImage");
+        String schema = DataUtil.loadJsonSchema("RawImage.json");
         channelImage.setSchema(schema);
         channelImage.setSchemaEncoding("jsonschema");
 
@@ -30,7 +30,7 @@ public class ChannelUtil {
         channelScene.setTopic("sceneEntity");
         channelScene.setEncoding("json");
         channelScene.setSchemaName("SceneEntity");
-        schema = DataUtil.loadSchemaJson("SceneUpdate.json");
+        schema = DataUtil.loadJsonSchema("SceneUpdate.json");
         channelScene.setSchema(schema);
         channelScene.setSchemaEncoding("jsonschema");
 
@@ -39,7 +39,7 @@ public class ChannelUtil {
         channelFrame.setTopic("FrameTransforms");
         channelFrame.setEncoding("json");
         channelFrame.setSchemaName("FrameTransforms");
-        schema = DataUtil.loadSchemaJson("FrameTransforms.json");
+        schema = DataUtil.loadJsonSchema("FrameTransforms.json");
         channelFrame.setSchema(schema);
         channelFrame.setSchemaEncoding("jsonschema");
 
@@ -48,7 +48,7 @@ public class ChannelUtil {
         channelCompressImage.setTopic("CompressImage");
         channelCompressImage.setEncoding("json");
         channelCompressImage.setSchemaName("foxglove.CompressedImage");
-        schema = DataUtil.loadSchemaJson("CompressedImage.json");
+        schema = DataUtil.loadJsonSchema("CompressedImage.json");
         channelCompressImage.setSchema(schema);
         channelCompressImage.setSchemaEncoding("jsonschema");
 
