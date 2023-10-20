@@ -113,17 +113,17 @@ public class FoxgloveServer {
             JSONArray subscriptions = msg.getJSONArray("subscriptions");
             System.out.println("subscriptions: " + subscriptions);
 
-//            Thread sendCountThread = new Thread(new SendCountThread(1, session));
-//            sendCountThread.start();
-//
-//            Thread sendSceneThread = new Thread(new SendSceneThread(2, session));
-//            sendSceneThread.start();
-//
-            Thread sendRawImageThread = new Thread(new SendRawImageThread(0, session));
-            sendRawImageThread.start();
+            Thread sendCountThread = new Thread(new SendCountThread(1, session));
+            sendCountThread.start();
 
-//            Thread sendCompressedImageThread = new Thread(new SendCompressedImageThread(0, session));
-//            sendCompressedImageThread.start();
+            Thread sendSceneThread = new Thread(new SendSceneThread(2, session));
+            sendSceneThread.start();
+
+//            Thread sendRawImageThread = new Thread(new SendRawImageThread(0, session));
+//            sendRawImageThread.start();
+
+            Thread sendCompressedImageThread = new Thread(new SendCompressedImageThread(0, session));
+            sendCompressedImageThread.start();
         }
     }
 

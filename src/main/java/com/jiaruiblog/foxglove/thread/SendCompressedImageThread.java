@@ -41,7 +41,6 @@ public class SendCompressedImageThread implements Runnable {
                 long ns = 1692891094326598000L;
                 byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), ns, index);
                 this.session.sendBinary(bytes);
-//                System.out.println("----------send compressed image");
                 TimeUnit.SECONDS.sleep(1);
             }
         } catch (InterruptedException e) {

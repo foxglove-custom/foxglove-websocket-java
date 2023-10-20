@@ -15,15 +15,16 @@ public class ChannelUtil {
         channelDemo.setSchemaName("示例消息(只展示字符串)");
         channelDemo.setSchema("{\"type\": \"object\", \"properties\": {\"msg\": {\"type\": \"string\"}, \"count\": {\"type\": \"number\"}}}");
         channelDemo.setSchemaEncoding("jsonschema");
+        String schema = null;
 
-        ChannelInfo channelImage = new ChannelInfo();
-        channelImage.setId(2);
-        channelImage.setTopic("rawImage");
-        channelImage.setEncoding("json");
-        channelImage.setSchemaName("foxglove.RawImage");
-        String schema = DataUtil.loadJsonSchema("RawImage.json");
-        channelImage.setSchema(schema);
-        channelImage.setSchemaEncoding("jsonschema");
+//        ChannelInfo channelImage = new ChannelInfo();
+//        channelImage.setId(2);
+//        channelImage.setTopic("rawImage");
+//        channelImage.setEncoding("json");
+//        channelImage.setSchemaName("foxglove.RawImage");
+//        String schema = DataUtil.loadJsonSchema("RawImage.json");
+//        channelImage.setSchema(schema);
+//        channelImage.setSchemaEncoding("jsonschema");
 
         ChannelInfo channelScene = new ChannelInfo();
         channelScene.setId(3);
@@ -53,7 +54,7 @@ public class ChannelUtil {
         channelCompressImage.setSchemaEncoding("jsonschema");
 
 
-        List<ChannelInfo> channelList = Arrays.asList(channelDemo, channelImage, channelScene, channelFrame, channelCompressImage);
+        List<ChannelInfo> channelList = Arrays.asList(channelDemo, channelScene, channelFrame, channelCompressImage);
         return channelList;
     }
 }
