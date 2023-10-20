@@ -17,26 +17,17 @@ public class ChannelUtil {
         channelDemo.setSchemaEncoding("jsonschema");
         String schema = null;
 
-//        ChannelInfo channelImage = new ChannelInfo();
-//        channelImage.setId(2);
-//        channelImage.setTopic("rawImage");
-//        channelImage.setEncoding("json");
-//        channelImage.setSchemaName("foxglove.RawImage");
-//        String schema = DataUtil.loadJsonSchema("RawImage.json");
-//        channelImage.setSchema(schema);
-//        channelImage.setSchemaEncoding("jsonschema");
-
         ChannelInfo channelScene = new ChannelInfo();
-        channelScene.setId(3);
-        channelScene.setTopic("sceneEntity");
+        channelScene.setId(2);
+        channelScene.setTopic("SceneUpdate");
         channelScene.setEncoding("json");
-        channelScene.setSchemaName("SceneEntity");
+        channelScene.setSchemaName("foxglove.SceneUpdate");
         schema = DataUtil.loadJsonSchema("SceneUpdate.json");
         channelScene.setSchema(schema);
         channelScene.setSchemaEncoding("jsonschema");
 
         ChannelInfo channelFrame = new ChannelInfo();
-        channelFrame.setId(4);
+        channelFrame.setId(3);
         channelFrame.setTopic("FrameTransforms");
         channelFrame.setEncoding("json");
         channelFrame.setSchemaName("FrameTransforms");
@@ -45,7 +36,7 @@ public class ChannelUtil {
         channelFrame.setSchemaEncoding("jsonschema");
 
         ChannelInfo channelCompressImage = new ChannelInfo();
-        channelCompressImage.setId(5);
+        channelCompressImage.setId(4);
         channelCompressImage.setTopic("CompressImage");
         channelCompressImage.setEncoding("json");
         channelCompressImage.setSchemaName("foxglove.CompressedImage");
@@ -54,7 +45,7 @@ public class ChannelUtil {
         channelCompressImage.setSchemaEncoding("jsonschema");
 
         ChannelInfo channelPointCloud = new ChannelInfo();
-        channelPointCloud.setId(6);
+        channelPointCloud.setId(5);
         channelPointCloud.setTopic("PointCloud");
         channelPointCloud.setEncoding("json");
         channelPointCloud.setSchemaName("foxglove.PointCloud");
@@ -63,7 +54,7 @@ public class ChannelUtil {
         channelPointCloud.setSchemaEncoding("jsonschema");
 
 
-        List<ChannelInfo> channelList = Arrays.asList(channelPointCloud);
+        List<ChannelInfo> channelList = Arrays.asList(channelScene);
         //List<ChannelInfo> channelList = Arrays.asList(channelDemo, channelScene, channelFrame, channelCompressImage);
         return channelList;
     }

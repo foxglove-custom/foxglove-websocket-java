@@ -19,7 +19,7 @@ public class FrameTransform {
 
     String childFrameId;
 
-    Vecter3 translation;
+    Vector3 translation;
 
 
 }

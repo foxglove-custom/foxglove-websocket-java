@@ -17,6 +17,6 @@ public class SceneUpdate {
 
     List<Object> deletions;
 
-    List<Object> entities;
+    List<SceneEntity> entities;
 
 }

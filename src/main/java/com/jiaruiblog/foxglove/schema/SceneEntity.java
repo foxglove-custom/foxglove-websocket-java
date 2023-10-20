@@ -3,6 +3,7 @@ package com.jiaruiblog.foxglove.schema;
 import lombok.Data;
 
 import javax.sound.sampled.Line;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,81 +16,32 @@ import java.util.List;
 @Data
 public class SceneEntity {
 
+    private Timestamp timestamp;
 
-    SceneTimestamp timestamp;
+    private Timestamp lifetime;
 
-    String frameId;
+    private String frame_id;
 
-    String id;
+    private String id;
 
-    SceneLifeTime lifeTime;
+    private boolean frame_locked;
 
-    Boolean frameLocked;
+    private List<KeyValuePair> metadata = new ArrayList<>();
 
-    List<Metadata> metadata;
+    private List<CubePrimitive> cubes = new ArrayList<>();
 
-    List<Arrow> arrows;
+    private List<Object> arrows = new ArrayList<>();
 
-    List<Cube> cubes;
+    private List<Object> spheres = new ArrayList<>();
 
-    List<Sphere> spheres;
+    private List<Object> cylinders = new ArrayList<>();
 
-    List<Cylinder> cylinders;
+    private List<Line> lines = new ArrayList<>();
 
-    List<Line> lines;
+    private List<Object> triangles = new ArrayList<>();
 
-    List<Triangle> triangles;
+    private List<Object> texts = new ArrayList<>();
 
-    List<Text> texts;
-
-    List<Model> models;
-
-    @Data
-    public class SceneTimestamp {
-        Integer sec;
-
-        Integer nsec;
-    }
-
-    @Data
-    public class SceneLifeTime {
-        Integer sec;
-
-        Integer nsec;
-    }
-
-    @Data
-    public class Metadata {
-        String key;
-        String value;
-    }
-
-    public class Arrow {
-
-    }
-
-    public class Cube {
-
-    }
-
-    class Sphere{
-
-    }
-
-    class Cylinder {
-
-    }
-
-    class Triangle {
-
-    }
-
-    class Text {
-
-    }
-
-    class Model {
-
-    }
+    private List<Object> models = new ArrayList<>();
 
 }
