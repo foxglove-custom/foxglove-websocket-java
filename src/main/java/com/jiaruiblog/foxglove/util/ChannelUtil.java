@@ -53,8 +53,18 @@ public class ChannelUtil {
         channelCompressImage.setSchema(schema);
         channelCompressImage.setSchemaEncoding("jsonschema");
 
+        ChannelInfo channelPointCloud = new ChannelInfo();
+        channelPointCloud.setId(6);
+        channelPointCloud.setTopic("PointCloud");
+        channelPointCloud.setEncoding("json");
+        channelPointCloud.setSchemaName("foxglove.PointCloud");
+        schema = DataUtil.loadJsonSchema("PointCloud.json");
+        channelPointCloud.setSchema(schema);
+        channelPointCloud.setSchemaEncoding("jsonschema");
 
-        List<ChannelInfo> channelList = Arrays.asList(channelDemo, channelScene, channelFrame, channelCompressImage);
+
+        List<ChannelInfo> channelList = Arrays.asList(channelPointCloud);
+        //List<ChannelInfo> channelList = Arrays.asList(channelDemo, channelScene, channelFrame, channelCompressImage);
         return channelList;
     }
 }
