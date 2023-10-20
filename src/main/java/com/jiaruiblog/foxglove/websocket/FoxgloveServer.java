@@ -5,10 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jiaruiblog.foxglove.entity.Advertise;
 import com.jiaruiblog.foxglove.entity.ServerInfo;
-import com.jiaruiblog.foxglove.thread.SendCompressedImageThread;
-import com.jiaruiblog.foxglove.thread.SendCountThread;
-import com.jiaruiblog.foxglove.thread.SendRawImageThread;
-import com.jiaruiblog.foxglove.thread.SendSceneThread;
+import com.jiaruiblog.foxglove.thread.SendPointCloudThread;
 import com.jiaruiblog.foxglove.util.ChannelUtil;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.timeout.IdleStateEvent;
@@ -106,24 +103,27 @@ public class FoxgloveServer {
         JSONObject msg = JSON.parseObject(message);
         Object op = msg.get("op");
         System.out.println("-------------op:\t" + op + "\t" + connected);
-        boolean opCheck = "subscribe".equals(op) || "advertise".equals(op);
+        boolean opCheck = "subscribe".equals(op);
         if (opCheck && !connected) {
             System.out.println("----------开启多线程，循环发送-------------");
             connected = true;
             JSONArray subscriptions = msg.getJSONArray("subscriptions");
             System.out.println("subscriptions: " + subscriptions);
 
-//            Thread sendCountThread = new Thread(new SendCountThread(1, session));
+//            Thread sendCountThread = new Thread(new SendCountThread(0, session));
 //            sendCountThread.start();
-//
+
 //            Thread sendSceneThread = new Thread(new SendSceneThread(2, session));
 //            sendSceneThread.start();
-//
-//            Thread sendRawImageThread = new Thread(new SendRawImageThread(3, session));
+
+//            Thread sendRawImageThread = new Thread(new SendRawImageThread(0, session));
 //            sendRawImageThread.start();
 
-            Thread sendCompressedImageThread = new Thread(new SendCompressedImageThread(0, session));
-            sendCompressedImageThread.start();
+//            Thread sendCompressedImageThread = new Thread(new SendCompressedImageThread(0, session));
+//            sendCompressedImageThread.start();
+
+            Thread sendPointCloudThread = new Thread(new SendPointCloudThread(0, session));
+            sendPointCloudThread.start();
         }
     }
 

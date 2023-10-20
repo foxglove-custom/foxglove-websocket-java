@@ -19,7 +19,7 @@ public class DataUtil {
         return pack2;
     }
 
-    public static String loadSchemaJson(String schemaFile) {
+    public static String loadJsonSchema(String schemaFile) {
         ObjectMapper objectMapper = new ObjectMapper();
         Map map = null;
         try {
@@ -58,23 +58,6 @@ public class DataUtil {
      * @return
      */
     public static byte[] getLongBytes(long data) {
-        int length = 8;
-        byte[] bytes = new byte[length];
-
-        for (int i = 0; i < length; i++) {
-            bytes[i] = (byte) ((data >> (i * 8)) & fx);
-        }
-        return bytes;
-    }
-
-    /**
-     * long 转 byte[]
-     * 小端
-     *
-     * @param data
-     * @return
-     */
-    public static byte[] getLongBytes2(long data) {
         int length = 8;
         byte[] bytes = new byte[length];
 

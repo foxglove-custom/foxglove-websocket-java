@@ -15,22 +15,23 @@ public class ChannelUtil {
         channelDemo.setSchemaName("示例消息(只展示字符串)");
         channelDemo.setSchema("{\"type\": \"object\", \"properties\": {\"msg\": {\"type\": \"string\"}, \"count\": {\"type\": \"number\"}}}");
         channelDemo.setSchemaEncoding("jsonschema");
+        String schema = null;
 
-        ChannelInfo channelImage = new ChannelInfo();
-        channelImage.setId(2);
-        channelImage.setTopic("rawImage");
-        channelImage.setEncoding("json");
-        channelImage.setSchemaName("原始图片(非压缩的原始图片)");
-        String schema = DataUtil.loadSchemaJson("RawImage.json");
-        channelImage.setSchema(schema);
-        channelImage.setSchemaEncoding("jsonschema");
+//        ChannelInfo channelImage = new ChannelInfo();
+//        channelImage.setId(2);
+//        channelImage.setTopic("rawImage");
+//        channelImage.setEncoding("json");
+//        channelImage.setSchemaName("foxglove.RawImage");
+//        String schema = DataUtil.loadJsonSchema("RawImage.json");
+//        channelImage.setSchema(schema);
+//        channelImage.setSchemaEncoding("jsonschema");
 
         ChannelInfo channelScene = new ChannelInfo();
         channelScene.setId(3);
         channelScene.setTopic("sceneEntity");
         channelScene.setEncoding("json");
         channelScene.setSchemaName("SceneEntity");
-        schema = DataUtil.loadSchemaJson("SceneUpdate.json");
+        schema = DataUtil.loadJsonSchema("SceneUpdate.json");
         channelScene.setSchema(schema);
         channelScene.setSchemaEncoding("jsonschema");
 
@@ -39,7 +40,7 @@ public class ChannelUtil {
         channelFrame.setTopic("FrameTransforms");
         channelFrame.setEncoding("json");
         channelFrame.setSchemaName("FrameTransforms");
-        schema = DataUtil.loadSchemaJson("FrameTransforms.json");
+        schema = DataUtil.loadJsonSchema("FrameTransforms.json");
         channelFrame.setSchema(schema);
         channelFrame.setSchemaEncoding("jsonschema");
 
@@ -47,13 +48,23 @@ public class ChannelUtil {
         channelCompressImage.setId(5);
         channelCompressImage.setTopic("CompressImage");
         channelCompressImage.setEncoding("json");
-        channelCompressImage.setSchemaName("CompressImage(压缩图片)");
-        schema = DataUtil.loadSchemaJson("CompressedImage.json");
+        channelCompressImage.setSchemaName("foxglove.CompressedImage");
+        schema = DataUtil.loadJsonSchema("CompressedImage.json");
         channelCompressImage.setSchema(schema);
         channelCompressImage.setSchemaEncoding("jsonschema");
 
+        ChannelInfo channelPointCloud = new ChannelInfo();
+        channelPointCloud.setId(6);
+        channelPointCloud.setTopic("PointCloud");
+        channelPointCloud.setEncoding("json");
+        channelPointCloud.setSchemaName("foxglove.PointCloud");
+        schema = DataUtil.loadJsonSchema("PointCloud.json");
+        channelPointCloud.setSchema(schema);
+        channelPointCloud.setSchemaEncoding("jsonschema");
 
-        List<ChannelInfo> channelList = Arrays.asList(channelDemo, channelImage, channelScene, channelFrame, channelCompressImage);
+
+        List<ChannelInfo> channelList = Arrays.asList(channelPointCloud);
+        //List<ChannelInfo> channelList = Arrays.asList(channelDemo, channelScene, channelFrame, channelCompressImage);
         return channelList;
     }
 }

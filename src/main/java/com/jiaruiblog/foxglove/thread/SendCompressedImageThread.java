@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
@@ -40,7 +41,6 @@ public class SendCompressedImageThread implements Runnable {
                 long ns = 1692891094326598000L;
                 byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), ns, index);
                 this.session.sendBinary(bytes);
-//                System.out.println("----------send compressed image");
                 TimeUnit.SECONDS.sleep(1);
             }
         } catch (InterruptedException e) {
@@ -54,10 +54,11 @@ public class SendCompressedImageThread implements Runnable {
         try (InputStream is = new FileInputStream(filePath)) {
             byte[] bytes = IOUtils.toByteArray(is);
             image.setFormat("jpeg");
-            image.setFrame_id(String.valueOf(index));
             CompressedImage.Timestamp timestamp = image.new Timestamp();
-            timestamp.setSec(index * index * index % 20);
-            timestamp.setNsec(index);
+            int nano = Instant.now().getNano();
+            long second = Instant.now().getEpochSecond();
+            timestamp.setSec((int) second);
+            timestamp.setNsec(nano);
             image.setTimestamp(timestamp);
             byte[] encode = Base64.getEncoder().encode(bytes);
             String data = new String(encode);
