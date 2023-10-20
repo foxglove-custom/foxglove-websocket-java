@@ -15,7 +15,7 @@ public class PointCloudUtil {
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = br.readLine()) != null) {
-                if (line.contains("nan")) {
+                if (line.toLowerCase().contains("nan")) {
                     continue;
                 }
                 String[] data = line.split("\\s+");

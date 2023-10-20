@@ -122,7 +122,7 @@ public class FoxgloveServer {
 //            Thread sendCompressedImageThread = new Thread(new SendCompressedImageThread(0, session));
 //            sendCompressedImageThread.start();
 
-            Thread sendPointCloudThread = new Thread(new SendPointCloudThread(0, session));
+            Thread sendPointCloudThread = new Thread(new SendPointCloudThread(0, 50, session));
             sendPointCloudThread.start();
         }
     }
