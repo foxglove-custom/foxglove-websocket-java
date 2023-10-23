@@ -41,10 +41,10 @@ public class SendTransformThread implements Runnable {
             transform.setChild_frame_id("obstacle");
             transform.setParent_frame_id("root");
 
-            Quaternion rotation = new Quaternion(100f + i, 200f + i, 100f + i, 100f + i / 3);
+            Quaternion rotation = new Quaternion(1f, 0f , 1f, 1f + i / 10);
             transform.setRotation(rotation);
 
-            Vector3 translation = new Vector3(100f, 200f + i, 100f + i);
+            Vector3 translation = new Vector3(1f, 0f + i, 0f + i);
             transform.setTranslation(translation);
 
             JSONObject jsonObject = (JSONObject) JSON.toJSON(transform);
