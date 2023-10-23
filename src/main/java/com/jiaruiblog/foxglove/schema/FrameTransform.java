@@ -12,14 +12,13 @@ import lombok.Data;
 @Data
 public class FrameTransform {
 
+    private Timestamp timestamp;
 
-    String timestamp;
+    private String parent_frame_id;
 
-    String parentFrameId;
+    private String child_frame_id;
 
-    String childFrameId;
+    private Vector3 translation;
 
-    Vector3 translation;
-
-
+    private Quaternion rotation;
 }
