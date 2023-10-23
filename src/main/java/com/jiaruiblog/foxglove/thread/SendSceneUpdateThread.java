@@ -46,10 +46,10 @@ public class SendSceneUpdateThread implements Runnable {
 
             CubePrimitive cube = new CubePrimitive();
             Color color = new Color(1f, 0.38823529411764707f, 0.2784313725490196f, 0.5f);
-            Vector3 size = new Vector3(100.201f, 200.877f, 100.595f);
+            Vector3 size = new Vector3(10.201f, 20.877f, 10.55f);
 
             Pose pose = new Pose();
-            Vector3 position = new Vector3(410.007f + i * 10, 1164.069f + i * 20, -900.623f);
+            Vector3 position = new Vector3(0f + i * 10, 0f + i * 20, -900.623f);
             Quaternion orientation = new Quaternion(0f, 0f, 0.812556848660791f, -0.5828819500503033f + i / 200);
             pose.setPosition(position);
             pose.setOrientation(orientation);
