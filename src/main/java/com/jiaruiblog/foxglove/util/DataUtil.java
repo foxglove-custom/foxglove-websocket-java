@@ -2,6 +2,7 @@ package com.jiaruiblog.foxglove.util;
 
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,7 +10,7 @@ import java.util.Map;
 
 public class DataUtil {
 
-    public static byte[] getFormatedBytes(byte[] data, long ns,int channel) {
+    public static byte[] getFormatedBytes(byte[] data, long ns, int channel) {
         byte constantInfo = 1;
         byte[] constantInfoByte = new byte[]{constantInfo};
         byte[] dataType = getIntBytes(channel);
@@ -17,6 +18,18 @@ public class DataUtil {
         byte[] packz1 = byteConcat(constantInfoByte, dataType, nsTime);
         byte[] pack2 = byteConcat(packz1, data);
         return pack2;
+    }
+
+    public static byte[] loadGlbData(String glbFile) {
+        try {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            InputStream stream = classLoader.getResourceAsStream("glb/" + glbFile);
+            byte[] bytes = IOUtils.toByteArray(stream);
+            return bytes;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static String loadJsonSchema(String schemaFile) {
