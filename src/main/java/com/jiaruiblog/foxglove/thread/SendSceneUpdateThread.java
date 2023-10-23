@@ -3,7 +3,6 @@ package com.jiaruiblog.foxglove.thread;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jiaruiblog.foxglove.schema.*;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.yeauty.pojo.Session;
 
 import java.time.Instant;
@@ -26,8 +25,10 @@ public class SendSceneUpdateThread implements Runnable {
 
     @Override
     public void run() {
+        int i = 0;
         while (true) {
-
+            i = i > 10 ? 0 : i;
+            i++;
             SceneEntity entity = new SceneEntity();
             Timestamp timestamp = new Timestamp();
             int nano = Instant.now().getNano();
@@ -48,8 +49,8 @@ public class SendSceneUpdateThread implements Runnable {
             Vector3 size = new Vector3(100.201f, 200.877f, 100.595f);
 
             Pose pose = new Pose();
-            Vector3 position = new Vector3(410.007f, 1164.069f, 1.623f);
-            Quaternion orientation = new Quaternion(0f, 0f, 0.812556848660791f, -0.5828819500503033f);
+            Vector3 position = new Vector3(410.007f + i * 10, 1164.069f + i * 20, -900.623f);
+            Quaternion orientation = new Quaternion(0f, 0f, 0.812556848660791f, -0.5828819500503033f + i / 200);
             pose.setPosition(position);
             pose.setOrientation(orientation);
 
