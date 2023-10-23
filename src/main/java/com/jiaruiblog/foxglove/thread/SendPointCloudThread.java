@@ -16,12 +16,14 @@ import static com.jiaruiblog.foxglove.util.DataUtil.getFormatedBytes;
 
 public class SendPointCloudThread implements Runnable {
 
+    private int frequency; //  发送频率，单位毫秒
     private int index;
     private Session session;
 
-    public SendPointCloudThread(int index, Session session) {
+    public SendPointCloudThread(int index, int frequency, Session session) {
         this.index = index;
         this.session = session;
+        this.frequency = frequency;
     }
 
     @Override
@@ -43,7 +45,7 @@ public class SendPointCloudThread implements Runnable {
             this.session.sendBinary(bytes);
             i++;
             try {
-                Thread.sleep(1000);
+                Thread.sleep(frequency);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

@@ -24,18 +24,4 @@ public class ChannelInfo {
 
     private String schemaEncoding;
 
-//
-//    String str = "{\n" +
-//            "  \"op\":\"advertise\",\n" +
-//            "  \"channels\":[\n" +
-//            "    {\n" +
-//            "    \"id\":0,\n" +
-//            "      \"topic\":\"example_msg\",\n" +
-//            "      \"encoding\":\"json\",\n" +
-//            "      \"schemaName\":\"ExampleMsg\",\n" +
-//            "      \"schema\":\n" +
-//            "      \"{\\\"type\\\": \\\"object\\\", \\\"properties\\\": {\\\"msg\\\": {\\\"type\\\": \\\"string\\\"}, \\\"count\\\": {\\\"type\\\": \\\"number\\\"}}}\",\n" +
-//            "      \"schemaEncoding\":\"jsonschema\"\n" +
-//            "    }]\n" +
-//            "}";
 }
