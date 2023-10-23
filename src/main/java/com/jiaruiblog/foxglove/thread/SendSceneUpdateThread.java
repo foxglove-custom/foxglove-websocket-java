@@ -36,7 +36,8 @@ public class SendSceneUpdateThread implements Runnable {
             timestamp.setNsec(nano);
             entity.setTimestamp(timestamp);
             entity.setFrame_id("obstacle");
-            entity.setId(RandomStringUtils.randomAlphabetic(4).toLowerCase());
+            entity.setId("6dd2");
+            //entity.setId(RandomStringUtils.randomAlphabetic(4).toLowerCase());
             entity.setFrame_locked(true);
 
             List<KeyValuePair> metadata = Arrays.asList(new KeyValuePair("category", "vehicle.truck"));
@@ -44,10 +45,10 @@ public class SendSceneUpdateThread implements Runnable {
 
             CubePrimitive cube = new CubePrimitive();
             Color color = new Color(1f, 0.38823529411764707f, 0.2784313725490196f, 0.5f);
-            Vector3 size = new Vector3(10.201f, 2.877f, 3.595f);
+            Vector3 size = new Vector3(100.201f, 200.877f, 100.595f);
 
             Pose pose = new Pose();
-            Vector3 position = new Vector3(410.007f + 400, 1164.069f + 1000, 1.623f);
+            Vector3 position = new Vector3(410.007f, 1164.069f, 1.623f);
             Quaternion orientation = new Quaternion(0f, 0f, 0.812556848660791f, -0.5828819500503033f);
             pose.setPosition(position);
             pose.setOrientation(orientation);
