@@ -18,14 +18,14 @@ public class ChannelUtil {
 //        channelDemo.setSchema("{\"type\": \"object\", \"properties\": {\"msg\": {\"type\": \"string\"}, \"count\": {\"type\": \"number\"}}}");
 //        channelDemo.setSchemaEncoding("jsonschema");
 
-//        ChannelInfo channelScene = new ChannelInfo();
-//        channelScene.setId(1);
-//        channelScene.setTopic("SceneUpdate");
-//        channelScene.setEncoding("json");
-//        channelScene.setSchemaName("foxglove.SceneUpdate");
-//        schema = DataUtil.loadJsonSchema("SceneUpdate.json");
-//        channelScene.setSchema(schema);
-//        channelScene.setSchemaEncoding("jsonschema");
+        ChannelInfo channelScene = new ChannelInfo();
+        channelScene.setId(1);
+        channelScene.setTopic("SceneUpdate");
+        channelScene.setEncoding("json");
+        channelScene.setSchemaName("foxglove.SceneUpdate");
+        schema = DataUtil.loadJsonSchema("SceneUpdate.json");
+        channelScene.setSchema(schema);
+        channelScene.setSchemaEncoding("jsonschema");
 
 //        ChannelInfo channelFrame = new ChannelInfo();
 //        channelFrame.setId(3);
@@ -36,14 +36,14 @@ public class ChannelUtil {
 //        channelFrame.setSchema(schema);
 //        channelFrame.setSchemaEncoding("jsonschema");
 //
-        ChannelInfo channelCompressImage = new ChannelInfo();
-        channelCompressImage.setId(2);
-        channelCompressImage.setTopic("CompressImage");
-        channelCompressImage.setEncoding("json");
-        channelCompressImage.setSchemaName("foxglove.CompressedImage");
-        schema = DataUtil.loadJsonSchema("CompressedImage.json");
-        channelCompressImage.setSchema(schema);
-        channelCompressImage.setSchemaEncoding("jsonschema");
+//        ChannelInfo channelCompressImage = new ChannelInfo();
+//        channelCompressImage.setId(2);
+//        channelCompressImage.setTopic("CompressImage");
+//        channelCompressImage.setEncoding("json");
+//        channelCompressImage.setSchemaName("foxglove.CompressedImage");
+//        schema = DataUtil.loadJsonSchema("CompressedImage.json");
+//        channelCompressImage.setSchema(schema);
+//        channelCompressImage.setSchemaEncoding("jsonschema");
 
 //        ChannelInfo channelPointCloud = new ChannelInfo();
 //        channelPointCloud.setId(2);
@@ -74,7 +74,7 @@ public class ChannelUtil {
 
 
         List<ChannelInfo> channelList = new ArrayList<>();
-        channelList.add(channelCompressImage);
+        channelList.add(channelScene);
         return channelList;
     }
 }
