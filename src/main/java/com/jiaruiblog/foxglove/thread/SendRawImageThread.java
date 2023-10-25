@@ -62,8 +62,8 @@ public class SendRawImageThread implements Runnable {
             System.out.println(buf.getType() + "-----size:\t" + size);
             image.setWidth(width);
             image.setHeight(height);
-            image.setEncoding("8UC1");
-            image.setFrame_id(String.valueOf(index));
+            image.setEncoding("rgb8");
+            image.setFrame_id("main");
             RawImage.Timestamp timestamp = image.new Timestamp();
             int nano = Instant.now().getNano();
             long second = Instant.now().getEpochSecond();

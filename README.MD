@@ -28,3 +28,8 @@ Implementations are available in the following languages:
 - Panel： 3D， Plot， Image， Table， Map(要实现这五种组件的信息发送)
 - Schema：(将东风的数据基于schema转化foxglove数据)
 
+## RTSP相关指令
+```bash
+ffmpeg -re -i E:\foxglove\test_video.mp4 -vcodec libx264 -acodec aac -f flv rtmp://127.0.0.1:1935/demo
+```
+

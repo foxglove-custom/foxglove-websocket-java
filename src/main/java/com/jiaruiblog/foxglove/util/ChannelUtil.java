@@ -18,14 +18,14 @@ public class ChannelUtil {
 //        channelDemo.setSchema("{\"type\": \"object\", \"properties\": {\"msg\": {\"type\": \"string\"}, \"count\": {\"type\": \"number\"}}}");
 //        channelDemo.setSchemaEncoding("jsonschema");
 
-        ChannelInfo channelScene = new ChannelInfo();
-        channelScene.setId(1);
-        channelScene.setTopic("SceneUpdate");
-        channelScene.setEncoding("json");
-        channelScene.setSchemaName("foxglove.SceneUpdate");
-        schema = DataUtil.loadJsonSchema("SceneUpdate.json");
-        channelScene.setSchema(schema);
-        channelScene.setSchemaEncoding("jsonschema");
+//        ChannelInfo channelScene = new ChannelInfo();
+//        channelScene.setId(1);
+//        channelScene.setTopic("SceneUpdate");
+//        channelScene.setEncoding("json");
+//        channelScene.setSchemaName("foxglove.SceneUpdate");
+//        schema = DataUtil.loadJsonSchema("SceneUpdate.json");
+//        channelScene.setSchema(schema);
+//        channelScene.setSchemaEncoding("jsonschema");
 
 //        ChannelInfo channelFrame = new ChannelInfo();
 //        channelFrame.setId(3);
@@ -36,14 +36,14 @@ public class ChannelUtil {
 //        channelFrame.setSchema(schema);
 //        channelFrame.setSchemaEncoding("jsonschema");
 //
-//        ChannelInfo channelCompressImage = new ChannelInfo();
-//        channelCompressImage.setId(4);
-//        channelCompressImage.setTopic("CompressImage");
-//        channelCompressImage.setEncoding("json");
-//        channelCompressImage.setSchemaName("foxglove.CompressedImage");
-//        schema = DataUtil.loadJsonSchema("CompressedImage.json");
-//        channelCompressImage.setSchema(schema);
-//        channelCompressImage.setSchemaEncoding("jsonschema");
+        ChannelInfo channelCompressImage = new ChannelInfo();
+        channelCompressImage.setId(2);
+        channelCompressImage.setTopic("CompressImage");
+        channelCompressImage.setEncoding("json");
+        channelCompressImage.setSchemaName("foxglove.CompressedImage");
+        schema = DataUtil.loadJsonSchema("CompressedImage.json");
+        channelCompressImage.setSchema(schema);
+        channelCompressImage.setSchemaEncoding("jsonschema");
 
 //        ChannelInfo channelPointCloud = new ChannelInfo();
 //        channelPointCloud.setId(2);
@@ -54,20 +54,27 @@ public class ChannelUtil {
 //        channelPointCloud.setSchema(schema);
 //        channelPointCloud.setSchemaEncoding("jsonschema");
 
-        ChannelInfo channelTransform = new ChannelInfo();
-        channelTransform.setId(2);
-        channelTransform.setTopic("frameTransform");
-        channelTransform.setEncoding("json");
-        channelTransform.setSchemaName("foxglove.FrameTransform");
-        schema = DataUtil.loadJsonSchema("FrameTransform.json");
-        channelTransform.setSchema(schema);
-        channelTransform.setSchemaEncoding("jsonschema");
+//        ChannelInfo channelTransform = new ChannelInfo();
+//        channelTransform.setId(3);
+//        channelTransform.setTopic("frameTransform");
+//        channelTransform.setEncoding("json");
+//        channelTransform.setSchemaName("foxglove.FrameTransform");
+//        schema = DataUtil.loadJsonSchema("FrameTransform.json");
+//        channelTransform.setSchema(schema);
+//        channelTransform.setSchemaEncoding("jsonschema");
+
+//        ChannelInfo channelImage = new ChannelInfo();
+//        channelImage.setId(1);
+//        channelImage.setTopic("rawImage");
+//        channelImage.setEncoding("json");
+//        channelImage.setSchemaName("foxglove.RawImage");
+//        schema = DataUtil.loadJsonSchema("RawImage.json");
+//        channelImage.setSchema(schema);
+//        channelImage.setSchemaEncoding("jsonschema");
 
 
         List<ChannelInfo> channelList = new ArrayList<>();
-        channelList.add(channelScene);
-//        channelList.add(channelPointCloud);
-        channelList.add(channelTransform);
+        channelList.add(channelCompressImage);
         return channelList;
     }
 }
