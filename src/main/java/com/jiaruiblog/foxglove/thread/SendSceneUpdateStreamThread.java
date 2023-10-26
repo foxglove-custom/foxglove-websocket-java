@@ -100,8 +100,9 @@ public class SendSceneUpdateStreamThread implements Runnable {
                 System.out.println("==============播放完毕，新的轮回======================");
             }
             SceneUpdate sceneUpdate = updateList.get(i);
-            Timestamp timestamp = sceneUpdate.getEntities().get(0).getTimestamp();
-            List<String> newIdList = sceneUpdate.getEntities().stream().map(SceneEntity::getId).collect(Collectors.toList());
+            List<SceneEntity> entities = sceneUpdate.getEntities();
+            Timestamp timestamp = entities.get(0).getTimestamp();
+            List<String> newIdList = entities.stream().map(SceneEntity::getId).collect(Collectors.toList());
             oldIdList.removeAll(newIdList);
             if (oldIdList.size() > 0) {
                 List<SceneEntityDeletion> deleteList = oldIdList.stream().map(s -> {
@@ -114,9 +115,13 @@ public class SendSceneUpdateStreamThread implements Runnable {
                 sceneUpdate.setDeletions(deleteList);
             }
 
+            SceneEntity carEntity = this.createEntity("drive_car", "obstacle", "vehicle.car", timestamp);
+            carEntity.setModels(models);
+            entities.add(carEntity);
+
             oldIdList = newIdList;
             i++;
-            System.out.println("-----------读取第" + i + "个元素------------");
+            System.out.println(Thread.currentThread().getName() + "-----------读取第" + i + "个元素------------");
             JSONObject jsonObject = (JSONObject) JSON.toJSON(sceneUpdate);
             byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), timestamp.getNsec(), index);
             this.session.sendBinary(bytes);
@@ -131,13 +136,14 @@ public class SendSceneUpdateStreamThread implements Runnable {
     private List<ModelPrimitive> addModels() {
         ModelPrimitive model = new ModelPrimitive();
         Pose pose = new Pose();
-        Vector3 position = new Vector3(0f, 0f, 1.623f);
-        Quaternion orientation = new Quaternion(0.0f, 0.0f, 1f, 0.7f);
+        Vector3 position = new Vector3(-11.200000f, -8.499990f, 1.623f);
+        Quaternion orientation = new Quaternion(0.0f, 0.0f, 0f, 0.1f);
         pose.setPosition(position);
         pose.setOrientation(orientation);
 
-        Vector3 scale = new Vector3(100f, 100f, 100f);
-        Color color = new Color(0.6f, 0.2f, 1f, 0.8f);
+        Vector3 scale = new Vector3(1f, 1f, 1f);
+        //Color color = new Color(0.6f, 0.2f, 1f, 0.8f);
+        Color color = new Color(1f, 0.38823529411764707f, 0.2784313725490196f, 0.5f);
         byte[] bytes = DataUtil.loadGlbData("car.glb");
 
         model.setColor(color);
