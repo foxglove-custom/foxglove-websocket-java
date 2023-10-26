@@ -20,7 +20,7 @@ public class ChannelUtil {
 
         ChannelInfo channelScene = new ChannelInfo();
         channelScene.setId(1);
-        channelScene.setTopic("SceneUpdate");
+        channelScene.setTopic("/drive/scene");
         channelScene.setEncoding("json");
         channelScene.setSchemaName("foxglove.SceneUpdate");
         schema = DataUtil.loadJsonSchema("SceneUpdate.json");

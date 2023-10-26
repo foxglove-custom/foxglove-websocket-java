@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jiaruiblog.foxglove.entity.Advertise;
 import com.jiaruiblog.foxglove.entity.ServerInfo;
+import com.jiaruiblog.foxglove.thread.SendSceneUpdateSimulateThread;
 import com.jiaruiblog.foxglove.thread.SendSceneUpdateStreamThread;
 import com.jiaruiblog.foxglove.util.ChannelUtil;
 import io.netty.handler.codec.http.HttpHeaders;
@@ -113,8 +114,11 @@ public class FoxgloveServer {
 //            Thread sendCountThread = new Thread(new SendCountThread(0, session));
 //            sendCountThread.start();
 
-            Thread sendSceneUpdateThread = new Thread(new SendSceneUpdateStreamThread(0, 100, session));
+            Thread sendSceneUpdateThread = new Thread(new SendSceneUpdateStreamThread(0, 50, session));
             sendSceneUpdateThread.start();
+
+//            Thread sendSceneUpdateThread = new Thread(new SendSceneUpdateSimulateThread(0, 500, session));
+//            sendSceneUpdateThread.start();
 
 //            Thread sendTransformThread = new Thread(new SendTransformThread(0, 1000, session));
 //            sendTransformThread.start();
