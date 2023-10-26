@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jiaruiblog.foxglove.entity.Advertise;
 import com.jiaruiblog.foxglove.entity.ServerInfo;
-import com.jiaruiblog.foxglove.thread.SendSceneUpdateThread;
+import com.jiaruiblog.foxglove.thread.SendSceneUpdateStreamThread;
 import com.jiaruiblog.foxglove.thread.SendTransformThread;
 import com.jiaruiblog.foxglove.util.ChannelUtil;
 import io.netty.handler.codec.http.HttpHeaders;
@@ -114,16 +114,19 @@ public class FoxgloveServer {
 //            Thread sendCountThread = new Thread(new SendCountThread(0, session));
 //            sendCountThread.start();
 
-            Thread sendSceneUpdateThread = new Thread(new SendSceneUpdateThread(1, 1000, session));
+            Thread sendSceneUpdateThread = new Thread(new SendSceneUpdateStreamThread(0, 100, session));
             sendSceneUpdateThread.start();
 
-            Thread sendTransformThread = new Thread(new SendTransformThread(0, 1000, session));
-            sendTransformThread.start();
+//            Thread sendSceneUpdateThread = new Thread(new SendSceneUpdateSimulateThread(0, 500, session));
+//            sendSceneUpdateThread.start();
+
+//            Thread sendTransformThread = new Thread(new SendTransformThread(0, 100, session));
+//            sendTransformThread.start();
 
 //            Thread sendRawImageThread = new Thread(new SendRawImageThread(0, session));
 //            sendRawImageThread.start();
 
-//            Thread sendCompressedImageThread = new Thread(new SendCompressedImageThread(0, session));
+//            Thread sendCompressedImageThread = new Thread(new SendCompressedImageThread(0, 30, session));
 //            sendCompressedImageThread.start();
 
 //            Thread sendPointCloudThread = new Thread(new SendPointCloudThread(1, 50, session));

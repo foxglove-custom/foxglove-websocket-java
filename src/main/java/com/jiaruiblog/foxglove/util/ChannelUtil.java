@@ -20,7 +20,7 @@ public class ChannelUtil {
 
         ChannelInfo channelScene = new ChannelInfo();
         channelScene.setId(1);
-        channelScene.setTopic("SceneUpdate");
+        channelScene.setTopic("/drive/scene");
         channelScene.setEncoding("json");
         channelScene.setSchemaName("foxglove.SceneUpdate");
         schema = DataUtil.loadJsonSchema("SceneUpdate.json");
@@ -37,7 +37,7 @@ public class ChannelUtil {
 //        channelFrame.setSchemaEncoding("jsonschema");
 //
 //        ChannelInfo channelCompressImage = new ChannelInfo();
-//        channelCompressImage.setId(4);
+//        channelCompressImage.setId(2);
 //        channelCompressImage.setTopic("CompressImage");
 //        channelCompressImage.setEncoding("json");
 //        channelCompressImage.setSchemaName("foxglove.CompressedImage");
@@ -54,20 +54,27 @@ public class ChannelUtil {
 //        channelPointCloud.setSchema(schema);
 //        channelPointCloud.setSchemaEncoding("jsonschema");
 
-        ChannelInfo channelTransform = new ChannelInfo();
-        channelTransform.setId(2);
-        channelTransform.setTopic("frameTransform");
-        channelTransform.setEncoding("json");
-        channelTransform.setSchemaName("foxglove.FrameTransform");
-        schema = DataUtil.loadJsonSchema("FrameTransform.json");
-        channelTransform.setSchema(schema);
-        channelTransform.setSchemaEncoding("jsonschema");
+//        ChannelInfo channelTransform = new ChannelInfo();
+//        channelTransform.setId(3);
+//        channelTransform.setTopic("frameTransform");
+//        channelTransform.setEncoding("json");
+//        channelTransform.setSchemaName("foxglove.FrameTransform");
+//        schema = DataUtil.loadJsonSchema("FrameTransform.json");
+//        channelTransform.setSchema(schema);
+//        channelTransform.setSchemaEncoding("jsonschema");
+
+//        ChannelInfo channelImage = new ChannelInfo();
+//        channelImage.setId(1);
+//        channelImage.setTopic("rawImage");
+//        channelImage.setEncoding("json");
+//        channelImage.setSchemaName("foxglove.RawImage");
+//        schema = DataUtil.loadJsonSchema("RawImage.json");
+//        channelImage.setSchema(schema);
+//        channelImage.setSchemaEncoding("jsonschema");
 
 
         List<ChannelInfo> channelList = new ArrayList<>();
         channelList.add(channelScene);
-//        channelList.add(channelPointCloud);
-        channelList.add(channelTransform);
         return channelList;
     }
 }

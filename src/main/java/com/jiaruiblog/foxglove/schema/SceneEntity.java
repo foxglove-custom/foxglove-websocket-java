@@ -26,22 +26,22 @@ public class SceneEntity {
 
     private boolean frame_locked;
 
-    private List<KeyValuePair> metadata = new ArrayList<>();
+    private List<KeyValuePair> metadata;
 
-    private List<CubePrimitive> cubes = new ArrayList<>();
+    private List<CubePrimitive> cubes;
 
-    private List<Object> arrows = new ArrayList<>();
+    private List<Object> arrows;
 
-    private List<Object> spheres = new ArrayList<>();
+    private List<Object> spheres;
 
-    private List<Object> cylinders = new ArrayList<>();
+    private List<Object> cylinders;
 
-    private List<Line> lines = new ArrayList<>();
+    private List<Line> lines;
 
-    private List<Object> triangles = new ArrayList<>();
+    private List<Object> triangles;
 
-    private List<Object> texts = new ArrayList<>();
+    private List<Object> texts;
 
-    private List<Object> models = new ArrayList<>();
+    private List<ModelPrimitive> models;
 
 }
