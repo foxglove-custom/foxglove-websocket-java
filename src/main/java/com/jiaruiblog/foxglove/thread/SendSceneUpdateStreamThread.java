@@ -34,9 +34,22 @@ public class SendSceneUpdateStreamThread implements Runnable {
         List<SceneUpdate> updateList = new ArrayList<>();
         String file = "E:\\foxglove\\obstacle_data.data";
         String str;
+        String oldTs = null;
+        List<SceneEntity> entityList = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             while ((str = br.readLine()) != null) {
                 String[] data = str.split(",");
+
+                String currentTs = data[0];
+                if (!currentTs.equals(oldTs)) {
+                    if (entityList.size() > 0) {
+                        SceneUpdate sceneUpdate = new SceneUpdate();
+                        sceneUpdate.setEntities(entityList);
+                        updateList.add(sceneUpdate);
+                    }
+                    entityList = new ArrayList<>();
+                    oldTs = currentTs;
+                }
 
                 Timestamp timestamp = new Timestamp();
                 int nano = Instant.now().getNano();
@@ -54,16 +67,14 @@ public class SendSceneUpdateStreamThread implements Runnable {
                 entity.setMetadata(metadata);
                 entity.setCubes(this.addCubes(data));
 
-                SceneUpdate sceneUpdate = new SceneUpdate();
-                sceneUpdate.setEntities(Arrays.asList(entity));
-
-                updateList.add(sceneUpdate);
+                entityList.add(entity);
             }
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        System.out.println("==============解析完毕，共有" + updateList.size() + "条记录======================");
         return updateList;
     }
 
