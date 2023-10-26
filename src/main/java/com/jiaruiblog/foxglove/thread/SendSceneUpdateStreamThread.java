@@ -3,6 +3,7 @@ package com.jiaruiblog.foxglove.thread;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jiaruiblog.foxglove.schema.*;
+import com.jiaruiblog.foxglove.util.DataUtil;
 import org.yeauty.pojo.Session;
 
 import java.io.BufferedReader;
@@ -23,13 +24,15 @@ public class SendSceneUpdateStreamThread implements Runnable {
     private int index;
     private Session session;
     private List<SceneUpdate> updateList;
+    private List<ModelPrimitive> models;
     private List<String> oldIdList = new ArrayList<>();
 
     public SendSceneUpdateStreamThread(int index, int frequency, Session session) {
         this.index = index;
         this.session = session;
         this.frequency = frequency;
-        updateList = readEntityData();
+        updateList = this.readEntityData();
+        models = this.addModels();
     }
 
     private List<SceneUpdate> readEntityData() {
@@ -53,20 +56,7 @@ public class SendSceneUpdateStreamThread implements Runnable {
                     oldTs = currentTs;
                 }
 
-                Timestamp timestamp = new Timestamp();
-                int nano = Instant.now().getNano();
-                long second = Instant.now().getEpochSecond();
-                timestamp.setSec((int) second);
-                timestamp.setNsec(nano);
-
-                SceneEntity entity = new SceneEntity();
-                entity.setTimestamp(timestamp);
-                entity.setFrame_id("obstacle");
-                entity.setFrame_locked(true);
-                entity.setId(data[1]);
-
-                List<KeyValuePair> metadata = Arrays.asList(new KeyValuePair("category", "vehicle.truck"));
-                entity.setMetadata(metadata);
+                SceneEntity entity = this.createEntity(data[1], "obstacle", "vehicle.truck", null);
                 entity.setCubes(this.addCubes(data));
 
                 entityList.add(entity);
@@ -78,6 +68,27 @@ public class SendSceneUpdateStreamThread implements Runnable {
         }
         System.out.println("==============解析完毕，共有" + updateList.size() + "条记录======================");
         return updateList;
+    }
+
+    private SceneEntity createEntity(String id, String frameId, String metaDataValue, Timestamp ts) {
+        if (ts == null) {
+            Timestamp timestamp = new Timestamp();
+            int nano = Instant.now().getNano();
+            long second = Instant.now().getEpochSecond();
+            timestamp.setSec((int) second);
+            timestamp.setNsec(nano);
+            ts = timestamp;
+        }
+
+        List<KeyValuePair> metadata = Arrays.asList(new KeyValuePair("category", metaDataValue));
+
+        SceneEntity entity = new SceneEntity();
+        entity.setTimestamp(ts);
+        entity.setFrame_id(frameId);
+        entity.setFrame_locked(true);
+        entity.setId(id);
+        entity.setMetadata(metadata);
+        return entity;
     }
 
     @Override
@@ -115,6 +126,27 @@ public class SendSceneUpdateStreamThread implements Runnable {
                 e.printStackTrace();
             }
         }
+    }
+
+    private List<ModelPrimitive> addModels() {
+        ModelPrimitive model = new ModelPrimitive();
+        Pose pose = new Pose();
+        Vector3 position = new Vector3(0f, 0f, 1.623f);
+        Quaternion orientation = new Quaternion(0.0f, 0.0f, 1f, 0.7f);
+        pose.setPosition(position);
+        pose.setOrientation(orientation);
+
+        Vector3 scale = new Vector3(100f, 100f, 100f);
+        Color color = new Color(0.6f, 0.2f, 1f, 0.8f);
+        byte[] bytes = DataUtil.loadGlbData("car.glb");
+
+        model.setColor(color);
+        model.setPose(pose);
+        model.setData(bytes);
+        model.setScale(scale);
+        model.setMedia_type("model/gltf-binary");
+
+        return Arrays.asList(model);
     }
 
     private List<CubePrimitive> addCubes(String[] data) {
