@@ -115,9 +115,12 @@ public class SendSceneUpdateStreamThread implements Runnable {
                 sceneUpdate.setDeletions(deleteList);
             }
 
-            SceneEntity carEntity = this.createEntity("drive_car", "obstacle", "vehicle.car", timestamp);
-            carEntity.setModels(models);
-            entities.add(carEntity);
+            // 减少车辆模型的显示频率
+            if (i % 5 == 0) {
+                SceneEntity carEntity = this.createEntity("drive_car", "obstacle", "vehicle.car", timestamp);
+                carEntity.setModels(models);
+                entities.add(carEntity);
+            }
 
             oldIdList = newIdList;
             i++;
