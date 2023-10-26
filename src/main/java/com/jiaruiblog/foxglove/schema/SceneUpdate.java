@@ -2,7 +2,6 @@ package com.jiaruiblog.foxglove.schema;
 
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,8 +15,8 @@ import java.util.List;
 @Data
 public class SceneUpdate {
 
-    private List<Object> deletions = new ArrayList<>();
+    private List<SceneEntityDeletion> deletions;
 
-    private List<SceneEntity> entities = new ArrayList<>();
+    private List<SceneEntity> entities;
 
 }

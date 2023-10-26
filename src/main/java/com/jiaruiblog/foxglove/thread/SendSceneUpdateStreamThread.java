@@ -13,6 +13,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.jiaruiblog.foxglove.util.DataUtil.getFormatedBytes;
 
@@ -22,6 +23,7 @@ public class SendSceneUpdateStreamThread implements Runnable {
     private int index;
     private Session session;
     private List<SceneUpdate> updateList;
+    private List<String> oldIdList = new ArrayList<>();
 
     public SendSceneUpdateStreamThread(int index, int frequency, Session session) {
         this.index = index;
@@ -87,12 +89,25 @@ public class SendSceneUpdateStreamThread implements Runnable {
                 System.out.println("==============播放完毕，新的轮回======================");
             }
             SceneUpdate sceneUpdate = updateList.get(i);
+            Timestamp timestamp = sceneUpdate.getEntities().get(0).getTimestamp();
+            List<String> newIdList = sceneUpdate.getEntities().stream().map(SceneEntity::getId).collect(Collectors.toList());
+            oldIdList.removeAll(newIdList);
+            if (oldIdList.size() > 0) {
+                List<SceneEntityDeletion> deleteList = oldIdList.stream().map(s -> {
+                    SceneEntityDeletion del = new SceneEntityDeletion();
+                    del.setId(s);
+                    del.setType(0);
+                    del.setTimestamp(timestamp);
+                    return del;
+                }).collect(Collectors.toList());
+                sceneUpdate.setDeletions(deleteList);
+            }
+
+            oldIdList = newIdList;
             i++;
             System.out.println("-----------读取第" + i + "个元素------------");
             JSONObject jsonObject = (JSONObject) JSON.toJSON(sceneUpdate);
-
-            Integer ns = sceneUpdate.getEntities().get(0).getTimestamp().getNsec();
-            byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), ns, index);
+            byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), timestamp.getNsec(), index);
             this.session.sendBinary(bytes);
             try {
                 Thread.sleep(frequency);
@@ -102,9 +117,9 @@ public class SendSceneUpdateStreamThread implements Runnable {
         }
     }
 
-    public List<CubePrimitive> addCubes(String[] data) {
+    private List<CubePrimitive> addCubes(String[] data) {
         CubePrimitive cube = new CubePrimitive();
-        Color color = new Color(1f, 0.38823529411764707f, 0.2784313725490196f, 0.5f);
+        Color color = this.setCubeColor(Integer.parseInt(data[7]));
 
         float length = Float.parseFloat(data[4]);
         float width = Float.parseFloat(data[5]);
@@ -116,7 +131,7 @@ public class SendSceneUpdateStreamThread implements Runnable {
         float y = Float.parseFloat(data[3]);
         Vector3 position = new Vector3(x, y, 10f);
         float w = Float.parseFloat(data[6]);
-        Quaternion orientation = new Quaternion(0f, 0f, 0.812556848660791f, w);
+        Quaternion orientation = new Quaternion(0f, 0f, 1f, w);
         pose.setPosition(position);
         pose.setOrientation(orientation);
 
@@ -125,5 +140,18 @@ public class SendSceneUpdateStreamThread implements Runnable {
         cube.setPose(pose);
         List<CubePrimitive> cubeList = Arrays.asList(cube);
         return cubeList;
+    }
+
+    private Color setCubeColor(int type) {
+        switch (type) {
+            case 0:
+                return new Color(0.1843137254901961f, 0.30980392156862746f, 0.30980392156862746f, 0.5f);
+            case 1:
+                return new Color(0.1137254901960784f, 0.0784313725490196f, 0.1f, 0.58f);
+            case 2:
+                return new Color(0f, 0f, 0.9019607843137255f, 0.5f);
+            default:
+                return new Color(1f, 0.38823529411764707f, 0.2784313725490196f, 0.5f);
+        }
     }
 }
