@@ -12,13 +12,13 @@ import java.util.List;
 
 import static com.jiaruiblog.foxglove.util.DataUtil.getFormatedBytes;
 
-public class SendSceneUpdateSimulateThread implements Runnable {
+public class Send3DSimulateThread implements Runnable {
 
     private int frequency;
     private int index;
     private Session session;
 
-    public SendSceneUpdateSimulateThread(int index, int frequency, Session session) {
+    public Send3DSimulateThread(int index, int frequency, Session session) {
         this.index = index;
         this.session = session;
         this.frequency = frequency;

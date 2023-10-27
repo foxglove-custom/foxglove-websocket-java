@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 import static com.jiaruiblog.foxglove.util.DataUtil.getFormatedBytes;
 
-public class SendSceneUpdateStreamThread implements Runnable {
+public class Send3DStreamThread implements Runnable {
 
     private int frequency;
     private int index;
@@ -27,7 +27,7 @@ public class SendSceneUpdateStreamThread implements Runnable {
     private List<ModelPrimitive> models;
     private List<String> oldIdList = new ArrayList<>();
 
-    public SendSceneUpdateStreamThread(int index, int frequency, Session session) {
+    public Send3DStreamThread(int index, int frequency, Session session) {
         this.index = index;
         this.session = session;
         this.frequency = frequency;

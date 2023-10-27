@@ -8,13 +8,15 @@ import java.util.Random;
 
 import static com.jiaruiblog.foxglove.util.DataUtil.getFormatedBytes;
 
-public class SendCountThread implements Runnable {
+public class SendMessageThread implements Runnable {
     private int index;
     private Session session;
+    private int frequency;
 
-    public SendCountThread(int index, Session session) {
+    public SendMessageThread(int index, int frequency, Session session) {
         this.index = index;
         this.session = session;
+        this.frequency = frequency;
     }
 
     @Override
@@ -31,7 +33,7 @@ public class SendCountThread implements Runnable {
             byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), ns, index);
             this.session.sendBinary(bytes);
             try {
-                Thread.sleep(1000);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

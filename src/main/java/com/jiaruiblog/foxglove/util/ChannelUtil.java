@@ -10,40 +10,6 @@ public class ChannelUtil {
     public static List<ChannelInfo> createChannels() {
         String schema = null;
 
-//        ChannelInfo channelDemo = new ChannelInfo();
-//        channelDemo.setId(1);
-//        channelDemo.setTopic("示例消息");
-//        channelDemo.setEncoding("json");
-//        channelDemo.setSchemaName("示例消息(只展示字符串)");
-//        channelDemo.setSchema("{\"type\": \"object\", \"properties\": {\"msg\": {\"type\": \"string\"}, \"count\": {\"type\": \"number\"}}}");
-//        channelDemo.setSchemaEncoding("jsonschema");
-
-//        ChannelInfo channelScene = new ChannelInfo();
-//        channelScene.setId(1);
-//        channelScene.setTopic("/drive/scene");
-//        channelScene.setEncoding("json");
-//        channelScene.setSchemaName("foxglove.SceneUpdate");
-//        schema = DataUtil.loadJsonSchema("SceneUpdate.json");
-//        channelScene.setSchema(schema);
-//        channelScene.setSchemaEncoding("jsonschema");
-
-//        ChannelInfo channelFrame = new ChannelInfo();
-//        channelFrame.setId(3);
-//        channelFrame.setTopic("FrameTransforms");
-//        channelFrame.setEncoding("json");
-//        channelFrame.setSchemaName("FrameTransforms");
-//        schema = DataUtil.loadJsonSchema("FrameTransforms.json");
-//        channelFrame.setSchema(schema);
-//        channelFrame.setSchemaEncoding("jsonschema");
-//
-//        ChannelInfo channelCompressImage = new ChannelInfo();
-//        channelCompressImage.setId(2);
-//        channelCompressImage.setTopic("CompressImage");
-//        channelCompressImage.setEncoding("json");
-//        channelCompressImage.setSchemaName("foxglove.CompressedImage");
-//        schema = DataUtil.loadJsonSchema("CompressedImage.json");
-//        channelCompressImage.setSchema(schema);
-//        channelCompressImage.setSchemaEncoding("jsonschema");
 
 //        ChannelInfo channelPointCloud = new ChannelInfo();
 //        channelPointCloud.setId(2);
@@ -72,8 +38,44 @@ public class ChannelUtil {
 //        channelImage.setSchema(schema);
 //        channelImage.setSchemaEncoding("jsonschema");
 
+//        ChannelInfo channelFrame = new ChannelInfo();
+//        channelFrame.setId(3);
+//        channelFrame.setTopic("FrameTransforms");
+//        channelFrame.setEncoding("json");
+//        channelFrame.setSchemaName("FrameTransforms");
+//        schema = DataUtil.loadJsonSchema("FrameTransforms.json");
+//        channelFrame.setSchema(schema);
+//        channelFrame.setSchemaEncoding("jsonschema");
+
+        ChannelInfo channelMessage = new ChannelInfo();
+        channelMessage.setId(1);
+        channelMessage.setTopic("/drive/raw_msg");
+        channelMessage.setEncoding("json");
+        channelMessage.setSchemaName("示例消息(只展示字符串)");
+        channelMessage.setSchema("{\"type\": \"object\", \"properties\": {\"msg\": {\"type\": \"string\"}, \"count\": {\"type\": \"number\"}}}");
+        channelMessage.setSchemaEncoding("jsonschema");
+
+        ChannelInfo channel3D = new ChannelInfo();
+        channel3D.setId(2);
+        channel3D.setTopic("/drive/3D");
+        channel3D.setEncoding("json");
+        channel3D.setSchemaName("foxglove.SceneUpdate");
+        schema = DataUtil.loadJsonSchema("SceneUpdate.json");
+        channel3D.setSchema(schema);
+        channel3D.setSchemaEncoding("jsonschema");
+
+
+        ChannelInfo channelImage = new ChannelInfo();
+        channelImage.setId(3);
+        channelImage.setTopic("/drive/image");
+        channelImage.setEncoding("json");
+        channelImage.setSchemaName("foxglove.CompressedImage");
+        schema = DataUtil.loadJsonSchema("CompressedImage.json");
+        channelImage.setSchema(schema);
+        channelImage.setSchemaEncoding("jsonschema");
+
         ChannelInfo channelGPS = new ChannelInfo();
-        channelGPS.setId(1);
+        channelGPS.setId(4);
         channelGPS.setTopic("/drive/gps");
         channelGPS.setEncoding("json");
         channelGPS.setSchemaName("foxglove.LocationFix");
@@ -83,6 +85,9 @@ public class ChannelUtil {
 
 
         List<ChannelInfo> channelList = new ArrayList<>();
+        channelList.add(channelMessage);
+        channelList.add(channelImage);
+        channelList.add(channel3D);
         channelList.add(channelGPS);
         return channelList;
     }

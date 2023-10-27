@@ -67,7 +67,6 @@ public class SendGPSThread implements Runnable {
             locationFix.setTimestamp(timestamp);
             JSONObject jsonObject = (JSONObject) JSON.toJSON(locationFix);
             byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), timestamp.getNsec(), index);
-            System.out.println(Thread.currentThread().getName() + "-----------读取第" + i + "个元素------------");
             this.session.sendBinary(bytes);
             try {
                 Thread.sleep(frequency);

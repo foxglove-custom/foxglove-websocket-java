@@ -5,7 +5,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jiaruiblog.foxglove.entity.Advertise;
 import com.jiaruiblog.foxglove.entity.ServerInfo;
+import com.jiaruiblog.foxglove.thread.SendCompressedImageThread;
+import com.jiaruiblog.foxglove.thread.SendMessageThread;
 import com.jiaruiblog.foxglove.thread.SendGPSThread;
+import com.jiaruiblog.foxglove.thread.Send3DStreamThread;
 import com.jiaruiblog.foxglove.util.ChannelUtil;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.timeout.IdleStateEvent;
@@ -110,13 +113,16 @@ public class FoxgloveServer {
             JSONArray subscriptions = msg.getJSONArray("subscriptions");
             System.out.println("subscriptions: " + subscriptions);
 
-//            Thread sendCountThread = new Thread(new SendCountThread(0, session));
-//            sendCountThread.start();
+            Thread sendMessageThread = new Thread(new SendMessageThread(0, 100, session));
+            sendMessageThread.start();
 
-//            Thread sendSceneUpdateThread = new Thread(new SendSceneUpdateStreamThread(0, 100, session));
-//            sendSceneUpdateThread.start();
+            Thread sendImageThread = new Thread(new SendCompressedImageThread(1, 30, session));
+            sendImageThread.start();
 
-            Thread sendGPSThread = new Thread(new SendGPSThread(0, 100, session));
+            Thread send3DThread = new Thread(new Send3DStreamThread(2, 100, session));
+            send3DThread.start();
+
+            Thread sendGPSThread = new Thread(new SendGPSThread(3, 100, session));
             sendGPSThread.start();
 
 //            Thread sendSceneUpdateThread = new Thread(new SendSceneUpdateSimulateThread(0, 500, session));
@@ -124,12 +130,6 @@ public class FoxgloveServer {
 
 //            Thread sendTransformThread = new Thread(new SendTransformThread(0, 100, session));
 //            sendTransformThread.start();
-
-//            Thread sendRawImageThread = new Thread(new SendRawImageThread(0, session));
-//            sendRawImageThread.start();
-
-//            Thread sendCompressedImageThread = new Thread(new SendCompressedImageThread(0, 30, session));
-//            sendCompressedImageThread.start();
 
 //            Thread sendPointCloudThread = new Thread(new SendPointCloudThread(1, 50, session));
 //            sendPointCloudThread.start();
