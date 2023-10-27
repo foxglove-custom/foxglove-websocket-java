@@ -48,7 +48,7 @@ public class ChannelUtil {
 //        channelFrame.setSchemaEncoding("jsonschema");
 
         ChannelInfo channelMessage = new ChannelInfo();
-        channelMessage.setId(1);
+        channelMessage.setId(0);
         channelMessage.setTopic("/drive/raw_msg");
         channelMessage.setEncoding("json");
         channelMessage.setSchemaName("示例消息(只展示字符串)");
@@ -56,7 +56,7 @@ public class ChannelUtil {
         channelMessage.setSchemaEncoding("jsonschema");
 
         ChannelInfo channel3D = new ChannelInfo();
-        channel3D.setId(2);
+        channel3D.setId(1);
         channel3D.setTopic("/drive/3D");
         channel3D.setEncoding("json");
         channel3D.setSchemaName("foxglove.SceneUpdate");
@@ -66,7 +66,7 @@ public class ChannelUtil {
 
 
         ChannelInfo channelImage = new ChannelInfo();
-        channelImage.setId(3);
+        channelImage.setId(2);
         channelImage.setTopic("/drive/image");
         channelImage.setEncoding("json");
         channelImage.setSchemaName("foxglove.CompressedImage");
@@ -75,7 +75,7 @@ public class ChannelUtil {
         channelImage.setSchemaEncoding("jsonschema");
 
         ChannelInfo channelGPS = new ChannelInfo();
-        channelGPS.setId(4);
+        channelGPS.setId(3);
         channelGPS.setTopic("/drive/gps");
         channelGPS.setEncoding("json");
         channelGPS.setSchemaName("foxglove.LocationFix");

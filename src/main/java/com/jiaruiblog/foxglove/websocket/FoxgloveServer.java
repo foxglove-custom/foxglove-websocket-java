@@ -124,15 +124,6 @@ public class FoxgloveServer {
 
             Thread sendGPSThread = new Thread(new SendGPSThread(3, 100, session));
             sendGPSThread.start();
-
-//            Thread sendSceneUpdateThread = new Thread(new SendSceneUpdateSimulateThread(0, 500, session));
-//            sendSceneUpdateThread.start();
-
-//            Thread sendTransformThread = new Thread(new SendTransformThread(0, 100, session));
-//            sendTransformThread.start();
-
-//            Thread sendPointCloudThread = new Thread(new SendPointCloudThread(1, 50, session));
-//            sendPointCloudThread.start();
         }
     }
 
