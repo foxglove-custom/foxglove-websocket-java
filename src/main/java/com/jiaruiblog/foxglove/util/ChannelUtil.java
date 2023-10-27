@@ -18,14 +18,14 @@ public class ChannelUtil {
 //        channelDemo.setSchema("{\"type\": \"object\", \"properties\": {\"msg\": {\"type\": \"string\"}, \"count\": {\"type\": \"number\"}}}");
 //        channelDemo.setSchemaEncoding("jsonschema");
 
-        ChannelInfo channelScene = new ChannelInfo();
-        channelScene.setId(1);
-        channelScene.setTopic("/drive/scene");
-        channelScene.setEncoding("json");
-        channelScene.setSchemaName("foxglove.SceneUpdate");
-        schema = DataUtil.loadJsonSchema("SceneUpdate.json");
-        channelScene.setSchema(schema);
-        channelScene.setSchemaEncoding("jsonschema");
+//        ChannelInfo channelScene = new ChannelInfo();
+//        channelScene.setId(1);
+//        channelScene.setTopic("/drive/scene");
+//        channelScene.setEncoding("json");
+//        channelScene.setSchemaName("foxglove.SceneUpdate");
+//        schema = DataUtil.loadJsonSchema("SceneUpdate.json");
+//        channelScene.setSchema(schema);
+//        channelScene.setSchemaEncoding("jsonschema");
 
 //        ChannelInfo channelFrame = new ChannelInfo();
 //        channelFrame.setId(3);
@@ -72,9 +72,18 @@ public class ChannelUtil {
 //        channelImage.setSchema(schema);
 //        channelImage.setSchemaEncoding("jsonschema");
 
+        ChannelInfo channelGPS = new ChannelInfo();
+        channelGPS.setId(1);
+        channelGPS.setTopic("/drive/gps");
+        channelGPS.setEncoding("json");
+        channelGPS.setSchemaName("foxglove.LocationFix");
+        schema = DataUtil.loadJsonSchema("LocationFix.json");
+        channelGPS.setSchema(schema);
+        channelGPS.setSchemaEncoding("jsonschema");
+
 
         List<ChannelInfo> channelList = new ArrayList<>();
-        channelList.add(channelScene);
+        channelList.add(channelGPS);
         return channelList;
     }
 }
