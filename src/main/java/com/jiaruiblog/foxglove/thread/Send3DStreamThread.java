@@ -124,9 +124,9 @@ public class Send3DStreamThread implements Runnable {
 
             oldIdList = newIdList;
             i++;
-            System.out.println(Thread.currentThread().getName() + "-----------读取第" + i + "个元素------------");
+            //System.out.println(Thread.currentThread().getName() + "-----------读取第" + i + "个元素------------");
             JSONObject jsonObject = (JSONObject) JSON.toJSON(sceneUpdate);
-            byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), timestamp.getNsec(), index);
+            byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), index);
             this.session.sendBinary(bytes);
             try {
                 Thread.sleep(frequency);

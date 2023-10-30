@@ -10,13 +10,17 @@ import java.util.Map;
 
 public class DataUtil {
 
+    public static byte[] getFormatedBytes(byte[] data, int channel) {
+        return getFormatedBytes(data, 0, channel);
+    }
+
     public static byte[] getFormatedBytes(byte[] data, long ns, int channel) {
         byte constantInfo = 1;
         byte[] constantInfoByte = new byte[]{constantInfo};
         byte[] dataType = getIntBytes(channel);
         byte[] nsTime = getLongBytes(ns);
-        byte[] packz1 = byteConcat(constantInfoByte, dataType, nsTime);
-        byte[] pack2 = byteConcat(packz1, data);
+        byte[] pack1 = byteConcat(constantInfoByte, dataType, nsTime);
+        byte[] pack2 = byteConcat(pack1, data);
         return pack2;
     }
 

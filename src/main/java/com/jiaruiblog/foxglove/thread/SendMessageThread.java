@@ -29,8 +29,7 @@ public class SendMessageThread implements Runnable {
             jsonObject.put("count", new Random().nextInt(1000));
             jsonObject.put("number", new Random().nextInt(1000));
 
-            Long ns = 1692891094326598000L;
-            byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), ns, index);
+            byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), index);
             this.session.sendBinary(bytes);
             try {
                 Thread.sleep(100);

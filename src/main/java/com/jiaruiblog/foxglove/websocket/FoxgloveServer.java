@@ -5,10 +5,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jiaruiblog.foxglove.entity.Advertise;
 import com.jiaruiblog.foxglove.entity.ServerInfo;
-import com.jiaruiblog.foxglove.thread.SendCompressedImageThread;
-import com.jiaruiblog.foxglove.thread.SendMessageThread;
-import com.jiaruiblog.foxglove.thread.SendGPSThread;
 import com.jiaruiblog.foxglove.thread.Send3DStreamThread;
+import com.jiaruiblog.foxglove.thread.SendCompressedImageThread;
+import com.jiaruiblog.foxglove.thread.SendGPSThread;
+import com.jiaruiblog.foxglove.thread.SendMessageThread;
 import com.jiaruiblog.foxglove.util.ChannelUtil;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.timeout.IdleStateEvent;
@@ -106,6 +106,7 @@ public class FoxgloveServer {
         JSONObject msg = JSON.parseObject(message);
         Object op = msg.get("op");
         System.out.println("-------------op:\t" + op + "\t" + connected);
+        System.out.println("------------id:\t" + msg.getInteger("id"));
         boolean opCheck = "subscribe".equals(op);
         if (opCheck && !connected) {
             System.out.println("----------开启多线程，循环发送-------------");
@@ -131,9 +132,8 @@ public class FoxgloveServer {
     @OnBinary
     public void onBinary(Session session, byte[] bytes) {
         // 这里接收到用户指令
-        for (byte b : bytes) {
-            System.out.println("----byte:\t" + b);
-        }
+        String message = new String(Arrays.copyOfRange(bytes, 5, bytes.length));
+        System.out.println(message);
         session.sendBinary(bytes);
     }
 

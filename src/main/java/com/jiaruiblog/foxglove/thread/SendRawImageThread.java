@@ -38,8 +38,7 @@ public class SendRawImageThread implements Runnable {
                 }
                 RawImage rawImage = readImage(count);
                 JSONObject jsonObject = (JSONObject) JSON.toJSON(rawImage);
-                Integer ns = rawImage.getTimestamp().getNsec();
-                byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), ns, index);
+                byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), index);
                 this.session.sendBinary(bytes);
                 TimeUnit.SECONDS.sleep(1);
             }
