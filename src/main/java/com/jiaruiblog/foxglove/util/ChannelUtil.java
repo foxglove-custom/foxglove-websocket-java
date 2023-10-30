@@ -65,17 +65,17 @@ public class ChannelUtil {
         channel3D.setSchemaEncoding("jsonschema");
 
 
-        ChannelInfo channelImage = new ChannelInfo();
-        channelImage.setId(2);
-        channelImage.setTopic("/drive/image");
-        channelImage.setEncoding("json");
-        channelImage.setSchemaName("foxglove.CompressedImage");
-        schema = DataUtil.loadJsonSchema("CompressedImage.json");
-        channelImage.setSchema(schema);
-        channelImage.setSchemaEncoding("jsonschema");
+//        ChannelInfo channelImage = new ChannelInfo();
+//        channelImage.setId(2);
+//        channelImage.setTopic("/drive/image");
+//        channelImage.setEncoding("json");
+//        channelImage.setSchemaName("foxglove.CompressedImage");
+//        schema = DataUtil.loadJsonSchema("CompressedImage.json");
+//        channelImage.setSchema(schema);
+//        channelImage.setSchemaEncoding("jsonschema");
 
         ChannelInfo channelGPS = new ChannelInfo();
-        channelGPS.setId(3);
+        channelGPS.setId(2);
         channelGPS.setTopic("/drive/gps");
         channelGPS.setEncoding("json");
         channelGPS.setSchemaName("foxglove.LocationFix");
@@ -86,7 +86,7 @@ public class ChannelUtil {
 
         List<ChannelInfo> channelList = new ArrayList<>();
         channelList.add(channelMessage);
-        channelList.add(channelImage);
+//        channelList.add(channelImage);
         channelList.add(channel3D);
         channelList.add(channelGPS);
         return channelList;

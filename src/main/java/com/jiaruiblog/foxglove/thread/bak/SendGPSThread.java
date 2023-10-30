@@ -1,4 +1,4 @@
-package com.jiaruiblog.foxglove.thread;
+package com.jiaruiblog.foxglove.thread.bak;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -55,7 +55,7 @@ public class SendGPSThread implements Runnable {
         while (true) {
             if (i >= size) {
                 i = 0;
-                System.out.println("==============播放完毕，新的轮回======================");
+                System.out.println(Thread.currentThread() + "==============播放完毕，新的轮回======================");
             }
             LocationFix locationFix = gpsList.get(i);
             i++;

@@ -1,10 +1,8 @@
-package com.jiaruiblog.foxglove.thread;
+package com.jiaruiblog.foxglove.message.test;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.jiaruiblog.foxglove.message.MessageGenerator;
 import com.jiaruiblog.foxglove.schema.*;
 import com.jiaruiblog.foxglove.util.DataUtil;
-import org.yeauty.pojo.Session;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -16,23 +14,50 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.jiaruiblog.foxglove.util.DataUtil.getFormatedBytes;
+public class Scene3DGenerator implements MessageGenerator<SceneUpdate> {
 
-public class Send3DStreamThread implements Runnable {
-
-    private int frequency;
-    private int index;
-    private Session session;
     private List<SceneUpdate> updateList;
     private List<ModelPrimitive> models;
     private List<String> oldIdList = new ArrayList<>();
+    private int index;
 
-    public Send3DStreamThread(int index, int frequency, Session session) {
-        this.index = index;
-        this.session = session;
-        this.frequency = frequency;
+    public Scene3DGenerator() {
         updateList = this.readEntityData();
         models = this.addModels();
+        this.updateList = readEntityData();
+    }
+
+    @Override
+    public SceneUpdate consume() {
+        if (index == updateList.size()) {
+            index = 0;
+        }
+        SceneUpdate sceneUpdate = updateList.get(index);
+        index++;
+        List<SceneEntity> entities = sceneUpdate.getEntities();
+        Timestamp timestamp = entities.get(0).getTimestamp();
+        List<String> newIdList = entities.stream().map(SceneEntity::getId).collect(Collectors.toList());
+        oldIdList.removeAll(newIdList);
+        if (oldIdList.size() > 0) {
+            List<SceneEntityDeletion> deleteList = oldIdList.stream().map(s -> {
+                SceneEntityDeletion del = new SceneEntityDeletion();
+                del.setId(s);
+                del.setType(0);
+                del.setTimestamp(timestamp);
+                return del;
+            }).collect(Collectors.toList());
+            sceneUpdate.setDeletions(deleteList);
+        }
+
+        // 减少车辆模型的显示频率
+        if (index % 5 == 0) {
+            SceneEntity carEntity = this.createEntity("drive_car", "obstacle", "vehicle.car", timestamp);
+            carEntity.setModels(models);
+            entities.add(carEntity);
+        }
+
+        oldIdList = newIdList;
+        return sceneUpdate;
     }
 
     private List<SceneUpdate> readEntityData() {
@@ -66,7 +91,7 @@ public class Send3DStreamThread implements Runnable {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("==============解析完毕，共有" + updateList.size() + "条记录======================");
+        System.out.println("==============解析完毕，共有" + updateList.size() + "条点云记录======================");
         return updateList;
     }
 
@@ -89,73 +114,6 @@ public class Send3DStreamThread implements Runnable {
         entity.setId(id);
         entity.setMetadata(metadata);
         return entity;
-    }
-
-    @Override
-    public void run() {
-        int i = 0, size = updateList.size();
-        while (true) {
-            if (i >= size) {
-                i = 0;
-                System.out.println("==============播放完毕，新的轮回======================");
-            }
-            SceneUpdate sceneUpdate = updateList.get(i);
-            List<SceneEntity> entities = sceneUpdate.getEntities();
-            Timestamp timestamp = entities.get(0).getTimestamp();
-            List<String> newIdList = entities.stream().map(SceneEntity::getId).collect(Collectors.toList());
-            oldIdList.removeAll(newIdList);
-            if (oldIdList.size() > 0) {
-                List<SceneEntityDeletion> deleteList = oldIdList.stream().map(s -> {
-                    SceneEntityDeletion del = new SceneEntityDeletion();
-                    del.setId(s);
-                    del.setType(0);
-                    del.setTimestamp(timestamp);
-                    return del;
-                }).collect(Collectors.toList());
-                sceneUpdate.setDeletions(deleteList);
-            }
-
-            // 减少车辆模型的显示频率
-            if (i % 5 == 0) {
-                SceneEntity carEntity = this.createEntity("drive_car", "obstacle", "vehicle.car", timestamp);
-                carEntity.setModels(models);
-                entities.add(carEntity);
-            }
-
-            oldIdList = newIdList;
-            i++;
-            //System.out.println(Thread.currentThread().getName() + "-----------读取第" + i + "个元素------------");
-            JSONObject jsonObject = (JSONObject) JSON.toJSON(sceneUpdate);
-            byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), index);
-            this.session.sendBinary(bytes);
-            try {
-                Thread.sleep(frequency);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private List<ModelPrimitive> addModels() {
-        ModelPrimitive model = new ModelPrimitive();
-        Pose pose = new Pose();
-        Vector3 position = new Vector3(-11.200000f, -8.499990f, 1.623f);
-        Quaternion orientation = new Quaternion(0.0f, 0.0f, 0f, 0.1f);
-        pose.setPosition(position);
-        pose.setOrientation(orientation);
-
-        Vector3 scale = new Vector3(1f, 1f, 1f);
-        //Color color = new Color(0.6f, 0.2f, 1f, 0.8f);
-        Color color = new Color(1f, 0.38823529411764707f, 0.2784313725490196f, 0.5f);
-        byte[] bytes = DataUtil.loadGlbData("car.glb");
-
-        model.setColor(color);
-        model.setPose(pose);
-        model.setData(bytes);
-        model.setScale(scale);
-        model.setMedia_type("model/gltf-binary");
-
-        return Arrays.asList(model);
     }
 
     private List<CubePrimitive> addCubes(String[] data) {
@@ -183,6 +141,28 @@ public class Send3DStreamThread implements Runnable {
         return cubeList;
     }
 
+    private List<ModelPrimitive> addModels() {
+        ModelPrimitive model = new ModelPrimitive();
+        Pose pose = new Pose();
+        Vector3 position = new Vector3(-11.200000f, -8.499990f, 1.623f);
+        Quaternion orientation = new Quaternion(0.0f, 0.0f, 0f, 0.1f);
+        pose.setPosition(position);
+        pose.setOrientation(orientation);
+
+        Vector3 scale = new Vector3(1f, 1f, 1f);
+        //Color color = new Color(0.6f, 0.2f, 1f, 0.8f);
+        Color color = new Color(1f, 0.38823529411764707f, 0.2784313725490196f, 0.5f);
+        byte[] bytes = DataUtil.loadGlbData("car.glb");
+
+        model.setColor(color);
+        model.setPose(pose);
+        model.setData(bytes);
+        model.setScale(scale);
+        model.setMedia_type("model/gltf-binary");
+
+        return Arrays.asList(model);
+    }
+
     private Color setCubeColor(int type) {
         switch (type) {
             case 0:
@@ -195,4 +175,5 @@ public class Send3DStreamThread implements Runnable {
                 return new Color(1f, 0.38823529411764707f, 0.2784313725490196f, 0.5f);
         }
     }
+
 }

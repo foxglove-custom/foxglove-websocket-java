@@ -1,42 +1,39 @@
 package com.jiaruiblog.foxglove.thread;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.jiaruiblog.foxglove.message.MessageGenerator;
 import org.yeauty.pojo.Session;
-
-import java.time.LocalTime;
-import java.util.Random;
 
 import static com.jiaruiblog.foxglove.util.DataUtil.getFormatedBytes;
 
-public class SendMessageThread implements Runnable {
+public class SendDataThread implements Runnable {
+
+    private int frequency;
     private int index;
     private Session session;
-    private int frequency;
+    private MessageGenerator<?> generator;
 
-    public SendMessageThread(int index, int frequency, Session session) {
+    public SendDataThread(int index, int frequency, Session session, MessageGenerator<?> generator) {
         this.index = index;
         this.session = session;
         this.frequency = frequency;
+        this.generator = generator;
     }
+
 
     @Override
     public void run() {
-
-        while (true) {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("msg", "hello at " + LocalTime.now());
-
-            jsonObject.put("count", new Random().nextInt(1000));
-            jsonObject.put("number", new Random().nextInt(1000));
-
+        while (!Thread.currentThread().isInterrupted()) {
+            Object message = generator.consume();
+            JSONObject jsonObject = (JSONObject) JSON.toJSON(message);
             byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), index);
             this.session.sendBinary(bytes);
             try {
-                Thread.sleep(100);
+                Thread.sleep(frequency);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-
     }
 }

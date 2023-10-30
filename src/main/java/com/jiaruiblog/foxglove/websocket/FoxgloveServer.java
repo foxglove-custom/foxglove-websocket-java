@@ -5,10 +5,13 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jiaruiblog.foxglove.entity.Advertise;
 import com.jiaruiblog.foxglove.entity.ServerInfo;
-import com.jiaruiblog.foxglove.thread.Send3DStreamThread;
-import com.jiaruiblog.foxglove.thread.SendCompressedImageThread;
-import com.jiaruiblog.foxglove.thread.SendGPSThread;
-import com.jiaruiblog.foxglove.thread.SendMessageThread;
+import com.jiaruiblog.foxglove.message.test.GPSGenerator;
+import com.jiaruiblog.foxglove.message.test.RawMessageGenerator;
+import com.jiaruiblog.foxglove.message.test.Scene3DGenerator;
+import com.jiaruiblog.foxglove.thread.SendDataThread;
+import com.jiaruiblog.foxglove.thread.bak.Send3DStreamThread;
+import com.jiaruiblog.foxglove.thread.bak.SendGPSThread;
+import com.jiaruiblog.foxglove.thread.bak.SendMessageThread;
 import com.jiaruiblog.foxglove.util.ChannelUtil;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.timeout.IdleStateEvent;
@@ -17,7 +20,9 @@ import org.yeauty.annotation.*;
 import org.yeauty.pojo.Session;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,16 +51,13 @@ public class FoxgloveServer {
      */
     private String uid;
 
-    private boolean connected;
+    private boolean connected = false;
+
+    private List<Thread> threadList = new ArrayList<>();
 
     @BeforeHandshake
     public void handshake(Session session, HttpHeaders headers, @RequestParam String req,
                           @RequestParam MultiValueMap reqMap, @PathVariable String uid, @PathVariable Map pathMap) {
-
-//        String submitedToken = headers.get("sec-websocket-protocol");
-//        System.out.println("token信息" + submitedToken);
-
-
         System.out.println("session信息" + session.toString());
         session.setSubprotocols("foxglove.websocket.v1");
 
@@ -74,7 +76,7 @@ public class FoxgloveServer {
 
         ServerInfo serverInfo = new ServerInfo();
         serverInfo.setOp("serverInfo");
-        serverInfo.setName("example server");
+        serverInfo.setName("foxglove data render");
         serverInfo.setCapabilities(Arrays.asList("clientPublish", "services"));
         serverInfo.setSupportedEncodings(Arrays.asList("json"));
 
@@ -105,26 +107,30 @@ public class FoxgloveServer {
 
         JSONObject msg = JSON.parseObject(message);
         Object op = msg.get("op");
-        System.out.println("-------------op:\t" + op + "\t" + connected);
-        System.out.println("------------id:\t" + msg.getInteger("id"));
+        System.out.println("-------------msg:\t" + message);
         boolean opCheck = "subscribe".equals(op);
         if (opCheck && !connected) {
-            System.out.println("----------开启多线程，循环发送-------------");
             connected = true;
+            System.out.println("----------开启多线程，循环发送-------------");
             JSONArray subscriptions = msg.getJSONArray("subscriptions");
             System.out.println("subscriptions: " + subscriptions);
 
-            Thread sendMessageThread = new Thread(new SendMessageThread(0, 100, session));
+            System.out.println("=================previous thread size:\t" + threadList.size());
+            threadList.forEach(t -> t.interrupt());
+
+            Thread sendMessageThread = new Thread(new SendDataThread(0, 100, session, new RawMessageGenerator()));
             sendMessageThread.start();
 
-            Thread sendImageThread = new Thread(new SendCompressedImageThread(1, 30, session));
-            sendImageThread.start();
-
-            Thread send3DThread = new Thread(new Send3DStreamThread(2, 100, session));
+            Thread send3DThread = new Thread(new SendDataThread(1, 100, session, new Scene3DGenerator()));
             send3DThread.start();
 
-            Thread sendGPSThread = new Thread(new SendGPSThread(3, 100, session));
+            Thread sendGPSThread = new Thread(new SendDataThread(2, 100, session, new GPSGenerator()));
             sendGPSThread.start();
+
+            threadList.clear();
+            threadList.add(sendMessageThread);
+            threadList.add(sendGPSThread);
+            threadList.add(send3DThread);
         }
     }
 
