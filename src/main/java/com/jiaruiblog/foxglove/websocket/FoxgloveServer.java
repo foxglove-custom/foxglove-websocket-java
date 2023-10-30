@@ -138,8 +138,7 @@ public class FoxgloveServer {
         log.info("============开始创建基于channel的数据发送线程==============" + subscribeList);
         for (Subscription sub : subscribeList) {
             Integer channelId = sub.getChannelId();
-            int frequency = channelId == 1 ? 30 : 100;
-            System.out.println("*************" + threadMap.containsKey(channelId));
+            int frequency = channelId == 3 ? 50 : 100;
             SendDataThread thread = ChannelUtil.getGenerator(sub.getId(), channelId, frequency, session);
             String threadName = "thread-" + channelId + "-" + RandomStringUtils.randomAlphabetic(6).toLowerCase();
             thread.setName(threadName);

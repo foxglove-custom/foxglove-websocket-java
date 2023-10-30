@@ -63,7 +63,7 @@ public class Send3DThread extends SendDataThread {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        log.info("==============解析完毕，共有" + updateList.size() + "条记录======================");
+        log.info("==============解析完毕，共有" + updateList.size() + "条点云记录======================");
         return updateList;
     }
 
