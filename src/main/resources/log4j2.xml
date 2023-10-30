@@ -1,0 +1,14 @@
+<Configuration status="warn">
+    <Appenders>
+        <!-- Console appender configuration -->
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%yellow{[%d{yyyy-MM-dd HH:mm:ss.SSS}]} %clr{[%-5level]} %cyan{[%c{1.}]} %msg%n" />
+        </Console>
+    </Appenders>
+    <Loggers>
+        <!-- Root logger referring to console appender -->
+        <Root level="info" additivity="false">
+            <AppenderRef ref="console" />
+        </Root>
+    </Loggers>
+</Configuration>

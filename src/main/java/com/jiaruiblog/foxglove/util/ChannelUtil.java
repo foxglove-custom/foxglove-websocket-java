@@ -1,6 +1,10 @@
 package com.jiaruiblog.foxglove.util;
 
 import com.jiaruiblog.foxglove.entity.ChannelInfo;
+import com.jiaruiblog.foxglove.message.MessageGenerator;
+import com.jiaruiblog.foxglove.message.test.GPSGenerator;
+import com.jiaruiblog.foxglove.message.test.RawMessageGenerator;
+import com.jiaruiblog.foxglove.message.test.Scene3DGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,43 +13,6 @@ public class ChannelUtil {
 
     public static List<ChannelInfo> createChannels() {
         String schema = null;
-
-
-//        ChannelInfo channelPointCloud = new ChannelInfo();
-//        channelPointCloud.setId(2);
-//        channelPointCloud.setTopic("PointCloud");
-//        channelPointCloud.setEncoding("json");
-//        channelPointCloud.setSchemaName("foxglove.PointCloud");
-//        schema = DataUtil.loadJsonSchema("PointCloud.json");
-//        channelPointCloud.setSchema(schema);
-//        channelPointCloud.setSchemaEncoding("jsonschema");
-
-//        ChannelInfo channelTransform = new ChannelInfo();
-//        channelTransform.setId(3);
-//        channelTransform.setTopic("frameTransform");
-//        channelTransform.setEncoding("json");
-//        channelTransform.setSchemaName("foxglove.FrameTransform");
-//        schema = DataUtil.loadJsonSchema("FrameTransform.json");
-//        channelTransform.setSchema(schema);
-//        channelTransform.setSchemaEncoding("jsonschema");
-
-//        ChannelInfo channelImage = new ChannelInfo();
-//        channelImage.setId(1);
-//        channelImage.setTopic("rawImage");
-//        channelImage.setEncoding("json");
-//        channelImage.setSchemaName("foxglove.RawImage");
-//        schema = DataUtil.loadJsonSchema("RawImage.json");
-//        channelImage.setSchema(schema);
-//        channelImage.setSchemaEncoding("jsonschema");
-
-//        ChannelInfo channelFrame = new ChannelInfo();
-//        channelFrame.setId(3);
-//        channelFrame.setTopic("FrameTransforms");
-//        channelFrame.setEncoding("json");
-//        channelFrame.setSchemaName("FrameTransforms");
-//        schema = DataUtil.loadJsonSchema("FrameTransforms.json");
-//        channelFrame.setSchema(schema);
-//        channelFrame.setSchemaEncoding("jsonschema");
 
         ChannelInfo channelMessage = new ChannelInfo();
         channelMessage.setId(0);
@@ -74,21 +41,34 @@ public class ChannelUtil {
 //        channelImage.setSchema(schema);
 //        channelImage.setSchemaEncoding("jsonschema");
 
-        ChannelInfo channelGPS = new ChannelInfo();
-        channelGPS.setId(2);
-        channelGPS.setTopic("/drive/gps");
-        channelGPS.setEncoding("json");
-        channelGPS.setSchemaName("foxglove.LocationFix");
-        schema = DataUtil.loadJsonSchema("LocationFix.json");
-        channelGPS.setSchema(schema);
-        channelGPS.setSchemaEncoding("jsonschema");
+//        ChannelInfo channelGPS = new ChannelInfo();
+//        channelGPS.setId(2);
+//        channelGPS.setTopic("/drive/gps");
+//        channelGPS.setEncoding("json");
+//        channelGPS.setSchemaName("foxglove.LocationFix");
+//        schema = DataUtil.loadJsonSchema("LocationFix.json");
+//        channelGPS.setSchema(schema);
+//        channelGPS.setSchemaEncoding("jsonschema");
 
 
         List<ChannelInfo> channelList = new ArrayList<>();
         channelList.add(channelMessage);
 //        channelList.add(channelImage);
         channelList.add(channel3D);
-        channelList.add(channelGPS);
+//        channelList.add(channelGPS);
         return channelList;
+    }
+
+    public static MessageGenerator getGenerator(int channelId) {
+        switch (channelId) {
+            case 0:
+                return new RawMessageGenerator();
+            case 1:
+                return new Scene3DGenerator();
+            case 2:
+                return new GPSGenerator();
+            default:
+                return null;
+        }
     }
 }
