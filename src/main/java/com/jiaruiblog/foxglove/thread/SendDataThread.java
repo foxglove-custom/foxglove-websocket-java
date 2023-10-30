@@ -15,6 +15,7 @@ public class SendDataThread implements Runnable {
     private int index;
     private Session session;
     private MessageGenerator<?> generator;
+    private int count;
 
     public SendDataThread(int index, int frequency, Session session, MessageGenerator<?> generator) {
         this.index = index;
@@ -31,9 +32,11 @@ public class SendDataThread implements Runnable {
             JSONObject jsonObject = (JSONObject) JSON.toJSON(message);
             byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), index);
             this.session.sendBinary(bytes);
-//            if (index % 50 == 0) {
-//                log.info(Thread.currentThread().getName() + "\tsend data" + "\t");
-//            }
+            count++;
+            if (count == 200) {
+                log.info(Thread.currentThread().getName() + "\tsend data");
+                count = 0;
+            }
             try {
                 Thread.sleep(frequency);
             } catch (InterruptedException e) {

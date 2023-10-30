@@ -163,8 +163,4 @@ public class FoxgloveServer {
         threadMap.clear();
     }
 
-    public void sendMessage(String message) throws IOException {
-        this.session.sendText(message);
-    }
-
 }

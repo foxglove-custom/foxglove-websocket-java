@@ -3,6 +3,7 @@ package com.jiaruiblog.foxglove.message.test;
 import com.jiaruiblog.foxglove.message.MessageGenerator;
 import com.jiaruiblog.foxglove.schema.*;
 import com.jiaruiblog.foxglove.util.DataUtil;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -14,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class Scene3DGenerator implements MessageGenerator<SceneUpdate> {
 
     private List<SceneUpdate> updateList;
@@ -91,7 +93,7 @@ public class Scene3DGenerator implements MessageGenerator<SceneUpdate> {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("==============解析完毕，共有" + updateList.size() + "条点云记录======================");
+        log.info("==============解析完毕，共有" + updateList.size() + "条点云记录======================");
         return updateList;
     }
 
