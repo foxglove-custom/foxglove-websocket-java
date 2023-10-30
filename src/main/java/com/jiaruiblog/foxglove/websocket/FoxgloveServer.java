@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @ClassName FoxgloveServer
@@ -99,7 +98,7 @@ public class FoxgloveServer {
                 this.createThread(msg);
                 break;
             case "unsubscribe":
-                this.stopThread(msg);
+                session.close();
                 break;
         }
     }
@@ -135,29 +134,29 @@ public class FoxgloveServer {
     private void createThread(JSONObject msg) {
         List<Subscription> subscribeList = msg.getObject("subscriptions", new TypeReference<List<Subscription>>() {
         });
-        List<Integer> channelList = subscribeList.stream().map(Subscription::getChannelId).distinct().collect(Collectors.toList());
-        log.info("============开始创建基于channel的数据发送线程==============" + channelList);
-        for (Integer channelId : channelList) {
+        log.info("============开始创建基于channel的数据发送线程==============" + subscribeList);
+        for (Subscription sub : subscribeList) {
+            Integer channelId = sub.getChannelId();
             MessageGenerator generator = ChannelUtil.getGenerator(channelId);
             String threadName = "thread-channel-" + channelId;
-            Thread thread = new Thread(new SendDataThread(channelId, 100, session, generator), threadName);
+            Thread thread = new Thread(new SendDataThread(sub.getId(), 100, session, generator), threadName);
             thread.start();
             threadMap.put(channelId, thread);
         }
     }
 
-    private void stopThread(JSONObject msg) {
-        List<Integer> channelList = msg.getObject("subscriptionIds", new TypeReference<List<Integer>>() {
-        });
-        for (Integer channelId : channelList) {
-            Thread thread = threadMap.remove(channelId);
-            if (thread != null) {
-                thread.interrupt();
-                log.info("----------------------通道" + channelId + "对应的线程已被停止");
-                session.close();
-            }
-        }
-    }
+//    private void stopThread(JSONObject msg) {
+//        List<Integer> channelList = msg.getObject("subscriptionIds", new TypeReference<List<Integer>>() {
+//        });
+//        for (Integer channelId : channelList) {
+//            Thread thread = threadMap.remove(channelId);
+//            if (thread != null) {
+//                thread.interrupt();
+//                log.info("----------------------通道" + channelId + "对应的线程已被停止");
+//                session.close();
+//            }
+//        }
+//    }
 
     private void closeAllThreads() {
         threadMap.forEach((k, v) -> v.interrupt());

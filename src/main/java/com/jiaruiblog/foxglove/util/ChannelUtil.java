@@ -41,21 +41,21 @@ public class ChannelUtil {
 //        channelImage.setSchema(schema);
 //        channelImage.setSchemaEncoding("jsonschema");
 
-//        ChannelInfo channelGPS = new ChannelInfo();
-//        channelGPS.setId(2);
-//        channelGPS.setTopic("/drive/gps");
-//        channelGPS.setEncoding("json");
-//        channelGPS.setSchemaName("foxglove.LocationFix");
-//        schema = DataUtil.loadJsonSchema("LocationFix.json");
-//        channelGPS.setSchema(schema);
-//        channelGPS.setSchemaEncoding("jsonschema");
+        ChannelInfo channelGPS = new ChannelInfo();
+        channelGPS.setId(2);
+        channelGPS.setTopic("/drive/gps");
+        channelGPS.setEncoding("json");
+        channelGPS.setSchemaName("foxglove.LocationFix");
+        schema = DataUtil.loadJsonSchema("LocationFix.json");
+        channelGPS.setSchema(schema);
+        channelGPS.setSchemaEncoding("jsonschema");
 
 
         List<ChannelInfo> channelList = new ArrayList<>();
         channelList.add(channelMessage);
 //        channelList.add(channelImage);
         channelList.add(channel3D);
-//        channelList.add(channelGPS);
+        channelList.add(channelGPS);
         return channelList;
     }
 

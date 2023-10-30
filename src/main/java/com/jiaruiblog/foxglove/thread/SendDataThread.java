@@ -31,7 +31,9 @@ public class SendDataThread implements Runnable {
             JSONObject jsonObject = (JSONObject) JSON.toJSON(message);
             byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), index);
             this.session.sendBinary(bytes);
-            log.info(Thread.currentThread().getName() + "\tsend data" + "\t" + Thread.currentThread().isInterrupted());
+//            if (index % 50 == 0) {
+//                log.info(Thread.currentThread().getName() + "\tsend data" + "\t");
+//            }
             try {
                 Thread.sleep(frequency);
             } catch (InterruptedException e) {
