@@ -1,4 +1,4 @@
-package com.jiaruiblog.foxglove.thread.bak;
+package com.jiaruiblog.foxglove.thread;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -14,16 +14,10 @@ import java.util.Base64;
 
 import static com.jiaruiblog.foxglove.util.DataUtil.getFormatedBytes;
 
-public class SendPointCloudThread implements Runnable {
-
-    private int frequency; //  发送频率，单位毫秒
-    private int index;
-    private Session session;
+public class SendPointCloudThread extends SendDataThread {
 
     public SendPointCloudThread(int index, int frequency, Session session) {
-        this.index = index;
-        this.session = session;
-        this.frequency = frequency;
+        super(index, frequency, session);
     }
 
     @Override
@@ -44,6 +38,7 @@ public class SendPointCloudThread implements Runnable {
             byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), pointCloud.timestamp.getNsec(), index);
             this.session.sendBinary(bytes);
             i++;
+            printLog(100);
             try {
                 Thread.sleep(frequency);
             } catch (InterruptedException e) {

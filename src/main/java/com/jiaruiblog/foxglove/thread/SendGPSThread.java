@@ -1,9 +1,10 @@
-package com.jiaruiblog.foxglove.thread.bak;
+package com.jiaruiblog.foxglove.thread;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jiaruiblog.foxglove.schema.LocationFix;
 import com.jiaruiblog.foxglove.schema.Timestamp;
+import lombok.extern.slf4j.Slf4j;
 import org.yeauty.pojo.Session;
 
 import java.io.BufferedReader;
@@ -16,17 +17,13 @@ import java.util.List;
 
 import static com.jiaruiblog.foxglove.util.DataUtil.getFormatedBytes;
 
-public class SendGPSThread implements Runnable {
+@Slf4j
+public class SendGPSThread extends SendDataThread {
 
-    private int frequency;
-    private int index;
-    private Session session;
     private List<LocationFix> gpsList;
 
     public SendGPSThread(int index, int frequency, Session session) {
-        this.index = index;
-        this.session = session;
-        this.frequency = frequency;
+        super(index, frequency, session);
         gpsList = this.readMapData();
     }
 
@@ -45,17 +42,17 @@ public class SendGPSThread implements Runnable {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("==============解析完毕，共有" + dataList.size() + "条记录======================");
+        log.info("==============解析完毕，共有" + dataList.size() + "条记录======================");
         return dataList;
     }
 
     @Override
     public void run() {
         int i = 0, size = gpsList.size();
-        while (true) {
+        while (running) {
             if (i >= size) {
                 i = 0;
-                System.out.println(Thread.currentThread() + "==============播放完毕，新的轮回======================");
+                log.info(Thread.currentThread() + "==============播放完毕，新的轮回======================");
             }
             LocationFix locationFix = gpsList.get(i);
             i++;
@@ -68,6 +65,7 @@ public class SendGPSThread implements Runnable {
             JSONObject jsonObject = (JSONObject) JSON.toJSON(locationFix);
             byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), index);
             this.session.sendBinary(bytes);
+            printLog(100);
             try {
                 Thread.sleep(frequency);
             } catch (InterruptedException e) {

@@ -1,9 +1,10 @@
-package com.jiaruiblog.foxglove.thread.bak;
+package com.jiaruiblog.foxglove.thread;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jiaruiblog.foxglove.schema.*;
 import com.jiaruiblog.foxglove.util.DataUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.yeauty.pojo.Session;
 
 import java.io.BufferedReader;
@@ -18,19 +19,15 @@ import java.util.stream.Collectors;
 
 import static com.jiaruiblog.foxglove.util.DataUtil.getFormatedBytes;
 
-public class Send3DStreamThread implements Runnable {
+@Slf4j
+public class Send3DThread extends SendDataThread {
 
-    private int frequency;
-    private int index;
-    private Session session;
     private List<SceneUpdate> updateList;
     private List<ModelPrimitive> models;
     private List<String> oldIdList = new ArrayList<>();
 
-    public Send3DStreamThread(int index, int frequency, Session session) {
-        this.index = index;
-        this.session = session;
-        this.frequency = frequency;
+    public Send3DThread(int index, int frequency, Session session) {
+        super(index, frequency, session);
         updateList = this.readEntityData();
         models = this.addModels();
     }
@@ -66,7 +63,7 @@ public class Send3DStreamThread implements Runnable {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("==============解析完毕，共有" + updateList.size() + "条记录======================");
+        log.info("==============解析完毕，共有" + updateList.size() + "条记录======================");
         return updateList;
     }
 
@@ -94,10 +91,10 @@ public class Send3DStreamThread implements Runnable {
     @Override
     public void run() {
         int i = 0, size = updateList.size();
-        while (true) {
+        while (running) {
             if (i >= size) {
                 i = 0;
-                System.out.println("==============播放完毕，新的轮回======================");
+                log.info("==============播放完毕，新的轮回======================");
             }
             SceneUpdate sceneUpdate = updateList.get(i);
             List<SceneEntity> entities = sceneUpdate.getEntities();
@@ -124,7 +121,7 @@ public class Send3DStreamThread implements Runnable {
 
             oldIdList = newIdList;
             i++;
-            //System.out.println(Thread.currentThread().getName() + "-----------读取第" + i + "个元素------------");
+            printLog(100);
             JSONObject jsonObject = (JSONObject) JSON.toJSON(sceneUpdate);
             byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), index);
             this.session.sendBinary(bytes);

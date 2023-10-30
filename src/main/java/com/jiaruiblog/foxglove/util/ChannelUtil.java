@@ -1,10 +1,8 @@
 package com.jiaruiblog.foxglove.util;
 
 import com.jiaruiblog.foxglove.entity.ChannelInfo;
-import com.jiaruiblog.foxglove.message.MessageGenerator;
-import com.jiaruiblog.foxglove.message.test.GPSGenerator;
-import com.jiaruiblog.foxglove.message.test.RawMessageGenerator;
-import com.jiaruiblog.foxglove.message.test.Scene3DGenerator;
+import com.jiaruiblog.foxglove.thread.*;
+import org.yeauty.pojo.Session;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,16 +29,6 @@ public class ChannelUtil {
         channel3D.setSchema(schema);
         channel3D.setSchemaEncoding("jsonschema");
 
-
-//        ChannelInfo channelImage = new ChannelInfo();
-//        channelImage.setId(2);
-//        channelImage.setTopic("/drive/image");
-//        channelImage.setEncoding("json");
-//        channelImage.setSchemaName("foxglove.CompressedImage");
-//        schema = DataUtil.loadJsonSchema("CompressedImage.json");
-//        channelImage.setSchema(schema);
-//        channelImage.setSchemaEncoding("jsonschema");
-
         ChannelInfo channelGPS = new ChannelInfo();
         channelGPS.setId(2);
         channelGPS.setTopic("/drive/gps");
@@ -50,23 +38,34 @@ public class ChannelUtil {
         channelGPS.setSchema(schema);
         channelGPS.setSchemaEncoding("jsonschema");
 
+//        ChannelInfo channelImage = new ChannelInfo();
+//        channelImage.setId(3);
+//        channelImage.setTopic("/drive/image");
+//        channelImage.setEncoding("json");
+//        channelImage.setSchemaName("foxglove.CompressedImage");
+//        schema = DataUtil.loadJsonSchema("CompressedImage.json");
+//        channelImage.setSchema(schema);
+//        channelImage.setSchemaEncoding("jsonschema");
+
 
         List<ChannelInfo> channelList = new ArrayList<>();
         channelList.add(channelMessage);
-//        channelList.add(channelImage);
         channelList.add(channel3D);
         channelList.add(channelGPS);
+        //channelList.add(channelImage);
         return channelList;
     }
 
-    public static MessageGenerator getGenerator(int channelId) {
+    public static SendDataThread getGenerator(int id, int channelId, int frequency, Session session) {
         switch (channelId) {
             case 0:
-                return new RawMessageGenerator();
+                return new SendMessageThread(id, frequency, session);
             case 1:
-                return new Scene3DGenerator();
+                return new Send3DThread(id, frequency, session);
             case 2:
-                return new GPSGenerator();
+                return new SendGPSThread(id, frequency, session);
+            case 3:
+                return new SendImageThread(id, frequency, session);
             default:
                 return null;
         }

@@ -6,12 +6,12 @@ import com.alibaba.fastjson.TypeReference;
 import com.jiaruiblog.foxglove.entity.Advertise;
 import com.jiaruiblog.foxglove.entity.ServerInfo;
 import com.jiaruiblog.foxglove.entity.Subscription;
-import com.jiaruiblog.foxglove.message.MessageGenerator;
 import com.jiaruiblog.foxglove.thread.SendDataThread;
 import com.jiaruiblog.foxglove.util.ChannelUtil;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.util.MultiValueMap;
 import org.yeauty.annotation.*;
 import org.yeauty.pojo.Session;
@@ -41,7 +41,7 @@ public class FoxgloveServer {
      */
     private Session session;
 
-    private Map<Integer, Thread> threadMap = new HashMap<>();
+    private Map<Integer, SendDataThread> threadMap = new HashMap<>();
 
     @BeforeHandshake
     public void handshake(Session session, HttpHeaders headers, @RequestParam String req,
@@ -80,6 +80,7 @@ public class FoxgloveServer {
     public void onClose(Session session) throws IOException {
         // 从对象集合中删除该连接对象
         log.info("-------one connection closed");
+        session.close();
         this.closeAllThreads();
     }
 
@@ -98,7 +99,7 @@ public class FoxgloveServer {
                 this.createThread(msg);
                 break;
             case "unsubscribe":
-                session.close();
+                this.stopThread(msg);
                 break;
         }
     }
@@ -137,29 +138,30 @@ public class FoxgloveServer {
         log.info("============开始创建基于channel的数据发送线程==============" + subscribeList);
         for (Subscription sub : subscribeList) {
             Integer channelId = sub.getChannelId();
-            MessageGenerator generator = ChannelUtil.getGenerator(channelId);
-            String threadName = "thread-channel-" + channelId;
-            Thread thread = new Thread(new SendDataThread(sub.getId(), 100, session, generator), threadName);
+            int frequency = channelId == 1 ? 30 : 100;
+            System.out.println("*************" + threadMap.containsKey(channelId));
+            SendDataThread thread = ChannelUtil.getGenerator(sub.getId(), channelId, frequency, session);
+            String threadName = "thread-" + channelId + "-" + RandomStringUtils.randomAlphabetic(6).toLowerCase();
+            thread.setName(threadName);
             thread.start();
             threadMap.put(channelId, thread);
         }
     }
 
-//    private void stopThread(JSONObject msg) {
-//        List<Integer> channelList = msg.getObject("subscriptionIds", new TypeReference<List<Integer>>() {
-//        });
-//        for (Integer channelId : channelList) {
-//            Thread thread = threadMap.remove(channelId);
-//            if (thread != null) {
-//                thread.interrupt();
-//                log.info("----------------------通道" + channelId + "对应的线程已被停止");
-//                session.close();
-//            }
-//        }
-//    }
+    private void stopThread(JSONObject msg) {
+        List<Integer> channelList = msg.getObject("subscriptionIds", new TypeReference<List<Integer>>() {
+        });
+        for (Integer channelId : channelList) {
+            SendDataThread thread = threadMap.remove(channelId);
+            if (thread != null) {
+                thread.stopThread();
+                log.info("----------------------通道" + channelId + "对应的线程已被停止");
+            }
+        }
+    }
 
     private void closeAllThreads() {
-        threadMap.forEach((k, v) -> v.interrupt());
+        threadMap.forEach((k, v) -> v.stopThread());
         threadMap.clear();
     }
 

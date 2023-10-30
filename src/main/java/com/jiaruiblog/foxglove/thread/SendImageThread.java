@@ -1,9 +1,10 @@
-package com.jiaruiblog.foxglove.thread.bak;
+package com.jiaruiblog.foxglove.thread;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jiaruiblog.foxglove.schema.CompressedImage;
 import com.jiaruiblog.foxglove.schema.Timestamp;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
@@ -14,24 +15,19 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Base64;
 
 import static com.jiaruiblog.foxglove.util.DataUtil.getFormatedBytes;
 
-public class SendCompressedImageThread implements Runnable {
+@Slf4j
+public class SendImageThread extends SendDataThread {
 
-    private int frequency;
-    private int index;
-    private Session session;
     private int MAX_COUNT = 1445;
 
     private String rtsp = "rtsp://127.0.0.1:8554/demo";
 
-    public SendCompressedImageThread(int index, int frequency, Session session) {
-        this.index = index;
-        this.session = session;
-        this.frequency = frequency;
+    public SendImageThread(int index, int frequency, Session session) {
+        super(index, frequency, session);
     }
 
     @Override
@@ -50,7 +46,6 @@ public class SendCompressedImageThread implements Runnable {
             grabber.start();
 
             Java2DFrameConverter converter = new Java2DFrameConverter();
-            int frequency = 2;
             Frame frame;
             long startTime = System.currentTimeMillis();
             long frameCount = 0;
@@ -85,9 +80,7 @@ public class SendCompressedImageThread implements Runnable {
                 // long类型不用担心溢出
                 frameCount++;
 
-                if (frameCount % 100 == 0) {
-                    System.out.println(LocalDateTime.now() + "----------------持续发送RTSP视频-------------------");
-                }
+                printLog(100);
             }
 
         } catch (FFmpegFrameGrabber.Exception e) {

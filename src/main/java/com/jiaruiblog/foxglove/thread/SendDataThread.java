@@ -1,48 +1,39 @@
 package com.jiaruiblog.foxglove.thread;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.jiaruiblog.foxglove.message.MessageGenerator;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.yeauty.pojo.Session;
 
-import static com.jiaruiblog.foxglove.util.DataUtil.getFormatedBytes;
-
+@Data
 @Slf4j
-public class SendDataThread implements Runnable {
+public class SendDataThread extends Thread {
 
-    private int frequency;
-    private int index;
-    private Session session;
-    private MessageGenerator<?> generator;
-    private int count;
+    protected int frequency;
+    protected int index;
+    protected Session session;
+    protected volatile boolean running = true;
 
-    public SendDataThread(int index, int frequency, Session session, MessageGenerator<?> generator) {
+    protected int count = 0;
+
+    public SendDataThread(int index, int frequency, Session session) {
         this.index = index;
         this.session = session;
         this.frequency = frequency;
-        this.generator = generator;
     }
 
 
-    @Override
-    public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
-            Object message = generator.consume();
-            JSONObject jsonObject = (JSONObject) JSON.toJSON(message);
-            byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), index);
-            this.session.sendBinary(bytes);
-            count++;
-            if (count == 200) {
-                log.info(Thread.currentThread().getName() + "\tsend data");
-                count = 0;
-            }
-            try {
-                Thread.sleep(frequency);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                e.printStackTrace();
-            }
+    /**
+     * 在达到阈值时打印消息
+     */
+    protected void printLog(int threshold) {
+        if (count == threshold) {
+            //log.info("------------" + Thread.currentThread().getName() + " sent data");
+            count = 0;
         }
+        count++;
+    }
+
+    public void stopThread() {
+        this.running = false;
     }
 }
