@@ -41,6 +41,8 @@ public class FoxgloveServer {
      */
     private Session session;
 
+    private String code;
+
     private Map<Integer, SendDataThread> threadMap = new HashMap<>();
 
     @BeforeHandshake
@@ -107,8 +109,15 @@ public class FoxgloveServer {
     @OnBinary
     public void onBinary(Session session, byte[] bytes) {
         // 这里接收到用户指令
-        String message = new String(Arrays.copyOfRange(bytes, 5, bytes.length));
-        log.info("--------binary message:\t" + message);
+        String data = new String(Arrays.copyOfRange(bytes, 5, bytes.length));
+        JSONObject message = JSON.parseObject(data);
+        log.info("--------binary message:\t" + data);
+        code = message.getString("code");
+        threadMap.forEach((k, v) -> {
+            if (k == 0) {
+                v.setCode(code);
+            }
+        });
         session.sendBinary(bytes);
     }
 
@@ -142,6 +151,7 @@ public class FoxgloveServer {
             SendDataThread thread = ChannelUtil.getGenerator(sub.getId(), channelId, frequency, session);
             String threadName = "thread-" + channelId + "-" + RandomStringUtils.randomAlphabetic(6).toLowerCase();
             thread.setName(threadName);
+            thread.setCode(code);
             thread.start();
             threadMap.put(channelId, thread);
         }

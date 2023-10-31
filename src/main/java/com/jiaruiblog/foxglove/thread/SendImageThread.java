@@ -49,7 +49,7 @@ public class SendImageThread extends SendDataThread {
             Frame frame;
             long startTime = System.currentTimeMillis();
             long frameCount = 0;
-            while ((frame = grabber.grabImage()) != null) {
+            while ((frame = grabber.grabImage()) != null && running) {
                 // 按照指定频率处理帧
                 if ((System.currentTimeMillis() - startTime) < (frameCount * 1000 / frequency)) {
                     continue;

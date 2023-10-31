@@ -21,7 +21,11 @@ public class SendMessageThread extends SendDataThread {
 
         while (running) {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("msg", "Hello at " + LocalTime.now());
+            String message = "Hello at " + LocalTime.now();
+            if (code != null) {
+                message += " from " + code;
+            }
+            jsonObject.put("msg", message);
 
             jsonObject.put("count", new Random().nextInt(1000));
             jsonObject.put("number", new Random().nextInt(1000));
