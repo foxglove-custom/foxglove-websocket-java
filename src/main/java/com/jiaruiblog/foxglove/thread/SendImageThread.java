@@ -32,6 +32,7 @@ public class SendImageThread extends SendDataThread {
 
     @Override
     public void run() {
+        rtsp="rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mp4";
         sendImageByRTSP();
     }
 
@@ -40,7 +41,7 @@ public class SendImageThread extends SendDataThread {
         try {
             grabber = FFmpegFrameGrabber.createDefault(rtsp);
             grabber.setOption("rtsp_transport", "tcp"); // 使用tcp的方式，不然会丢包很严重
-            grabber.setOption("stimeout", "500000");
+            grabber.setOption("stimeout", "50000000");
             //设置缓存大小，提高画质、减少卡顿花屏
             grabber.setOption("buffer_size", "1024000");
             grabber.start();
@@ -74,7 +75,7 @@ public class SendImageThread extends SendDataThread {
                 compressedImage.setTimestamp(timestamp);
 
                 JSONObject jsonObject = (JSONObject) JSON.toJSON(compressedImage);
-                byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), compressedImage.getTimestamp().getNsec(), index);
+                byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), index);
                 this.session.sendBinary(bytes);
 
                 // long类型不用担心溢出
@@ -99,14 +100,14 @@ public class SendImageThread extends SendDataThread {
     private void sendImageByLocal() {
         try {
             int count = 0;
-            while (true) {
+            while (running) {
                 count++;
                 if (count > MAX_COUNT) {
                     count = count % MAX_COUNT;
                 }
                 CompressedImage rawImage = readImageLocal(count);
                 JSONObject jsonObject = (JSONObject) JSON.toJSON(rawImage);
-                byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), rawImage.getTimestamp().getNsec(), index);
+                byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), index);
                 this.session.sendBinary(bytes);
                 Thread.sleep(frequency);
             }

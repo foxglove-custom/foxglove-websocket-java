@@ -52,7 +52,7 @@ public class SendGPSThread extends SendDataThread {
         while (running) {
             if (i >= size) {
                 i = 0;
-                log.info(Thread.currentThread() + "==============播放完毕，新的轮回======================");
+                log.info(Thread.currentThread().getName() + "==============播放完毕，新的轮回======================");
             }
             LocationFix locationFix = gpsList.get(i);
             i++;

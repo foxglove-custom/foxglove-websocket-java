@@ -28,7 +28,7 @@ public class SendDataThread extends Thread {
      */
     protected void printLog(int threshold) {
         if (count == threshold) {
-            //log.info("------------" + Thread.currentThread().getName() + " sent data");
+            log.info("------------" + Thread.currentThread().getName() + " sent data");
             count = 0;
         }
         count++;
