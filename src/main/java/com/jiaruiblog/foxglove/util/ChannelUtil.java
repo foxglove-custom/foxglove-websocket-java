@@ -3,6 +3,7 @@ package com.jiaruiblog.foxglove.util;
 import com.jiaruiblog.foxglove.entity.ChannelInfo;
 import com.jiaruiblog.foxglove.thread.SendDataThread;
 import com.jiaruiblog.foxglove.thread.SendImageThread;
+import com.jiaruiblog.foxglove.thread.kafka.Send3DKafkaThread;
 import com.jiaruiblog.foxglove.thread.kafka.SendGPSKafkaThread;
 import com.jiaruiblog.foxglove.thread.kafka.SendMessageKafkaThread;
 import com.jiaruiblog.foxglove.thread.test.Send3DThread;
@@ -82,7 +83,7 @@ public class ChannelUtil {
             case 0:
                 return new SendMessageKafkaThread(id, frequency, session);
             case 1:
-                return new Send3DThread(id, frequency, session);
+                return new Send3DKafkaThread(id, frequency, session);
             case 2:
                 return new SendGPSKafkaThread(id, frequency, session);
             case 3:
