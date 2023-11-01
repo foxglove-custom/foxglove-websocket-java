@@ -111,14 +111,8 @@ public class FoxgloveServer {
         // 这里接收到用户指令
         String data = new String(Arrays.copyOfRange(bytes, 5, bytes.length));
         JSONObject message = JSON.parseObject(data);
-        log.info("--------binary message:\t" + data);
+        log.info("--------binary message:\t" + message);
         code = message.getString("code");
-        threadMap.forEach((k, v) -> {
-            if (k == 0) {
-                v.setCode(code);
-            }
-        });
-        session.sendBinary(bytes);
     }
 
     @OnEvent
@@ -148,7 +142,7 @@ public class FoxgloveServer {
         for (Subscription sub : subscribeList) {
             Integer channelId = sub.getChannelId();
             int frequency = channelId == 3 ? 50 : 100;
-            SendDataThread thread = ChannelUtil.getGenerator(sub.getId(), channelId, frequency, session);
+            SendDataThread thread = ChannelUtil.getKafkaSendThread(sub.getId(), channelId, frequency, session);
             String threadName = "thread-" + channelId + "-" + RandomStringUtils.randomAlphabetic(6).toLowerCase();
             thread.setName(threadName);
             thread.setCode(code);

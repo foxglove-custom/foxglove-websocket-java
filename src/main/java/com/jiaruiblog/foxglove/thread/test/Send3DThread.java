@@ -1,8 +1,9 @@
-package com.jiaruiblog.foxglove.thread;
+package com.jiaruiblog.foxglove.thread.test;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jiaruiblog.foxglove.schema.*;
+import com.jiaruiblog.foxglove.thread.SendDataThread;
 import com.jiaruiblog.foxglove.util.DataUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.yeauty.pojo.Session;

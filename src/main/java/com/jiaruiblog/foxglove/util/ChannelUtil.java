@@ -1,7 +1,12 @@
 package com.jiaruiblog.foxglove.util;
 
 import com.jiaruiblog.foxglove.entity.ChannelInfo;
-import com.jiaruiblog.foxglove.thread.*;
+import com.jiaruiblog.foxglove.thread.SendDataThread;
+import com.jiaruiblog.foxglove.thread.SendImageThread;
+import com.jiaruiblog.foxglove.thread.kafka.SendMessageKafkaThread;
+import com.jiaruiblog.foxglove.thread.test.Send3DThread;
+import com.jiaruiblog.foxglove.thread.test.SendGPSThread;
+import com.jiaruiblog.foxglove.thread.test.SendMessageThread;
 import org.yeauty.pojo.Session;
 
 import java.util.ArrayList;
@@ -56,10 +61,25 @@ public class ChannelUtil {
         return channelList;
     }
 
-    public static SendDataThread getGenerator(int id, int channelId, int frequency, Session session) {
+    public static SendDataThread getTestSendThread(int id, int channelId, int frequency, Session session) {
         switch (channelId) {
             case 0:
                 return new SendMessageThread(id, frequency, session);
+            case 1:
+                return new Send3DThread(id, frequency, session);
+            case 2:
+                return new SendGPSThread(id, frequency, session);
+            case 3:
+                return new SendImageThread(id, frequency, session);
+            default:
+                return null;
+        }
+    }
+
+    public static SendDataThread getKafkaSendThread(int id, int channelId, int frequency, Session session) {
+        switch (channelId) {
+            case 0:
+                return new SendMessageKafkaThread(id, frequency, session);
             case 1:
                 return new Send3DThread(id, frequency, session);
             case 2:
