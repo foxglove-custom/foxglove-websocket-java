@@ -3,13 +3,13 @@ package com.jiaruiblog.foxglove.thread.bak;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jiaruiblog.foxglove.schema.RawImage;
+import com.jiaruiblog.foxglove.util.DateUtil;
 import org.apache.commons.io.IOUtils;
 import org.yeauty.pojo.Session;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.concurrent.TimeUnit;
@@ -64,12 +64,7 @@ public class SendRawImageThread implements Runnable {
             image.setHeight(height);
             image.setEncoding("rgb8");
             image.setFrame_id("main");
-            RawImage.Timestamp timestamp = image.new Timestamp();
-            int nano = Instant.now().getNano();
-            long second = Instant.now().getEpochSecond();
-            timestamp.setSec((int) second);
-            timestamp.setNsec(nano);
-            image.setTimestamp(timestamp);
+            image.setTimestamp(DateUtil.createTimestamp());
             byte[] encode = Base64.getEncoder().encode(newBytes);
             String data = new String(encode);
             image.setData(data);

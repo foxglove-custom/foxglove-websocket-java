@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jiaruiblog.foxglove.schema.CompressedImage;
 import com.jiaruiblog.foxglove.schema.Timestamp;
+import com.jiaruiblog.foxglove.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
@@ -14,7 +15,6 @@ import org.yeauty.pojo.Session;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.time.Instant;
 import java.util.Base64;
 
 import static com.jiaruiblog.foxglove.util.DataUtil.getFormatedBytes;
@@ -32,7 +32,7 @@ public class SendImageThread extends SendDataThread {
 
     @Override
     public void run() {
-        rtsp="rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mp4";
+        rtsp = "rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mp4";
         sendImageByRTSP();
     }
 
@@ -57,11 +57,7 @@ public class SendImageThread extends SendDataThread {
                 }
 
                 CompressedImage compressedImage = new CompressedImage();
-                Timestamp timestamp = new Timestamp();
-                int nano = Instant.now().getNano();
-                long second = Instant.now().getEpochSecond();
-                timestamp.setSec((int) second);
-                timestamp.setNsec(nano);
+                Timestamp timestamp = DateUtil.createTimestamp();
 
                 BufferedImage image = converter.getBufferedImage(frame);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -120,12 +116,7 @@ public class SendImageThread extends SendDataThread {
         CompressedImage image = new CompressedImage();
         String filePath = "E:\\foxglove\\image_rtsp\\" + index + ".png";
         try (InputStream is = new FileInputStream(filePath)) {
-            Timestamp timestamp = new Timestamp();
-            int nano = Instant.now().getNano();
-            long second = Instant.now().getEpochSecond();
-            timestamp.setSec((int) second);
-            timestamp.setNsec(nano);
-            image.setTimestamp(timestamp);
+            Timestamp timestamp = DateUtil.createTimestamp();
 
             byte[] bytes = IOUtils.toByteArray(is);
             image.setFormat("jpeg");

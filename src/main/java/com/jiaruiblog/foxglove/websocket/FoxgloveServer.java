@@ -145,7 +145,7 @@ public class FoxgloveServer {
             SendDataThread thread = ChannelUtil.getKafkaSendThread(sub.getId(), channelId, frequency, session);
             String threadName = "thread-" + channelId + "-" + RandomStringUtils.randomAlphabetic(6).toLowerCase();
             thread.setName(threadName);
-            thread.setCode(code);
+            thread.setCode(code == null ? "10000" : code);
             thread.start();
             threadMap.put(channelId, thread);
         }

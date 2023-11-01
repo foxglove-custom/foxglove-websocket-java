@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.jiaruiblog.foxglove.schema.*;
 import com.jiaruiblog.foxglove.thread.SendDataThread;
 import com.jiaruiblog.foxglove.util.DataUtil;
+import com.jiaruiblog.foxglove.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.yeauty.pojo.Session;
 
@@ -12,7 +13,6 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -70,12 +70,7 @@ public class Send3DThread extends SendDataThread {
 
     private SceneEntity createEntity(String id, String frameId, String metaDataValue, Timestamp ts) {
         if (ts == null) {
-            Timestamp timestamp = new Timestamp();
-            int nano = Instant.now().getNano();
-            long second = Instant.now().getEpochSecond();
-            timestamp.setSec((int) second);
-            timestamp.setNsec(nano);
-            ts = timestamp;
+            ts = DateUtil.createTimestamp();
         }
 
         List<KeyValuePair> metadata = Arrays.asList(new KeyValuePair("category", metaDataValue));

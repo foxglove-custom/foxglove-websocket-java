@@ -1,8 +1,8 @@
 package com.jiaruiblog.foxglove.thread.kafka;
 
 import com.alibaba.fastjson.JSONObject;
-import com.jiaruiblog.foxglove.kafka.deserializer.RawMessageDeserializer;
-import com.jiaruiblog.foxglove.schema.RawMessage;
+import com.jiaruiblog.foxglove.kafka.deserializer.LocationFixDeserializer;
+import com.jiaruiblog.foxglove.schema.LocationFix;
 import com.jiaruiblog.foxglove.thread.SendDataThread;
 import com.jiaruiblog.foxglove.util.KafkaUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -18,30 +18,30 @@ import java.util.Properties;
 import static com.jiaruiblog.foxglove.util.DataUtil.getFormatedBytes;
 
 @Slf4j
-public class SendMessageKafkaThread extends SendDataThread {
+public class SendGPSKafkaThread extends SendDataThread {
 
-    public SendMessageKafkaThread(int index, int frequency, Session session) {
+    public SendGPSKafkaThread(int index, int frequency, Session session) {
         super(index, frequency, session);
     }
 
     @Override
     public void run() {
-        Properties props = KafkaUtil.getConsumerProperties("group-1", RawMessageDeserializer.class.getName());
-        String topic = "raw_message";
-        try (KafkaConsumer<String, RawMessage> consumer = new KafkaConsumer<>(props)) {
+        Properties props = KafkaUtil.getConsumerProperties("group-1", LocationFixDeserializer.class.getName());
+        String topic = "drive_gps";
+        try (KafkaConsumer<String, LocationFix> consumer = new KafkaConsumer<>(props)) {
             consumer.subscribe(Arrays.asList(topic));
             int i = 0;
             while (running) {
-                ConsumerRecords<String, RawMessage> records = consumer.poll(Duration.ofSeconds(1));
-                for (ConsumerRecord<String, RawMessage> record : records) {
-                    RawMessage message = record.value();
-                    JSONObject jsonObject = (JSONObject) JSONObject.toJSON(message);
+                ConsumerRecords<String, LocationFix> records = consumer.poll(Duration.ofSeconds(1));
+                for (ConsumerRecord<String, LocationFix> record : records) {
+                    LocationFix gps = record.value();
+                    JSONObject jsonObject = (JSONObject) JSONObject.toJSON(gps);
                     byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), index);
                     this.session.sendBinary(bytes);
                     Thread.sleep(frequency);
                     if (i == 200) {
                         i = 0;
-                        log.info("----------------kafka raw message:\t" + message);
+                        log.info("----------------kafka gps message:\t" + gps);
                     }
                     i++;
                 }
