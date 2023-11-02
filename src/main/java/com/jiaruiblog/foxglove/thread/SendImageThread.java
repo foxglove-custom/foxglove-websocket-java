@@ -17,7 +17,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Base64;
 
-import static com.jiaruiblog.foxglove.util.DataUtil.getFormatedBytes;
+import static com.jiaruiblog.foxglove.util.DataUtil.getFormattedBytes;
 
 @Slf4j
 public class SendImageThread extends SendDataThread {
@@ -71,7 +71,7 @@ public class SendImageThread extends SendDataThread {
                 compressedImage.setTimestamp(timestamp);
 
                 JSONObject jsonObject = (JSONObject) JSON.toJSON(compressedImage);
-                byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), index);
+                byte[] bytes = getFormattedBytes(jsonObject.toJSONString().getBytes(), index);
                 this.session.sendBinary(bytes);
 
                 // long类型不用担心溢出
@@ -79,7 +79,7 @@ public class SendImageThread extends SendDataThread {
 
                 printLog(100);
             }
-
+            log.info("--------------------图片发送线程停止运行: " + Thread.currentThread().getName());
         } catch (FFmpegFrameGrabber.Exception e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
@@ -103,7 +103,7 @@ public class SendImageThread extends SendDataThread {
                 }
                 CompressedImage rawImage = readImageLocal(count);
                 JSONObject jsonObject = (JSONObject) JSON.toJSON(rawImage);
-                byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), index);
+                byte[] bytes = getFormattedBytes(jsonObject.toJSONString().getBytes(), index);
                 this.session.sendBinary(bytes);
                 Thread.sleep(frequency);
             }

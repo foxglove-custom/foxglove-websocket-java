@@ -17,7 +17,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Properties;
 
-import static com.jiaruiblog.foxglove.util.DataUtil.getFormatedBytes;
+import static com.jiaruiblog.foxglove.util.DataUtil.getFormattedBytes;
 
 @Slf4j
 public class SendGPSKafkaThread extends SendDataThread {
@@ -44,7 +44,7 @@ public class SendGPSKafkaThread extends SendDataThread {
                         continue;
                     }
                     JSONObject jsonObject = (JSONObject) JSONObject.toJSON(gps);
-                    byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), index);
+                    byte[] bytes = getFormattedBytes(jsonObject.toJSONString().getBytes(), index);
                     this.session.sendBinary(bytes);
                     Thread.sleep(frequency);
                     printLog();

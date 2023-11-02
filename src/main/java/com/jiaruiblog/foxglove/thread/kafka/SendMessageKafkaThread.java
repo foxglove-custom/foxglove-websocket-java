@@ -16,7 +16,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Properties;
 
-import static com.jiaruiblog.foxglove.util.DataUtil.getFormatedBytes;
+import static com.jiaruiblog.foxglove.util.DataUtil.getFormattedBytes;
 
 @Slf4j
 public class SendMessageKafkaThread extends SendDataThread {
@@ -40,7 +40,7 @@ public class SendMessageKafkaThread extends SendDataThread {
                         message.setChassisCode(code);
                     }
                     JSONObject jsonObject = (JSONObject) JSONObject.toJSON(message);
-                    byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), index);
+                    byte[] bytes = getFormattedBytes(jsonObject.toJSONString().getBytes(), index);
                     this.session.sendBinary(bytes);
                     Thread.sleep(frequency);
                     super.printLog();

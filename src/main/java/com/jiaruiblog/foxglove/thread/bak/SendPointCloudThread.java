@@ -6,6 +6,7 @@ import com.jiaruiblog.foxglove.schema.PackedElement;
 import com.jiaruiblog.foxglove.schema.PointCloud;
 import com.jiaruiblog.foxglove.schema.Timestamp;
 import com.jiaruiblog.foxglove.thread.SendDataThread;
+import com.jiaruiblog.foxglove.util.DataUtil;
 import com.jiaruiblog.foxglove.util.DateUtil;
 import com.jiaruiblog.foxglove.util.PointCloudUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -13,7 +14,7 @@ import org.yeauty.pojo.Session;
 
 import java.util.Base64;
 
-import static com.jiaruiblog.foxglove.util.DataUtil.getFormatedBytes;
+import static com.jiaruiblog.foxglove.util.DataUtil.getFormattedBytes;
 
 public class SendPointCloudThread extends SendDataThread {
 
@@ -36,7 +37,7 @@ public class SendPointCloudThread extends SendDataThread {
             PointCloud pointCloud = createPointCloud(fileName);
 
             JSONObject jsonObject = (JSONObject) JSON.toJSON(pointCloud);
-            byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), pointCloud.timestamp.getNsec(), index);
+            byte[] bytes = DataUtil.getFormattedBytes(jsonObject.toJSONString().getBytes(), pointCloud.timestamp.getNsec(), index);
             this.session.sendBinary(bytes);
             i++;
             printLog(100);

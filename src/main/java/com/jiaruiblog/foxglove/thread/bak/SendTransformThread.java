@@ -9,7 +9,7 @@ import com.jiaruiblog.foxglove.schema.Vector3;
 import com.jiaruiblog.foxglove.util.DateUtil;
 import org.yeauty.pojo.Session;
 
-import static com.jiaruiblog.foxglove.util.DataUtil.getFormatedBytes;
+import static com.jiaruiblog.foxglove.util.DataUtil.getFormattedBytes;
 
 @Deprecated
 public class SendTransformThread implements Runnable {
@@ -45,7 +45,7 @@ public class SendTransformThread implements Runnable {
 
             JSONObject jsonObject = (JSONObject) JSON.toJSON(transform);
 
-            byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), index);
+            byte[] bytes = getFormattedBytes(jsonObject.toJSONString().getBytes(), index);
             this.session.sendBinary(bytes);
             try {
                 Thread.sleep(frequency);
