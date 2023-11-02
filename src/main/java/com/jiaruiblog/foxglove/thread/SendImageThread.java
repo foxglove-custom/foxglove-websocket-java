@@ -49,6 +49,7 @@ public class SendImageThread extends SendDataThread {
             Frame frame;
             long startTime = System.currentTimeMillis();
             long frameCount = 0;
+            String imageFormat = "jpg";
             while ((frame = grabber.grabImage()) != null && running) {
                 // 按照指定频率处理帧
                 if ((System.currentTimeMillis() - startTime) < (frameCount * 1000 / frequency)) {
@@ -60,13 +61,13 @@ public class SendImageThread extends SendDataThread {
 
                 BufferedImage image = converter.getBufferedImage(frame);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                ImageIO.write(image, "png", baos);
+                ImageIO.write(image, imageFormat, baos);
 
                 byte[] encode = Base64.getEncoder().encode(baos.toByteArray());
                 String data = new String(encode);
                 compressedImage.setData(data);
-                compressedImage.setFormat("png");
-                compressedImage.setFrame_id("main");
+                compressedImage.setFormat(imageFormat);
+                compressedImage.setFrame_id("main_image");
                 compressedImage.setTimestamp(timestamp);
 
                 JSONObject jsonObject = (JSONObject) JSON.toJSON(compressedImage);
