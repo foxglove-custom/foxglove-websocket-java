@@ -29,7 +29,7 @@ public class SendGPSThread extends SendDataThread {
 
     private List<LocationFix> readMapData() {
         List<LocationFix> dataList = new ArrayList<>();
-        String file = "E:\\foxglove\\shanghai_gps_2.data";
+        String file = "E:\\foxglove\\gps_data\\shanghai_gps_2.data";
         String str;
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             while ((str = br.readLine()) != null) {

@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.TopicPartition;
 import org.yeauty.pojo.Session;
 
 import java.time.Duration;
@@ -27,17 +28,20 @@ public class SendGPSKafkaThread extends SendDataThread {
 
     @Override
     public void run() {
-        Properties props = KafkaUtil.getConsumerProperties("group-1", LocationFixDeserializer.class.getName());
-        String topic = "drive_gps";
+        Properties props = KafkaUtil.getConsumerProperties("group-1-a", LocationFixDeserializer.class.getName());
+        String topic = "drive_gps_mixed";
         try (KafkaConsumer<String, LocationFix> consumer = new KafkaConsumer<>(props)) {
-            consumer.subscribe(Arrays.asList(topic));
-            boolean validCode = StringUtils.isNotBlank(code);
+            TopicPartition partition = new TopicPartition(topic, 0);
+            consumer.assign(Arrays.asList(partition));
+            if (StringUtils.isBlank(code)) {
+                code = "10000";
+            }
             while (running) {
                 ConsumerRecords<String, LocationFix> records = consumer.poll(Duration.ofSeconds(1));
                 for (ConsumerRecord<String, LocationFix> record : records) {
                     LocationFix gps = record.value();
-                    if (validCode) {
-                        gps.setChassisCode(code);
+                    if (!code.equals(gps.getChassisCode())) {
+                        continue;
                     }
                     JSONObject jsonObject = (JSONObject) JSONObject.toJSON(gps);
                     byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), index);
