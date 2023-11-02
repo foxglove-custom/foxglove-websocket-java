@@ -113,6 +113,7 @@ public class FoxgloveServer {
         JSONObject message = JSON.parseObject(data);
         log.info("--------binary message:\t" + message);
         code = message.getString("code");
+        threadMap.forEach((k, v) -> v.setCode(code));
     }
 
     @OnEvent

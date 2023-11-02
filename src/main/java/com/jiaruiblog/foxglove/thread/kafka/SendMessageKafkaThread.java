@@ -6,6 +6,7 @@ import com.jiaruiblog.foxglove.schema.RawMessage;
 import com.jiaruiblog.foxglove.thread.SendDataThread;
 import com.jiaruiblog.foxglove.util.KafkaUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -30,20 +31,19 @@ public class SendMessageKafkaThread extends SendDataThread {
         String topic = "raw_message";
         try (KafkaConsumer<String, RawMessage> consumer = new KafkaConsumer<>(props)) {
             consumer.subscribe(Arrays.asList(topic));
-            int i = 0;
+            boolean validCode = StringUtils.isNotBlank(code);
             while (running) {
                 ConsumerRecords<String, RawMessage> records = consumer.poll(Duration.ofSeconds(1));
                 for (ConsumerRecord<String, RawMessage> record : records) {
                     RawMessage message = record.value();
+                    if (validCode) {
+                        message.setChassisCode(code);
+                    }
                     JSONObject jsonObject = (JSONObject) JSONObject.toJSON(message);
                     byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), index);
                     this.session.sendBinary(bytes);
                     Thread.sleep(frequency);
-                    if (i == 200) {
-                        i = 0;
-                        log.info("----------------kafka raw message:\t" + message);
-                    }
-                    i++;
+                    super.printLog();
                 }
             }
         } catch (InterruptedException e) {

@@ -6,6 +6,7 @@ import com.jiaruiblog.foxglove.schema.LocationFix;
 import com.jiaruiblog.foxglove.thread.SendDataThread;
 import com.jiaruiblog.foxglove.util.KafkaUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -30,20 +31,19 @@ public class SendGPSKafkaThread extends SendDataThread {
         String topic = "drive_gps";
         try (KafkaConsumer<String, LocationFix> consumer = new KafkaConsumer<>(props)) {
             consumer.subscribe(Arrays.asList(topic));
-            int i = 0;
+            boolean validCode = StringUtils.isNotBlank(code);
             while (running) {
                 ConsumerRecords<String, LocationFix> records = consumer.poll(Duration.ofSeconds(1));
                 for (ConsumerRecord<String, LocationFix> record : records) {
                     LocationFix gps = record.value();
+                    if (validCode) {
+                        gps.setChassisCode(code);
+                    }
                     JSONObject jsonObject = (JSONObject) JSONObject.toJSON(gps);
                     byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), index);
                     this.session.sendBinary(bytes);
                     Thread.sleep(frequency);
-                    if (i == 200) {
-                        i = 0;
-                        log.info("----------------kafka gps message:\t" + gps);
-                    }
-                    i++;
+                    printLog();
                 }
             }
         } catch (InterruptedException e) {

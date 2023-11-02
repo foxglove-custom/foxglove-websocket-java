@@ -16,6 +16,8 @@ public class SendDataThread extends Thread {
 
     protected int count = 0;
 
+    private static final int PRINT_LOG_THRESHOLD = 200;
+
     public SendDataThread(int index, int frequency, Session session) {
         this.index = index;
         this.session = session;
@@ -28,10 +30,17 @@ public class SendDataThread extends Thread {
      */
     protected void printLog(int threshold) {
         if (count == threshold) {
-            log.info("------------" + Thread.currentThread().getName() + " sent data");
+            log.info("------------" + Thread.currentThread().getName() + " sent data---------");
             count = 0;
         }
         count++;
+    }
+
+    /**
+     * 在达到阈值时打印消息
+     */
+    protected void printLog() {
+        printLog(PRINT_LOG_THRESHOLD);
     }
 
     public void stopThread() {

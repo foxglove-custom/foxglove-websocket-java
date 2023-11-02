@@ -6,6 +6,7 @@ import com.jiaruiblog.foxglove.schema.SceneUpdate;
 import com.jiaruiblog.foxglove.thread.SendDataThread;
 import com.jiaruiblog.foxglove.util.KafkaUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -30,20 +31,19 @@ public class Send3DKafkaThread extends SendDataThread {
         String topic = "drive_3d";
         try (KafkaConsumer<String, SceneUpdate> consumer = new KafkaConsumer<>(props)) {
             consumer.subscribe(Arrays.asList(topic));
-            int i = 0;
+            boolean validCode = StringUtils.isNotBlank(code);
             while (running) {
                 ConsumerRecords<String, SceneUpdate> records = consumer.poll(Duration.ofSeconds(1));
                 for (ConsumerRecord<String, SceneUpdate> record : records) {
                     SceneUpdate update = record.value();
+                    if (validCode) {
+                        update.setChassisCode(code);
+                    }
                     JSONObject jsonObject = (JSONObject) JSONObject.toJSON(update);
                     byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), index);
                     this.session.sendBinary(bytes);
                     Thread.sleep(frequency);
-                    if (i == 200) {
-                        i = 0;
-                        log.info("----------------kafka 3d message:");
-                    }
-                    i++;
+                    printLog();
                 }
             }
         } catch (InterruptedException e) {
