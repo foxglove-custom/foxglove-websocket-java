@@ -32,7 +32,6 @@ public class SendImageThread extends SendDataThread {
 
     @Override
     public void run() {
-        rtsp = "rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mp4";
         sendImageByRTSP();
     }
 
