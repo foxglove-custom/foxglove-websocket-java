@@ -26,11 +26,4 @@ public class RawImage {
 
     private String data;
 
-    @Data
-    public class Timestamp {
-        Integer sec;
-
-        Integer nsec;
-    }
-
 }

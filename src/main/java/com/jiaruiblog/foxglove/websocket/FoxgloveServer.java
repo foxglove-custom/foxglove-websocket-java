@@ -1,21 +1,25 @@
 package com.jiaruiblog.foxglove.websocket;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.jiaruiblog.foxglove.entity.Advertise;
 import com.jiaruiblog.foxglove.entity.ServerInfo;
-import com.jiaruiblog.foxglove.thread.SendSceneUpdateStreamThread;
-import com.jiaruiblog.foxglove.thread.SendTransformThread;
+import com.jiaruiblog.foxglove.entity.Subscription;
+import com.jiaruiblog.foxglove.thread.SendDataThread;
 import com.jiaruiblog.foxglove.util.ChannelUtil;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.timeout.IdleStateEvent;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.util.MultiValueMap;
 import org.yeauty.annotation.*;
 import org.yeauty.pojo.Session;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,6 +29,7 @@ import java.util.Map;
  * @Date 2023/7/31 21:55
  * @Version 1.0
  **/
+@Slf4j
 @ServerEndpoint(port = "8767")
 public class FoxgloveServer {
 
@@ -36,43 +41,30 @@ public class FoxgloveServer {
      */
     private Session session;
 
-    /**
-     * 标示连接用户的唯一信息
-     *
-     * @author 罗佳瑞
-     * @date 2022/04/22
-     */
-    private String uid;
+    private String code;
 
-    private boolean connected;
+    private Map<Integer, SendDataThread> threadMap = new HashMap<>();
 
     @BeforeHandshake
     public void handshake(Session session, HttpHeaders headers, @RequestParam String req,
                           @RequestParam MultiValueMap reqMap, @PathVariable String uid, @PathVariable Map pathMap) {
-
-//        String submitedToken = headers.get("sec-websocket-protocol");
-//        System.out.println("token信息" + submitedToken);
-
-
-        System.out.println("session信息" + session.toString());
+        log.info("----------session信息" + session.toString());
         session.setSubprotocols("foxglove.websocket.v1");
 
-        // TODO 未实现避免同一个客户端连接用户的方法，前端避免重复连接
+        this.closeAllThreads();
     }
 
     @OnOpen
     public void onOpen(Session session, HttpHeaders headers, @RequestParam String req,
                        @RequestParam MultiValueMap reqMap, @PathVariable String uid, @PathVariable Map pathMap) {
-        System.out.println("这是第一次新的链接 ---》 new connection");
-        System.out.println("返回的信息 " + req);
+        log.info("这是一次新的链接 ---》 new connection");
 
         this.session = session;
         // 指定的用户信息赋给uid信息
-        this.uid = uid;
 
         ServerInfo serverInfo = new ServerInfo();
         serverInfo.setOp("serverInfo");
-        serverInfo.setName("example server");
+        serverInfo.setName("foxglove data render");
         serverInfo.setCapabilities(Arrays.asList("clientPublish", "services"));
         serverInfo.setSupportedEncodings(Arrays.asList("json"));
 
@@ -89,7 +81,9 @@ public class FoxgloveServer {
     @OnClose
     public void onClose(Session session) throws IOException {
         // 从对象集合中删除该连接对象
-        System.out.println("one connection closed");
+        log.info("-------one connection closed");
+        session.close();
+        this.closeAllThreads();
     }
 
     @OnError
@@ -99,49 +93,27 @@ public class FoxgloveServer {
 
     @OnMessage
     public void onMessage(Session session, String message) {
-        System.out.println("接受到消息" + message);
-
         JSONObject msg = JSON.parseObject(message);
-        Object op = msg.get("op");
-        System.out.println("-------------op:\t" + op + "\t" + connected);
-        boolean opCheck = "subscribe".equals(op);
-        if (opCheck && !connected) {
-            System.out.println("----------开启多线程，循环发送-------------");
-            connected = true;
-            JSONArray subscriptions = msg.getJSONArray("subscriptions");
-            System.out.println("subscriptions: " + subscriptions);
-
-//            Thread sendCountThread = new Thread(new SendCountThread(0, session));
-//            sendCountThread.start();
-
-            Thread sendSceneUpdateThread = new Thread(new SendSceneUpdateStreamThread(0, 100, session));
-            sendSceneUpdateThread.start();
-
-//            Thread sendSceneUpdateThread = new Thread(new SendSceneUpdateSimulateThread(0, 500, session));
-//            sendSceneUpdateThread.start();
-
-//            Thread sendTransformThread = new Thread(new SendTransformThread(0, 100, session));
-//            sendTransformThread.start();
-
-//            Thread sendRawImageThread = new Thread(new SendRawImageThread(0, session));
-//            sendRawImageThread.start();
-
-//            Thread sendCompressedImageThread = new Thread(new SendCompressedImageThread(0, 30, session));
-//            sendCompressedImageThread.start();
-
-//            Thread sendPointCloudThread = new Thread(new SendPointCloudThread(1, 50, session));
-//            sendPointCloudThread.start();
+        String op = msg.getString("op");
+        log.info("-------------on open msg:\t" + message);
+        switch (op) {
+            case "subscribe":
+                this.createThread(msg);
+                break;
+            case "unsubscribe":
+                this.stopThread(msg);
+                break;
         }
     }
-
 
     @OnBinary
     public void onBinary(Session session, byte[] bytes) {
         // 这里接收到用户指令
-        for (byte b : bytes) {
-            System.out.println("----byte:\t" + b);
-        }
-        session.sendBinary(bytes);
+        String data = new String(Arrays.copyOfRange(bytes, 5, bytes.length));
+        JSONObject message = JSON.parseObject(data);
+        log.info("--------binary message:\t" + message);
+        code = message.getString("code");
+        threadMap.forEach((k, v) -> v.setCode(code));
     }
 
     @OnEvent
@@ -150,13 +122,13 @@ public class FoxgloveServer {
             IdleStateEvent idleStateEvent = (IdleStateEvent) evt;
             switch (idleStateEvent.state()) {
                 case READER_IDLE:
-                    System.out.println("read idle");
+                    log.info("read idle");
                     break;
                 case WRITER_IDLE:
-                    System.out.println("write idle");
+                    log.info("write idle");
                     break;
                 case ALL_IDLE:
-                    System.out.println("all idle");
+                    log.info("all idle");
                     break;
                 default:
                     break;
@@ -164,8 +136,37 @@ public class FoxgloveServer {
         }
     }
 
-    public void sendMessage(String message) throws IOException {
-        this.session.sendText(message);
+    private void createThread(JSONObject msg) {
+        List<Subscription> subscribeList = msg.getObject("subscriptions", new TypeReference<List<Subscription>>() {
+        });
+        log.info("============开始创建基于channel的数据发送线程==============" + subscribeList);
+        for (Subscription sub : subscribeList) {
+            Integer channelId = sub.getChannelId();
+            int frequency = channelId == 3 ? 50 : 100;
+            SendDataThread thread = ChannelUtil.getKafkaSendThread(sub.getId(), channelId, frequency, session);
+            String threadName = "thread-" + channelId + "-" + RandomStringUtils.randomAlphabetic(6).toLowerCase();
+            thread.setName(threadName);
+            thread.setCode(code == null ? "10000" : code);
+            thread.start();
+            threadMap.put(channelId, thread);
+        }
+    }
+
+    private void stopThread(JSONObject msg) {
+        List<Integer> channelList = msg.getObject("subscriptionIds", new TypeReference<List<Integer>>() {
+        });
+        for (Integer channelId : channelList) {
+            SendDataThread thread = threadMap.remove(channelId);
+            if (thread != null) {
+                thread.stopThread();
+                log.info("----------------------通道" + channelId + "对应的线程已被停止");
+            }
+        }
+    }
+
+    private void closeAllThreads() {
+        threadMap.forEach((k, v) -> v.stopThread());
+        threadMap.clear();
     }
 
 }

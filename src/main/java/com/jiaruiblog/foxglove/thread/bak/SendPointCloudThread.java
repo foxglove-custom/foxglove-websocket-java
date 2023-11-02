@@ -1,29 +1,24 @@
-package com.jiaruiblog.foxglove.thread;
+package com.jiaruiblog.foxglove.thread.bak;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jiaruiblog.foxglove.schema.PackedElement;
 import com.jiaruiblog.foxglove.schema.PointCloud;
 import com.jiaruiblog.foxglove.schema.Timestamp;
+import com.jiaruiblog.foxglove.thread.SendDataThread;
+import com.jiaruiblog.foxglove.util.DateUtil;
 import com.jiaruiblog.foxglove.util.PointCloudUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.yeauty.pojo.Session;
 
-import java.time.Instant;
 import java.util.Base64;
 
 import static com.jiaruiblog.foxglove.util.DataUtil.getFormatedBytes;
 
-public class SendPointCloudThread implements Runnable {
-
-    private int frequency; //  发送频率，单位毫秒
-    private int index;
-    private Session session;
+public class SendPointCloudThread extends SendDataThread {
 
     public SendPointCloudThread(int index, int frequency, Session session) {
-        this.index = index;
-        this.session = session;
-        this.frequency = frequency;
+        super(index, frequency, session);
     }
 
     @Override
@@ -44,6 +39,7 @@ public class SendPointCloudThread implements Runnable {
             byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), pointCloud.timestamp.getNsec(), index);
             this.session.sendBinary(bytes);
             i++;
+            printLog(100);
             try {
                 Thread.sleep(frequency);
             } catch (InterruptedException e) {
@@ -58,11 +54,7 @@ public class SendPointCloudThread implements Runnable {
         pointCloud.setPoint_stride(16);
         pointCloud.setFrame_id("LIDAR_MAIN");
 
-        Timestamp timestamp = new Timestamp();
-        int nano = Instant.now().getNano();
-        long second = Instant.now().getEpochSecond();
-        timestamp.setSec((int) second);
-        timestamp.setNsec(nano);
+        Timestamp timestamp = DateUtil.createTimestamp();
         pointCloud.setTimestamp(timestamp);
 
         PackedElement[] fields = new PackedElement[4];

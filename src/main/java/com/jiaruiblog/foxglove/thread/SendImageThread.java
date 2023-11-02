@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jiaruiblog.foxglove.schema.CompressedImage;
 import com.jiaruiblog.foxglove.schema.Timestamp;
+import com.jiaruiblog.foxglove.util.DateUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
@@ -13,29 +15,24 @@ import org.yeauty.pojo.Session;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Base64;
 
 import static com.jiaruiblog.foxglove.util.DataUtil.getFormatedBytes;
 
-public class SendCompressedImageThread implements Runnable {
+@Slf4j
+public class SendImageThread extends SendDataThread {
 
-    private int frequency;
-    private int index;
-    private Session session;
     private int MAX_COUNT = 1445;
 
     private String rtsp = "rtsp://127.0.0.1:8554/demo";
 
-    public SendCompressedImageThread(int index, int frequency, Session session) {
-        this.index = index;
-        this.session = session;
-        this.frequency = frequency;
+    public SendImageThread(int index, int frequency, Session session) {
+        super(index, frequency, session);
     }
 
     @Override
     public void run() {
+        rtsp = "rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mp4";
         sendImageByRTSP();
     }
 
@@ -44,28 +41,23 @@ public class SendCompressedImageThread implements Runnable {
         try {
             grabber = FFmpegFrameGrabber.createDefault(rtsp);
             grabber.setOption("rtsp_transport", "tcp"); // 使用tcp的方式，不然会丢包很严重
-            grabber.setOption("stimeout", "500000");
+            grabber.setOption("stimeout", "50000000");
             //设置缓存大小，提高画质、减少卡顿花屏
             grabber.setOption("buffer_size", "1024000");
             grabber.start();
 
             Java2DFrameConverter converter = new Java2DFrameConverter();
-            int frequency = 2;
             Frame frame;
             long startTime = System.currentTimeMillis();
             long frameCount = 0;
-            while ((frame = grabber.grabImage()) != null) {
+            while ((frame = grabber.grabImage()) != null && running) {
                 // 按照指定频率处理帧
                 if ((System.currentTimeMillis() - startTime) < (frameCount * 1000 / frequency)) {
                     continue;
                 }
 
                 CompressedImage compressedImage = new CompressedImage();
-                Timestamp timestamp = new Timestamp();
-                int nano = Instant.now().getNano();
-                long second = Instant.now().getEpochSecond();
-                timestamp.setSec((int) second);
-                timestamp.setNsec(nano);
+                Timestamp timestamp = DateUtil.createTimestamp();
 
                 BufferedImage image = converter.getBufferedImage(frame);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -79,15 +71,13 @@ public class SendCompressedImageThread implements Runnable {
                 compressedImage.setTimestamp(timestamp);
 
                 JSONObject jsonObject = (JSONObject) JSON.toJSON(compressedImage);
-                byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), compressedImage.getTimestamp().getNsec(), index);
+                byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), index);
                 this.session.sendBinary(bytes);
 
                 // long类型不用担心溢出
                 frameCount++;
 
-                if (frameCount % 100 == 0) {
-                    System.out.println(LocalDateTime.now() + "----------------持续发送RTSP视频-------------------");
-                }
+                printLog(100);
             }
 
         } catch (FFmpegFrameGrabber.Exception e) {
@@ -106,14 +96,14 @@ public class SendCompressedImageThread implements Runnable {
     private void sendImageByLocal() {
         try {
             int count = 0;
-            while (true) {
+            while (running) {
                 count++;
                 if (count > MAX_COUNT) {
                     count = count % MAX_COUNT;
                 }
                 CompressedImage rawImage = readImageLocal(count);
                 JSONObject jsonObject = (JSONObject) JSON.toJSON(rawImage);
-                byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), rawImage.getTimestamp().getNsec(), index);
+                byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), index);
                 this.session.sendBinary(bytes);
                 Thread.sleep(frequency);
             }
@@ -126,12 +116,7 @@ public class SendCompressedImageThread implements Runnable {
         CompressedImage image = new CompressedImage();
         String filePath = "E:\\foxglove\\image_rtsp\\" + index + ".png";
         try (InputStream is = new FileInputStream(filePath)) {
-            Timestamp timestamp = new Timestamp();
-            int nano = Instant.now().getNano();
-            long second = Instant.now().getEpochSecond();
-            timestamp.setSec((int) second);
-            timestamp.setNsec(nano);
-            image.setTimestamp(timestamp);
+            Timestamp timestamp = DateUtil.createTimestamp();
 
             byte[] bytes = IOUtils.toByteArray(is);
             image.setFormat("jpeg");

@@ -1,4 +1,4 @@
-package com.jiaruiblog.foxglove.thread;
+package com.jiaruiblog.foxglove.thread.bak;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -6,12 +6,12 @@ import com.jiaruiblog.foxglove.schema.FrameTransform;
 import com.jiaruiblog.foxglove.schema.Quaternion;
 import com.jiaruiblog.foxglove.schema.Timestamp;
 import com.jiaruiblog.foxglove.schema.Vector3;
+import com.jiaruiblog.foxglove.util.DateUtil;
 import org.yeauty.pojo.Session;
-
-import java.time.Instant;
 
 import static com.jiaruiblog.foxglove.util.DataUtil.getFormatedBytes;
 
+@Deprecated
 public class SendTransformThread implements Runnable {
 
     private int frequency;
@@ -30,11 +30,7 @@ public class SendTransformThread implements Runnable {
         while (true) {
             i = i > 10 ? 0 : i;
             i++;
-            Timestamp timestamp = new Timestamp();
-            int nano = Instant.now().getNano();
-            long second = Instant.now().getEpochSecond();
-            timestamp.setSec((int) second);
-            timestamp.setNsec(nano);
+            Timestamp timestamp = DateUtil.createTimestamp();
 
             FrameTransform transform = new FrameTransform();
             transform.setTimestamp(timestamp);
@@ -49,7 +45,7 @@ public class SendTransformThread implements Runnable {
 
             JSONObject jsonObject = (JSONObject) JSON.toJSON(transform);
 
-            byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), nano, index);
+            byte[] bytes = getFormatedBytes(jsonObject.toJSONString().getBytes(), index);
             this.session.sendBinary(bytes);
             try {
                 Thread.sleep(frequency);

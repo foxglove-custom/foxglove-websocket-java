@@ -1,5 +1,6 @@
 package com.jiaruiblog.foxglove.schema;
 
+import com.jiaruiblog.foxglove.entity.VehicleInfo;
 import lombok.Data;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
  **/
 
 @Data
-public class SceneUpdate {
+public class SceneUpdate extends VehicleInfo {
 
     private List<SceneEntityDeletion> deletions;
 
