@@ -26,14 +26,16 @@ import static com.jiaruiblog.foxglove.util.DataUtil.getFormattedBytes;
 @Slf4j
 public class Send3DKafkaThread extends SendDataThread {
 
-    public Send3DKafkaThread(int index, int frequency, Session session) {
+    private String topic;
+
+    public Send3DKafkaThread(int index, int frequency, Session session,String topic) {
         super(index, frequency, session);
+        this.topic = topic;
     }
 
     @Override
     public void run() {
         Properties props = KafkaUtil.getConsumerProperties("group-1", SceneUpdateDeserializer.class.getName());
-        String topic = "drive_3d";
         List<ModelPrimitive> models = SceneUtil.addModels();
         try (KafkaConsumer<String, SceneUpdate> consumer = new KafkaConsumer<>(props)) {
             consumer.subscribe(Arrays.asList(topic));

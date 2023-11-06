@@ -23,7 +23,7 @@ public class ChannelUtil {
         channelMessage.setId(0);
         channelMessage.setTopic("/drive/raw_msg");
         channelMessage.setEncoding("json");
-        channelMessage.setSchemaName("示例消息(只展示字符串)");
+        channelMessage.setSchemaName("纯文本消息");
         channelMessage.setSchema("{\"type\": \"object\", \"properties\": {\"msg\": {\"type\": \"string\"}, \"count\": {\"type\": \"number\"}}}");
         channelMessage.setSchemaEncoding("jsonschema");
 
@@ -81,11 +81,11 @@ public class ChannelUtil {
     public static SendDataThread getKafkaSendThread(int id, int channelId, int frequency, Session session) {
         switch (channelId) {
             case 0:
-                return new SendMessageKafkaThread(id, frequency, session);
+                return new SendMessageKafkaThread(id, frequency, session, "raw_message");
             case 1:
-                return new Send3DKafkaThread(id, frequency, session);
+                return new Send3DKafkaThread(id, frequency, session, "drive_3d");
             case 2:
-                return new SendGPSKafkaThread(id, frequency, session);
+                return new SendGPSKafkaThread(id, frequency, session, "drive_gps_mixed");
             case 3:
                 return new SendImageThread(id, frequency, session);
             default:

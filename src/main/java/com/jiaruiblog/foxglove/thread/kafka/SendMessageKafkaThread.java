@@ -21,14 +21,16 @@ import static com.jiaruiblog.foxglove.util.DataUtil.getFormattedBytes;
 @Slf4j
 public class SendMessageKafkaThread extends SendDataThread {
 
-    public SendMessageKafkaThread(int index, int frequency, Session session) {
+    private String topic;
+
+    public SendMessageKafkaThread(int index, int frequency, Session session,String topic) {
         super(index, frequency, session);
+        this.topic = topic;
     }
 
     @Override
     public void run() {
         Properties props = KafkaUtil.getConsumerProperties("group-1", RawMessageDeserializer.class.getName());
-        String topic = "raw_message";
         try (KafkaConsumer<String, RawMessage> consumer = new KafkaConsumer<>(props)) {
             consumer.subscribe(Arrays.asList(topic));
             boolean validCode = StringUtils.isNotBlank(code);

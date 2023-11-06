@@ -22,14 +22,16 @@ import static com.jiaruiblog.foxglove.util.DataUtil.getFormattedBytes;
 @Slf4j
 public class SendGPSKafkaThread extends SendDataThread {
 
-    public SendGPSKafkaThread(int index, int frequency, Session session) {
+    private String topic;
+
+    public SendGPSKafkaThread(int index, int frequency, Session session,String topic) {
         super(index, frequency, session);
+        this.topic = topic;
     }
 
     @Override
     public void run() {
         Properties props = KafkaUtil.getConsumerProperties("group-1-a", LocationFixDeserializer.class.getName());
-        String topic = "drive_gps_mixed";
         try (KafkaConsumer<String, LocationFix> consumer = new KafkaConsumer<>(props)) {
             TopicPartition partition = new TopicPartition(topic, 0);
             consumer.assign(Arrays.asList(partition));
