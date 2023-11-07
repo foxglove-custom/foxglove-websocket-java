@@ -27,15 +27,17 @@ import static com.jiaruiblog.foxglove.util.DataUtil.getFormattedBytes;
 public class Send3DKafkaThread extends SendDataThread {
 
     private String topic;
+    private String group;
 
-    public Send3DKafkaThread(int index, int frequency, Session session,String topic) {
+    public Send3DKafkaThread(int index, int frequency, Session session,String topic,String group) {
         super(index, frequency, session);
         this.topic = topic;
+        this.group = group;
     }
 
     @Override
     public void run() {
-        Properties props = KafkaUtil.getConsumerProperties("group-1", SceneUpdateDeserializer.class.getName());
+        Properties props = KafkaUtil.getConsumerProperties(group, SceneUpdateDeserializer.class.getName());
         List<ModelPrimitive> models = SceneUtil.addModels();
         try (KafkaConsumer<String, SceneUpdate> consumer = new KafkaConsumer<>(props)) {
             consumer.subscribe(Arrays.asList(topic));

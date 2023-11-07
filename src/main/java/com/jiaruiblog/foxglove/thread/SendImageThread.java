@@ -24,10 +24,11 @@ public class SendImageThread extends SendDataThread {
 
     private int MAX_COUNT = 1445;
 
-    private String rtsp = "rtsp://127.0.0.1:8554/demo";
+    private String rtsp;
 
-    public SendImageThread(int index, int frequency, Session session) {
+    public SendImageThread(int index, int frequency, Session session,String rtsp) {
         super(index, frequency, session);
+        this.rtsp = rtsp;
     }
 
     @Override
@@ -67,7 +68,7 @@ public class SendImageThread extends SendDataThread {
                 String data = new String(encode);
                 compressedImage.setData(data);
                 compressedImage.setFormat(imageFormat);
-                compressedImage.setFrame_id("main_image");
+                compressedImage.setFrameId("main_image");
                 compressedImage.setTimestamp(timestamp);
 
                 JSONObject jsonObject = (JSONObject) JSON.toJSON(compressedImage);
@@ -116,7 +117,6 @@ public class SendImageThread extends SendDataThread {
         CompressedImage image = new CompressedImage();
         String filePath = "E:\\foxglove\\image_rtsp\\" + index + ".png";
         try (InputStream is = new FileInputStream(filePath)) {
-            Timestamp timestamp = DateUtil.createTimestamp();
 
             byte[] bytes = IOUtils.toByteArray(is);
             image.setFormat("jpeg");

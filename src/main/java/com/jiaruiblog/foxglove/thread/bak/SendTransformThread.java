@@ -34,8 +34,8 @@ public class SendTransformThread implements Runnable {
 
             FrameTransform transform = new FrameTransform();
             transform.setTimestamp(timestamp);
-            transform.setChild_frame_id("obstacle");
-            transform.setParent_frame_id("car");
+            transform.setChildFrameId("obstacle");
+            transform.setParentFrameId("car");
 
             Quaternion rotation = new Quaternion(1f, 0f, 1f, 1f + i / 10);
             transform.setRotation(rotation);

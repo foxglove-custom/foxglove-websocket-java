@@ -23,15 +23,17 @@ import static com.jiaruiblog.foxglove.util.DataUtil.getFormattedBytes;
 public class SendGPSKafkaThread extends SendDataThread {
 
     private String topic;
+    private String group;
 
-    public SendGPSKafkaThread(int index, int frequency, Session session,String topic) {
+    public SendGPSKafkaThread(int index, int frequency, Session session, String topic, String group) {
         super(index, frequency, session);
         this.topic = topic;
+        this.group = group;
     }
 
     @Override
     public void run() {
-        Properties props = KafkaUtil.getConsumerProperties("group-1-a", LocationFixDeserializer.class.getName());
+        Properties props = KafkaUtil.getConsumerProperties(group, LocationFixDeserializer.class.getName());
         try (KafkaConsumer<String, LocationFix> consumer = new KafkaConsumer<>(props)) {
             TopicPartition partition = new TopicPartition(topic, 0);
             consumer.assign(Arrays.asList(partition));

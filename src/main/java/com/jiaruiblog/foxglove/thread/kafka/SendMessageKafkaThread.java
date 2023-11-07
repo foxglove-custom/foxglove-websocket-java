@@ -22,15 +22,17 @@ import static com.jiaruiblog.foxglove.util.DataUtil.getFormattedBytes;
 public class SendMessageKafkaThread extends SendDataThread {
 
     private String topic;
+    private String group;
 
-    public SendMessageKafkaThread(int index, int frequency, Session session,String topic) {
+    public SendMessageKafkaThread(int index, int frequency, Session session, String topic, String group) {
         super(index, frequency, session);
         this.topic = topic;
+        this.group = group;
     }
 
     @Override
     public void run() {
-        Properties props = KafkaUtil.getConsumerProperties("group-1", RawMessageDeserializer.class.getName());
+        Properties props = KafkaUtil.getConsumerProperties(group, RawMessageDeserializer.class.getName());
         try (KafkaConsumer<String, RawMessage> consumer = new KafkaConsumer<>(props)) {
             consumer.subscribe(Arrays.asList(topic));
             boolean validCode = StringUtils.isNotBlank(code);

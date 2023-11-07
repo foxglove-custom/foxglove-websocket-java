@@ -52,8 +52,8 @@ public class SendPointCloudThread extends SendDataThread {
     private PointCloud createPointCloud(String file) {
 
         PointCloud pointCloud = new PointCloud();
-        pointCloud.setPoint_stride(16);
-        pointCloud.setFrame_id("LIDAR_MAIN");
+        pointCloud.setPointStride(16);
+        pointCloud.setFrameId("LIDAR_MAIN");
 
         Timestamp timestamp = DateUtil.createTimestamp();
         pointCloud.setTimestamp(timestamp);
