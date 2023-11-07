@@ -26,13 +26,19 @@ Implementations are available in the following languages:
 
 - 接收用户的设置信息
 - Panel： 3D， Plot， Image， Table， Map(要实现这五种组件的信息发送)
-- Schema：(将东风的数据基于schema转化foxglove数据)
+- Schema：(将第三方的数据基于schema转化foxglove数据)
 
 ## RTSP相关指令
+* 生成视频流
 ```bash
-ffmpeg -re -i E:\foxglove\test_video.mp4 -vcodec libx264 -acodec aac -f flv rtmp://127.0.0.1:1935/demo
-ffmpeg -re -i E:\foxglove\bmw_drive.mp4 -vcodec libx264 -acodec aac -f flv rtmp://127.0.0.1:1935/demo
-ffmpeg -re -i E:\foxglove\usa_drive_2.mp4 -vcodec libx264 -acodec aac -f flv rtmp://127.0.0.1:1935/demo
+ffmpeg -re -i E:\foxglove\video\test_video.mp4 -vcodec libx264 -acodec aac -f flv rtmp://127.0.0.1:1935/demo
+ffmpeg -re -i E:\foxglove\video\bmw_drive.mp4 -vcodec libx264 -acodec aac -f flv rtmp://127.0.0.1:1935/demo
+ffmpeg -re -i E:\foxglove\video\usa_drive_2.mp4 -vcodec libx264 -acodec aac -f flv rtmp://127.0.0.1:1935/demo1
+ffmpeg -re -i E:\foxglove\video\chongqi_drive.mp4 -vcodec libx264 -acodec aac -f flv rtmp://127.0.0.1:1935/demo2
 ```
+* HTTP访问地址： `http://127.0.0.1:8888/demo`
 
-高德开放瓦片地图图层 https://webrd04.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}
+## leaflet地图 
+* 高德 `https://webrd04.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}`
+* openstreet `https://tile.openstreetmap.org/{z}/{x}/{y}.png`
+* 智图地图 `https://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineCommunity/MapServer/tile/{z}/{y}/{x}`
