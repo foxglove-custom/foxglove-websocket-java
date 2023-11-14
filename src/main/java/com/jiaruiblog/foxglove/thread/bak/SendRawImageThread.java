@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jiaruiblog.foxglove.schema.RawImage;
 import com.jiaruiblog.foxglove.util.DateUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.yeauty.pojo.Session;
 
@@ -16,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.jiaruiblog.foxglove.util.DataUtil.getFormattedBytes;
 
+@Slf4j
 @Deprecated
 public class SendRawImageThread implements Runnable {
 
@@ -59,7 +61,7 @@ public class SendRawImageThread implements Runnable {
             int height = buf.getHeight();
             int width = buf.getWidth();
             image.setStep(size);
-            System.out.println(buf.getType() + "-----size:\t" + size);
+            log.info(buf.getType() + "-----size:\t" + size);
             image.setWidth(width);
             image.setHeight(height);
             image.setEncoding("rgb8");

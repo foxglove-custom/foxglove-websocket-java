@@ -38,7 +38,7 @@ public class SendGPSKafkaThread extends SendDataThread {
             TopicPartition partition = new TopicPartition(topic, 0);
             consumer.assign(Arrays.asList(partition));
             if (StringUtils.isBlank(code)) {
-                code = "10000";
+                code = "ND000048";
             }
             while (running) {
                 ConsumerRecords<String, LocationFix> records = consumer.poll(Duration.ofSeconds(1));

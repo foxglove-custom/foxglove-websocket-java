@@ -13,6 +13,7 @@ import com.jiaruiblog.foxglove.thread.test.SendMessageThread;
 import org.yeauty.pojo.Session;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ChannelUtil {
@@ -92,7 +93,7 @@ public class ChannelUtil {
     }
 
     public static SendDataThread getKafkaSendThread(int id, int channelId, int frequency, Session session) {
-        String group = "test-group-1";
+        String group = "test-a1-a01" + new Date();
         switch (channelId) {
             case 0:
                 return new SendChassisThread(id, frequency, session);
@@ -101,7 +102,7 @@ public class ChannelUtil {
             case 2:
                 return new Send3DKafkaThread(id, frequency, session, "drive_3d", group);
             case 3:
-                return new SendGPSKafkaThread(id, frequency, session, "drive_gps_mixed", group);
+                return new SendGPSKafkaThread(id, frequency, session, "DFICP_0X8001102S_HIVE_TOPIC", group);
             case 4:
                 String rtsp = "rtsp://127.0.0.1:8554/demo1";
                 return new SendImageThread(id, frequency, session, rtsp);

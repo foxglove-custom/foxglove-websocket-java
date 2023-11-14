@@ -47,6 +47,8 @@ public class FoxgloveServer {
 
     private Map<Integer, SendDataThread> threadMap = new HashMap<>();
 
+    public static final String EMPTY_CHASSIS_CODE = "NaN";
+
     @BeforeHandshake
     public void handshake(Session session, HttpHeaders headers, @RequestParam String req,
                           @RequestParam MultiValueMap reqMap, @PathVariable String uid, @PathVariable Map pathMap) {
@@ -118,9 +120,6 @@ public class FoxgloveServer {
         if (!StringUtils.equals(chassisCode, newChassisCode)) {
             chassisCode = newChassisCode;
             threadMap.forEach((k, v) -> v.setCode(chassisCode));
-            SendChassisThread chassisThread = new SendChassisThread(0, 100, session);
-            chassisThread.setCode(chassisCode);
-            new Thread(chassisThread).start();
         }
     }
 
@@ -154,7 +153,7 @@ public class FoxgloveServer {
             SendDataThread thread = ChannelUtil.getKafkaSendThread(sub.getId(), channelId, frequency, session);
             String threadName = "thread-" + channelId + "-" + RandomStringUtils.randomAlphabetic(6).toLowerCase();
             thread.setName(threadName);
-            thread.setCode(chassisCode == null ? "10000" : chassisCode);
+            thread.setCode(chassisCode == null ? EMPTY_CHASSIS_CODE : chassisCode);
             thread.start();
             threadMap.put(channelId, thread);
         }
