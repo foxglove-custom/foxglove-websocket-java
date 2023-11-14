@@ -10,8 +10,8 @@ public class DateUtil {
         Timestamp timestamp = new Timestamp();
         int nano = Instant.now().getNano();
         long second = Instant.now().getEpochSecond();
-        timestamp.setSec((int) second);
-        timestamp.setNsec(nano);
+        timestamp.setSec(second);
+        timestamp.setNsec((long) nano);
         return timestamp;
     }
 }

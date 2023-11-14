@@ -14,7 +14,7 @@ public class LocationFix extends VehicleInfo {
     @JsonProperty("frame_id")
     private String frameId;
 
-    private float latitude;
-    private float longitude;
-    private float altitude;
+    private double latitude;
+    private double longitude;
+    private double altitude;
 }

@@ -1,6 +1,9 @@
 package com.jiaruiblog.foxglove.schema;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @ClassName Timestamp
@@ -10,10 +13,13 @@ import lombok.Data;
  * @Version 1.0
  **/
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Timestamp {
 
-    private Integer sec;
+    private Long sec;
 
-    private Integer nsec;
+    private Long nsec;
 
 }
