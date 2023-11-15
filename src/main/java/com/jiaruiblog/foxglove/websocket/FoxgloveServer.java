@@ -6,7 +6,6 @@ import com.alibaba.fastjson.TypeReference;
 import com.jiaruiblog.foxglove.entity.Advertise;
 import com.jiaruiblog.foxglove.entity.ServerInfo;
 import com.jiaruiblog.foxglove.entity.Subscription;
-import com.jiaruiblog.foxglove.thread.SendChassisThread;
 import com.jiaruiblog.foxglove.thread.SendDataThread;
 import com.jiaruiblog.foxglove.util.ChannelUtil;
 import io.netty.handler.codec.http.HttpHeaders;
@@ -116,10 +115,10 @@ public class FoxgloveServer {
         String data = new String(Arrays.copyOfRange(bytes, 5, bytes.length));
         JSONObject message = JSON.parseObject(data);
         log.info("--------binary message:\t" + message);
-        String newChassisCode = message.getString("code");
+        String newChassisCode = message.getString("chassis_code");
         if (!StringUtils.equals(chassisCode, newChassisCode)) {
             chassisCode = newChassisCode;
-            threadMap.forEach((k, v) -> v.setCode(chassisCode));
+            threadMap.forEach((k, v) -> v.setChassisCode(chassisCode));
         }
     }
 
@@ -153,7 +152,7 @@ public class FoxgloveServer {
             SendDataThread thread = ChannelUtil.getKafkaSendThread(sub.getId(), channelId, frequency, session);
             String threadName = "thread-" + channelId + "-" + RandomStringUtils.randomAlphabetic(6).toLowerCase();
             thread.setName(threadName);
-            thread.setCode(chassisCode == null ? EMPTY_CHASSIS_CODE : chassisCode);
+            thread.setChassisCode(chassisCode == null ? EMPTY_CHASSIS_CODE : chassisCode);
             thread.start();
             threadMap.put(channelId, thread);
         }

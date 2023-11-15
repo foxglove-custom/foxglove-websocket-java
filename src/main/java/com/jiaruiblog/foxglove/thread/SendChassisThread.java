@@ -22,11 +22,11 @@ public class SendChassisThread extends SendDataThread {
     public void run() {
         while (running) {
             try {
-                if (!StringUtils.equals(oldCode, code)) {
-                    oldCode = code;
+                if (!StringUtils.equals(oldCode, chassisCode)) {
+                    oldCode = chassisCode;
                     ChassisInfo chassis = new ChassisInfo();
                     chassis.setTimestamp(DateUtil.createTimestamp());
-                    chassis.setChassisCode(code);
+                    chassis.setChassisCode(chassisCode);
                     chassis.setRtspUrl(getRtspURL());
                     JSONObject jsonObject = (JSONObject) JSONObject.toJSON(chassis);
                     byte[] bytes = getFormattedBytes(jsonObject.toJSONString().getBytes(), index);

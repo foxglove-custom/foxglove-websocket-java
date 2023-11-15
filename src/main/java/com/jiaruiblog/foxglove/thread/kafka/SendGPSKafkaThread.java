@@ -46,7 +46,7 @@ public class SendGPSKafkaThread extends SendDataThread {
                 for (ConsumerRecord<String, String> record : records) {
                     String[] data = record.value().split(SysConstant.DF_KAFKA_DATA_SEPARATOR);
                     String chassisCode = data[0];
-                    if (!code.equals(chassisCode)) {
+                    if (!this.chassisCode.equals(chassisCode)) {
                         continue;
                     }
                     LocationFix location = this.convertToLocationFix(data);

@@ -41,14 +41,14 @@ public class Send3DKafkaThread extends SendDataThread {
         List<ModelPrimitive> models = SceneUtil.addModels();
         try (KafkaConsumer<String, SceneUpdate> consumer = new KafkaConsumer<>(props)) {
             consumer.subscribe(Arrays.asList(topic));
-            boolean validCode = StringUtils.isNotBlank(code);
+            boolean validCode = StringUtils.isNotBlank(chassisCode);
             int i = 0;
             while (running) {
                 ConsumerRecords<String, SceneUpdate> records = consumer.poll(Duration.ofSeconds(1));
                 for (ConsumerRecord<String, SceneUpdate> record : records) {
                     SceneUpdate update = record.value();
                     if (validCode) {
-                        update.setChassisCode(code);
+                        update.setChassisCode(chassisCode);
                     }
                     // 减少车辆模型的显示频率
                     if (i == 5) {

@@ -11,7 +11,7 @@ public class SendDataThread extends Thread {
     protected int frequency;
     protected int index;
     protected Session session;
-    protected volatile String code;
+    protected volatile String chassisCode;
     protected volatile boolean running = true;
 
     protected int count = 0;

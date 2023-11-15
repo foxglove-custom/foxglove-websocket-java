@@ -23,8 +23,8 @@ public class SendMessageThread extends SendDataThread {
         while (running) {
             JSONObject jsonObject = new JSONObject();
             String message = "Hello at " + LocalTime.now();
-            if (code != null) {
-                message += " from " + code;
+            if (chassisCode != null) {
+                message += " from " + chassisCode;
             }
             jsonObject.put("msg", message);
 
