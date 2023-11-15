@@ -5,7 +5,7 @@ import com.jiaruiblog.foxglove.schema.*;
 import java.util.Arrays;
 import java.util.List;
 
-public class SceneUtil {
+public class DFSceneUtil {
 
     public static SceneEntity createEntity(String id, String frameId, String metaDataValue, Timestamp ts) {
         if (ts == null) {
@@ -17,7 +17,7 @@ public class SceneUtil {
         SceneEntity entity = new SceneEntity();
         entity.setTimestamp(ts);
         entity.setFrameId(frameId);
-        entity.setFrame_locked(true);
+        entity.setFrameLocked(true);
         entity.setId(id);
         entity.setMetadata(metadata);
         return entity;
@@ -45,20 +45,26 @@ public class SceneUtil {
         return Arrays.asList(model);
     }
 
+    public static SceneEntity addSceneEntity(String frameId, String mDataValue, String[] data, Timestamp timestamp) {
+        SceneEntity entity = DFSceneUtil.createEntity("obs_" + data[7], frameId, mDataValue, timestamp);
+        entity.setCubes(DFSceneUtil.addCubes(data));
+        return entity;
+    }
+
     public static List<CubePrimitive> addCubes(String[] data) {
         CubePrimitive cube = new CubePrimitive();
         Color color = setCubeColor(Integer.parseInt(data[7]));
 
-        float length = Float.parseFloat(data[4]);
-        float width = Float.parseFloat(data[5]);
+        float length = Float.parseFloat(data[14]); // 障碍物有向包围盒-长
+        float width = Float.parseFloat(data[13]);// 障碍物有向包围盒-宽
         float height = length < width ? length : width;
         Vector3 size = new Vector3(length, width, height);
 
         Pose pose = new Pose();
-        float x = Float.parseFloat(data[2]);
-        float y = Float.parseFloat(data[3]);
+        float x = Float.parseFloat(data[8]); // x坐标
+        float y = Float.parseFloat(data[9]); // y坐标
         Vector3 position = new Vector3(x, y, 10f);
-        float w = Float.parseFloat(data[6]);
+        float w = Float.parseFloat(data[12]); // 障碍物朝向
         Quaternion orientation = new Quaternion(0f, 0f, 1f, w);
         pose.setPosition(position);
         pose.setOrientation(orientation);

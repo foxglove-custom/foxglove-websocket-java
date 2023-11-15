@@ -5,6 +5,7 @@ import com.jiaruiblog.foxglove.entity.GPS;
 import com.jiaruiblog.foxglove.schema.LocationFix;
 import com.jiaruiblog.foxglove.schema.Timestamp;
 import com.jiaruiblog.foxglove.thread.SendDataThread;
+import com.jiaruiblog.foxglove.util.DateUtil;
 import com.jiaruiblog.foxglove.util.GPSConverterUtils;
 import com.jiaruiblog.foxglove.util.KafkaUtil;
 import com.jiaruiblog.foxglove.util.SysConstant;
@@ -19,7 +20,6 @@ import org.yeauty.pojo.Session;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
 import static com.jiaruiblog.foxglove.util.DataUtil.getFormattedBytes;
 
@@ -69,10 +69,7 @@ public class SendGPSKafkaThread extends SendDataThread {
         double longitude = Float.parseFloat(data[4]) / 1_000_000;
         GPS gps = GPSConverterUtils.transform(latitude, longitude);
 
-        long mills = Long.parseLong(data[1]);
-        long seconds = TimeUnit.MILLISECONDS.toSeconds(mills);
-        long nanos = TimeUnit.MILLISECONDS.toNanos(mills);
-        Timestamp timestamp = Timestamp.builder().sec(seconds).nsec(nanos).build();
+        Timestamp timestamp = DateUtil.createTimestamp(data[1]);
 
         LocationFix locationFix = new LocationFix();
         locationFix.setTimestamp(timestamp);

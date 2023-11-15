@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import javax.sound.sampled.Line;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,7 +25,8 @@ public class SceneEntity {
 
     private String id;
 
-    private boolean frame_locked;
+    @JsonProperty("frame_locked")
+    private boolean frameLocked;
 
     private List<KeyValuePair> metadata;
 

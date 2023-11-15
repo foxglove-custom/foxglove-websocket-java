@@ -14,8 +14,6 @@ import org.yeauty.pojo.Session;
 
 import java.util.Base64;
 
-import static com.jiaruiblog.foxglove.util.DataUtil.getFormattedBytes;
-
 public class SendPointCloudThread extends SendDataThread {
 
     public SendPointCloudThread(int index, int frequency, Session session) {

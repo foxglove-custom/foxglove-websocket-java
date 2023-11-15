@@ -12,6 +12,7 @@ import com.jiaruiblog.foxglove.thread.test.SendGPSThread;
 import com.jiaruiblog.foxglove.thread.test.SendMessageThread;
 import org.yeauty.pojo.Session;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,7 +20,7 @@ import java.util.List;
 public class ChannelUtil {
 
     public static List<ChannelInfo> createChannels() {
-        String schema = null;
+        String schema;
 
         ChannelInfo channelChassis = new ChannelInfo();
         channelChassis.setId(0);
@@ -87,14 +88,15 @@ public class ChannelUtil {
     }
 
     public static SendDataThread getKafkaSendThread(int id, int channelId, int frequency, Session session) {
-        String group = "test-group-" + new Date().getTime();
+        String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        String group = "test-group-" + timestamp;
         switch (channelId) {
             case 0:
                 return new SendChassisThread(id, frequency, session);
             case 1:
                 return new SendMessageKafkaThread(id, frequency, session, "DFICP_0X8001106S_HIVE_TOPIC", group);
             case 2:
-                return new Send3DKafkaThread(id, frequency, session, "drive_3d", group);
+                return new Send3DKafkaThread(id, frequency, session, "DFICP_0X800110AS_HIVE_TOPIC", group);
             case 3:
                 return new SendGPSKafkaThread(id, frequency, session, "DFICP_0X8001102S_HIVE_TOPIC", group);
             case 4:

@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jiaruiblog.foxglove.schema.*;
 import com.jiaruiblog.foxglove.thread.SendDataThread;
-import com.jiaruiblog.foxglove.util.SceneUtil;
+import com.jiaruiblog.foxglove.util.DFSceneUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.yeauty.pojo.Session;
 
@@ -28,7 +28,7 @@ public class Send3DThread extends SendDataThread {
     public Send3DThread(int index, int frequency, Session session) {
         super(index, frequency, session);
         updateList = this.readEntityData();
-        models = SceneUtil.addModels();
+        models = DFSceneUtil.addModels();
     }
 
     private List<SceneUpdate> readEntityData() {
@@ -52,8 +52,8 @@ public class Send3DThread extends SendDataThread {
                     oldTs = currentTs;
                 }
 
-                SceneEntity entity = SceneUtil.createEntity(data[1], "obstacle", "vehicle.truck", null);
-                entity.setCubes(SceneUtil.addCubes(data));
+                SceneEntity entity = DFSceneUtil.createEntity(data[1], "obstacle", "vehicle.truck", null);
+                entity.setCubes(DFSceneUtil.addCubes(data));
 
                 entityList.add(entity);
             }
@@ -92,7 +92,7 @@ public class Send3DThread extends SendDataThread {
 
             // 减少车辆模型的显示频率
             if (i % 5 == 0) {
-                SceneEntity carEntity = SceneUtil.createEntity("drive_car", "obstacle", "vehicle.car", timestamp);
+                SceneEntity carEntity = DFSceneUtil.createEntity("drive_car", "obstacle", "vehicle.car", timestamp);
                 carEntity.setModels(models);
                 entities.add(carEntity);
             }
