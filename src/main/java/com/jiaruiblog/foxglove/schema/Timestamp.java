@@ -1,5 +1,6 @@
 package com.jiaruiblog.foxglove.schema;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,8 +19,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Timestamp {
 
+    @JsonProperty("秒")
     private Long sec;
 
+    @JsonProperty("纳秒")
     private Long nsec;
 
 }

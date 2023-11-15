@@ -1,15 +1,15 @@
 package com.jiaruiblog.foxglove.thread.kafka;
 
 import com.alibaba.fastjson.JSONObject;
-import com.jiaruiblog.foxglove.kafka.deserializer.RawMessageDeserializer;
-import com.jiaruiblog.foxglove.schema.RawMessage;
+import com.jiaruiblog.foxglove.schema.ControlData;
 import com.jiaruiblog.foxglove.thread.SendDataThread;
 import com.jiaruiblog.foxglove.util.KafkaUtil;
+import com.jiaruiblog.foxglove.util.SysConstant;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.yeauty.pojo.Session;
 
 import java.time.Duration;
@@ -32,18 +32,19 @@ public class SendMessageKafkaThread extends SendDataThread {
 
     @Override
     public void run() {
-        Properties props = KafkaUtil.getConsumerProperties(group, RawMessageDeserializer.class.getName());
-        try (KafkaConsumer<String, RawMessage> consumer = new KafkaConsumer<>(props)) {
+        Properties props = KafkaUtil.getConsumerProperties(group, StringDeserializer.class.getName());
+        try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
             consumer.subscribe(Arrays.asList(topic));
-            boolean validCode = StringUtils.isNotBlank(code);
             while (running) {
-                ConsumerRecords<String, RawMessage> records = consumer.poll(Duration.ofSeconds(1));
-                for (ConsumerRecord<String, RawMessage> record : records) {
-                    RawMessage message = record.value();
-                    if (validCode) {
-                        message.setChassisCode(code);
+                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
+                for (ConsumerRecord<String, String> record : records) {
+                    String[] data = record.value().split(SysConstant.DF_KAFKA_DATA_SEPARATOR);
+                    String chassisCode = data[0];
+                    if (!code.equals(chassisCode)) {
+                        continue;
                     }
-                    JSONObject jsonObject = (JSONObject) JSONObject.toJSON(message);
+                    ControlData controlData = this.convertToControlData(data);
+                    JSONObject jsonObject = (JSONObject) JSONObject.toJSON(controlData);
                     byte[] bytes = getFormattedBytes(jsonObject.toJSONString().getBytes(), index);
                     this.session.sendBinary(bytes);
                     Thread.sleep(frequency);
@@ -54,5 +55,53 @@ public class SendMessageKafkaThread extends SendDataThread {
             throw new RuntimeException(e);
         }
         log.info("--------------------Kafka线程已经停止: " + Thread.currentThread().getName());
+    }
+
+
+    private ControlData convertToControlData(String[] data) {
+
+        ControlData controlData = ControlData.builder()
+                .chassisCode(data[0])
+                .terminalid(data[1])
+                .gpstime(data[2])
+                .latitude(data[3])
+                .longitude(data[4])
+                .height(data[5])
+                .sysstADMdmp(data[6])
+                .spdPlnlTrgLngErrmp(data[7])
+                .spdPlnvTrgSpdmp(data[8])
+                .spdPlnaTrgAccmp(data[9])
+                .bhvCrdnnumBhvIDmp(data[10])
+                .vehDarSlopmp(data[11])
+                .vehDamWghtmp(data[12])
+                .vehDavegoSpdmp(data[13])
+                .vehDaaEgoAccmp(data[14])
+                .vehDastTraCurGearmp(data[15])
+                .vehDarTraCurGearmp(data[16])
+                .vehDastCluSwtmp(data[17])
+                .vehDaprcTrqEngNomFricmp(data[18])
+                .vehDastSrcBrkmp(data[19])
+                .vehDaprcActuTrqmp(data[20])
+                .vehDaprcDrvrDmdTrqmp(data[21])
+                .vehDastSrcEngCtrlmp(data[22])
+                .vehDapFrontLeftmp(data[23])
+                .vehDanEngSpdmp(data[24])
+                .vehDastTrlrCnctnmp(data[25])
+                .vehDastTraEgdmp(data[26])
+                .vehDastTraSelGearmp(data[27])
+                .vehDastTraShtmp(data[28])
+                .vehDarBrkPedlmp(data[29])
+                .vehDaprcTrqEstimdLossmp(data[30])
+                .vehDastTraTrqLimmp(data[31])
+                .vehDarAccrPedlmp(data[32])
+                .ACCSvSetFrmSysmp(data[33])
+                .vehDanOutpShaftmp(data[34])
+                .vehDastBrkReady4Rlsmp(data[35])
+                .yawrate(data[36])
+                .ax(data[37])
+                .ay(data[38])
+                .vDCfrDrvForce(data[39])
+                .build();
+        return controlData;
     }
 }
