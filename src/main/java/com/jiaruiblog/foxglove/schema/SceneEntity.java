@@ -3,7 +3,6 @@ package com.jiaruiblog.foxglove.schema;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import javax.sound.sampled.Line;
 import java.util.List;
 
 /**
@@ -38,7 +37,7 @@ public class SceneEntity {
 
     private List<Object> cylinders;
 
-    private List<Line> lines;
+    private List<LinePrimitive> lines;
 
     private List<Object> triangles;
 

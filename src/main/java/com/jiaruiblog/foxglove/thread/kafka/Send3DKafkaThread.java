@@ -19,12 +19,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 import static com.jiaruiblog.foxglove.util.DataUtil.getFormattedBytes;
 
 @Slf4j
 public class Send3DKafkaThread extends SendDataThread {
+
+    private List<LinePrimitive> lineList = new ArrayList<>();
 
     private String topic;
     private String group;
@@ -38,13 +39,19 @@ public class Send3DKafkaThread extends SendDataThread {
     @Override
     public void run() {
         Properties props = KafkaUtil.getConsumerProperties(group, StringDeserializer.class.getName());
-        List<ModelPrimitive> models = DFSceneUtil.addModels();
 
         long gpsTime = 0L;
-        List<SceneEntity> entityList = new ArrayList<>();
-        List<String> obsCurIdList = new ArrayList<>();
-        List<String> obsOldList = new ArrayList<>();
-        Timestamp timestamp = null;
+        Timestamp timestamp;
+
+        List<CubePrimitive> cubeList = new ArrayList<>();
+
+        new Thread(() -> {
+            try {
+                this.createLinePrimitive();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
 
         try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
             consumer.subscribe(Arrays.asList(topic));
@@ -60,32 +67,24 @@ public class Send3DKafkaThread extends SendDataThread {
                     if (ts != gpsTime) {
                         gpsTime = ts;
                         timestamp = DateUtil.createTimestamp(gpsTime);
-                        if (entityList.size() > 0) {
-                            obsOldList.removeAll(obsCurIdList);
-                            List<SceneEntityDeletion> deletionList = this.createDeleteEntityList(timestamp, obsOldList);
-
+                        if (gpsTime != 0) {
+                            SceneEntity entity = DFSceneUtil.addSceneEntity("entity", "obstacle", "vehicle.truck", data, timestamp);
+                            entity.setCubes(cubeList);
+                            entity.setLines(lineList);
                             SceneUpdate sceneUpdate = new SceneUpdate();
-                            sceneUpdate.setEntities(entityList);
-                            sceneUpdate.setDeletions(deletionList);
+                            sceneUpdate.setEntities(Arrays.asList(entity));
 
                             printLog();
                             JSONObject jsonObject = (JSONObject) JSON.toJSON(sceneUpdate);
                             byte[] bytes = getFormattedBytes(jsonObject.toJSONString().getBytes(), index);
                             this.session.sendBinary(bytes);
-                            log.info("------------------------" + ts + "发送数据");
+                            cubeList.clear();
 
-                            entityList.clear();
-                            obsOldList.clear();
-                            obsOldList.addAll(obsCurIdList);
-                            obsCurIdList.clear();
-
-                            Thread.sleep(100);
+                            Thread.sleep(frequency);
                         }
                     } else {
-                        String obstacleId = "obs_" + data[7];
-                        obsCurIdList.add(obstacleId);
-                        SceneEntity entity = DFSceneUtil.addSceneEntity("obstacle", "vehicle.truck", data, timestamp);
-                        entityList.add(entity);
+                        CubePrimitive cube = DFSceneUtil.createCube(data);
+                        cubeList.add(cube);
                     }
                 }
             }
@@ -95,14 +94,43 @@ public class Send3DKafkaThread extends SendDataThread {
         log.info("--------------------Kafka线程已经停止: " + Thread.currentThread().getName());
     }
 
-    private List<SceneEntityDeletion> createDeleteEntityList(Timestamp timestamp, List<String> oldIdList) {
-        List<SceneEntityDeletion> deleteList = oldIdList.stream().map(s -> {
-            SceneEntityDeletion del = new SceneEntityDeletion();
-            del.setId(s);
-            del.setType(0);
-            del.setTimestamp(timestamp);
-            return del;
-        }).collect(Collectors.toList());
-        return deleteList;
+    private void createLinePrimitive() throws InterruptedException {
+        String topic = "DFICP_0X800110CS_HIVE_POINT_PLANNING_RESULT_TOPIC";
+        List<Point3> pointList = new ArrayList<>();
+        Properties props = KafkaUtil.getConsumerProperties(group + "_1", StringDeserializer.class.getName());
+        //props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "1");
+        try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
+            consumer.subscribe(Arrays.asList(topic));
+            long gpsTime = 0;
+            while (true) {
+                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
+                for (ConsumerRecord<String, String> record : records) {
+                    String[] data = record.value().split("\\001");
+                    String chassisCode = data[0];
+                    if (!this.chassisCode.equals(chassisCode)) {
+                        continue;
+                    }
+                    long ts = Long.parseLong(data[2]);
+                    if (ts != gpsTime && gpsTime > 0) {
+                        Color color = new Color(0f, 0f, 0.9019607843137255f, 0.5f);
+
+                        LinePrimitive line = new LinePrimitive();
+                        line.setType(0);
+                        line.setColor(color);
+                        line.setThickness(0.5f);
+                        line.setPoints(pointList);
+
+                        lineList.clear();
+                        lineList.add(line);
+                        log.info("-----------------------------" + lineList.size() + "\t" + pointList.size());
+                        pointList.clear();
+                        Thread.sleep(frequency);
+                    }
+                    gpsTime = ts;
+                    Point3 point3 = Point3.builder().x(Float.parseFloat(data[9])).y(Float.parseFloat(data[10])).z(0f).build();
+                    pointList.add(point3);
+                }
+            }
+        }
     }
 }

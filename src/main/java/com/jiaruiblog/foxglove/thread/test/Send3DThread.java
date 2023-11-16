@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import static com.jiaruiblog.foxglove.util.DataUtil.getFormattedBytes;
 
+@Deprecated
 @Slf4j
 public class Send3DThread extends SendDataThread {
 
@@ -53,7 +54,7 @@ public class Send3DThread extends SendDataThread {
                 }
 
                 SceneEntity entity = DFSceneUtil.createEntity(data[1], "obstacle", "vehicle.truck", null);
-                entity.setCubes(DFSceneUtil.addCubes(data));
+                //entity.setCubes(DFSceneUtil.createCube(data));
 
                 entityList.add(entity);
             }

@@ -45,13 +45,12 @@ public class DFSceneUtil {
         return Arrays.asList(model);
     }
 
-    public static SceneEntity addSceneEntity(String frameId, String mDataValue, String[] data, Timestamp timestamp) {
-        SceneEntity entity = DFSceneUtil.createEntity("obs_" + data[7], frameId, mDataValue, timestamp);
-        entity.setCubes(DFSceneUtil.addCubes(data));
+    public static SceneEntity addSceneEntity(String id, String frameId, String mDataValue, String[] data, Timestamp timestamp) {
+        SceneEntity entity = DFSceneUtil.createEntity(id, frameId, mDataValue, timestamp);
         return entity;
     }
 
-    public static List<CubePrimitive> addCubes(String[] data) {
+    public static CubePrimitive createCube(String[] data) {
         CubePrimitive cube = new CubePrimitive();
         Color color = setCubeColor(Integer.parseInt(data[7]));
 
@@ -72,8 +71,7 @@ public class DFSceneUtil {
         cube.setColor(color);
         cube.setSize(size);
         cube.setPose(pose);
-        List<CubePrimitive> cubeList = Arrays.asList(cube);
-        return cubeList;
+        return cube;
     }
 
     public static Color setCubeColor(int type) {
