@@ -2,7 +2,6 @@ package com.view.foxglove.thread.kafka;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.jiaruiblog.foxglove.schema.*;
 import com.view.foxglove.schema.*;
 import com.view.foxglove.thread.SendDataThread;
 import com.view.foxglove.util.DFSceneUtil;
