@@ -7,9 +7,6 @@ import com.view.foxglove.thread.SendImageThread;
 import com.view.foxglove.thread.kafka.Send3DKafkaThread;
 import com.view.foxglove.thread.kafka.SendGPSKafkaThread;
 import com.view.foxglove.thread.kafka.SendMessageKafkaThread;
-import com.view.foxglove.thread.test.Send3DThread;
-import com.view.foxglove.thread.test.SendGPSThread;
-import com.view.foxglove.thread.test.SendMessageThread;
 import org.yeauty.pojo.Session;
 
 import java.text.SimpleDateFormat;
@@ -59,27 +56,9 @@ public class ChannelUtil {
         return channelList;
     }
 
-    public static SendDataThread getTestSendThread(int id, int channelId, int frequency, Session session) {
-        switch (channelId) {
-            case 0:
-                return new SendChassisThread(id, frequency, session);
-            case 1:
-                return new SendMessageThread(id, frequency, session);
-            case 2:
-                return new Send3DThread(id, frequency, session);
-            case 3:
-                return new SendGPSThread(id, frequency, session);
-            case 4:
-                String rtsp = "rtsp://127.0.0.1:8554/demo1";
-                return new SendImageThread(id, frequency, session, rtsp);
-            default:
-                return null;
-        }
-    }
-
     public static SendDataThread getKafkaSendThread(int id, int channelId, int frequency, Session session) {
         String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-        String group = "test-group-" + timestamp;
+        String group = "kafka-view-group-" + timestamp;
         switch (channelId) {
             case 0:
                 return new SendChassisThread(id, frequency, session);

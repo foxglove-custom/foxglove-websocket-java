@@ -98,7 +98,6 @@ public class Send3DKafkaThread extends SendDataThread {
         String topic = "DFICP_0X800110CS_HIVE_POINT_PLANNING_RESULT_TOPIC";
         List<Point3> pointList = new ArrayList<>();
         Properties props = KafkaUtil.getConsumerProperties(group, StringDeserializer.class.getName());
-        //props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "1");
         try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
             consumer.subscribe(Arrays.asList(topic));
             long gpsTime = 0;
