@@ -1,6 +1,5 @@
 package com.visualization.foxglove.util;
 
-import com.view.foxglove.schema.*;
 import com.visualization.foxglove.schema.*;
 
 import java.util.Arrays;
