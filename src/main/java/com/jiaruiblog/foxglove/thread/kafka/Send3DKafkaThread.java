@@ -97,7 +97,7 @@ public class Send3DKafkaThread extends SendDataThread {
     private void createLinePrimitive() throws InterruptedException {
         String topic = "DFICP_0X800110CS_HIVE_POINT_PLANNING_RESULT_TOPIC";
         List<Point3> pointList = new ArrayList<>();
-        Properties props = KafkaUtil.getConsumerProperties(group + "_1", StringDeserializer.class.getName());
+        Properties props = KafkaUtil.getConsumerProperties(group, StringDeserializer.class.getName());
         //props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "1");
         try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
             consumer.subscribe(Arrays.asList(topic));
@@ -117,12 +117,12 @@ public class Send3DKafkaThread extends SendDataThread {
                         LinePrimitive line = new LinePrimitive();
                         line.setType(0);
                         line.setColor(color);
-                        line.setThickness(0.5f);
+                        line.setThickness(2f);
                         line.setPoints(pointList);
+                        line.setScaleInvariant(true);
 
                         lineList.clear();
                         lineList.add(line);
-                        log.info("-----------------------------" + lineList.size() + "\t" + pointList.size());
                         pointList.clear();
                         Thread.sleep(frequency);
                     }

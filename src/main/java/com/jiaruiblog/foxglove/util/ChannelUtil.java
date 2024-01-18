@@ -43,21 +43,12 @@ public class ChannelUtil {
 
         ChannelInfo channelGPS = new ChannelInfo();
         channelGPS.setId(3);
-        channelGPS.setTopic("/drive/gps");
+        channelGPS.setTopic("/drive/map");
         channelGPS.setEncoding("json");
         channelGPS.setSchemaName("foxglove.LocationFix");
         schema = DataUtil.loadJsonSchema("LocationFix.json");
         channelGPS.setSchema(schema);
         channelGPS.setSchemaEncoding("jsonschema");
-
-        ChannelInfo channelImage = new ChannelInfo();
-        channelImage.setId(4);
-        channelImage.setTopic("/drive/image");
-        channelImage.setEncoding("json");
-        channelImage.setSchemaName("foxglove.CompressedImage");
-        schema = DataUtil.loadJsonSchema("CompressedImage.json");
-        channelImage.setSchema(schema);
-        channelImage.setSchemaEncoding("jsonschema");
 
 
         List<ChannelInfo> channelList = new ArrayList<>();
@@ -65,7 +56,6 @@ public class ChannelUtil {
         channelList.add(channelControl);
         channelList.add(channel3D);
         channelList.add(channelGPS);
-        channelList.add(channelImage);
         return channelList;
     }
 
