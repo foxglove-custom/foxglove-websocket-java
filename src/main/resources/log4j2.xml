@@ -2,7 +2,7 @@
     <Appenders>
         <!-- Console appender configuration -->
         <Console name="console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%yellow{[%d{yyyy-MM-dd HH:mm:ss.SSS}]} %clr{[%-5level]} %cyan{[%c{1.}]} %msg%n" />
+            <PatternLayout pattern="%yellow{[%d{yyyy-MM-dd HH:mm:ss.SSS}]} %clr{[%-5level]} %cyan{[%c{1.}：%line]} %msg%n" />
         </Console>
     </Appenders>
     <Loggers>
