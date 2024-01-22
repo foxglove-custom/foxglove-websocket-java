@@ -45,11 +45,6 @@ public class DFSceneUtil {
         return Arrays.asList(model);
     }
 
-    public static SceneEntity addSceneEntity(String id, String frameId, String mDataValue, String[] data, Timestamp timestamp) {
-        SceneEntity entity = DFSceneUtil.createEntity(id, frameId, mDataValue, timestamp);
-        return entity;
-    }
-
     public static CubePrimitive createCube(String[] data) {
         CubePrimitive cube = new CubePrimitive();
         Color color = setCubeColor(Integer.parseInt(data[7]));

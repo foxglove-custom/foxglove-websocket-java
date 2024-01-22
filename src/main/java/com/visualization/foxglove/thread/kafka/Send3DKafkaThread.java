@@ -2,7 +2,10 @@ package com.visualization.foxglove.thread.kafka;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.visualization.foxglove.schema.*;
+import com.visualization.foxglove.schema.CubePrimitive;
+import com.visualization.foxglove.schema.SceneEntity;
+import com.visualization.foxglove.schema.SceneUpdate;
+import com.visualization.foxglove.schema.Timestamp;
 import com.visualization.foxglove.thread.SendDataThread;
 import com.visualization.foxglove.util.DFSceneUtil;
 import com.visualization.foxglove.util.DateUtil;
@@ -25,8 +28,6 @@ import static com.visualization.foxglove.util.DataUtil.getFormattedBytes;
 @Slf4j
 public class Send3DKafkaThread extends SendDataThread {
 
-    private List<LinePrimitive> lineList = new ArrayList<>();
-
     private String topic;
     private String group;
 
@@ -45,14 +46,6 @@ public class Send3DKafkaThread extends SendDataThread {
 
         List<CubePrimitive> cubeList = new ArrayList<>();
 
-        new Thread(() -> {
-            try {
-                this.createLinePrimitive();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }).start();
-
         try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
             consumer.subscribe(Arrays.asList(topic));
             while (running) {
@@ -68,9 +61,8 @@ public class Send3DKafkaThread extends SendDataThread {
                         gpsTime = ts;
                         timestamp = DateUtil.createTimestamp(gpsTime);
                         if (gpsTime != 0) {
-                            SceneEntity entity = DFSceneUtil.addSceneEntity("entity", "obstacle", "vehicle.truck", data, timestamp);
+                            SceneEntity entity = DFSceneUtil.createEntity("entity", "obstacle", "vehicle.truck", timestamp);
                             entity.setCubes(cubeList);
-                            entity.setLines(lineList);
                             SceneUpdate sceneUpdate = new SceneUpdate();
                             sceneUpdate.setEntities(Arrays.asList(entity));
 
@@ -92,44 +84,5 @@ public class Send3DKafkaThread extends SendDataThread {
             throw new RuntimeException(e);
         }
         log.info("--------------------Kafka线程已经停止: " + Thread.currentThread().getName());
-    }
-
-    private void createLinePrimitive() throws InterruptedException {
-        String topic = "DFICP_0X800110CS_HIVE_POINT_PLANNING_RESULT_TOPIC";
-        List<Point3> pointList = new ArrayList<>();
-        Properties props = KafkaUtil.getConsumerProperties(group, StringDeserializer.class.getName());
-        try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
-            consumer.subscribe(Arrays.asList(topic));
-            long gpsTime = 0;
-            while (true) {
-                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
-                for (ConsumerRecord<String, String> record : records) {
-                    String[] data = record.value().split("\\001");
-                    String chassisCode = data[0];
-                    if (!this.chassisCode.equals(chassisCode)) {
-                        continue;
-                    }
-                    long ts = Long.parseLong(data[2]);
-                    if (ts != gpsTime && gpsTime > 0) {
-                        Color color = new Color(0f, 0f, 0.9019607843137255f, 0.5f);
-
-                        LinePrimitive line = new LinePrimitive();
-                        line.setType(0);
-                        line.setColor(color);
-                        line.setThickness(2f);
-                        line.setPoints(pointList);
-                        line.setScaleInvariant(true);
-
-                        lineList.clear();
-                        lineList.add(line);
-                        pointList.clear();
-                        Thread.sleep(frequency);
-                    }
-                    gpsTime = ts;
-                    Point3 point3 = Point3.builder().x(Float.parseFloat(data[9])).y(Float.parseFloat(data[10])).z(0f).build();
-                    pointList.add(point3);
-                }
-            }
-        }
     }
 }
