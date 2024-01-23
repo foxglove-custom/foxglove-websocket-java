@@ -1,6 +1,7 @@
 # 服务器配置
 kafka:
   server: 10.10.2.98:9004
+  latest: false
 
 # 消息配置
 message:
@@ -14,7 +15,7 @@ message:
     partition: 0
     frequency: 100
     pollDuration: 10
-    group: orienlink-view-text
+    group: orienlink-view-text-3
     topic: DFICP_0X8001106S_HIVE_TOPIC
 
   # 地图
@@ -22,7 +23,7 @@ message:
     partition: 0
     frequency: 110
     pollDuration: 10
-    group: orienlink-view-map
+    group: orienlink-view-map-3
     topic: DFICP_0X8001102S_HIVE_TOPIC
 
   # 3D
@@ -30,7 +31,7 @@ message:
     partition: 0
     frequency: 120
     pollDuration: 10
-    group: orienlink-view-3d
+    group: orienlink-view-3d-3
     topic: DFICP_0X800110AS_HIVE_TOPIC
 
   # RTSP视频流

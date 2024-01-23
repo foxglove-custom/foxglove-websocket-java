@@ -12,10 +12,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.TopicPartition;
 import org.yeauty.pojo.Session;
 
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 import static com.visualization.foxglove.util.DataUtil.getFormattedBytes;
@@ -40,7 +42,12 @@ public class SendTextKafkaThread extends SendDataThread {
         String topic = config.getTopic();
         int pollDuration = config.getPollDuration();
         try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
-            consumer.subscribe(Arrays.asList(topic));
+            TopicPartition topicPartition = new TopicPartition(topic, config.getPartition());
+            List<TopicPartition> topics = Arrays.asList(topicPartition);
+            consumer.assign(topics);
+            if (kafkaConfig.isLatest()) {
+                consumer.seekToEnd(topics);
+            }
             while (running) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(pollDuration));
                 for (ConsumerRecord<String, String> record : records) {

@@ -10,4 +10,9 @@ import org.springframework.stereotype.Component;
 public class KafkaConfig {
 
     private String server;
+
+    /**
+     * 是否消费最新消息
+     */
+    private boolean latest;
 }
