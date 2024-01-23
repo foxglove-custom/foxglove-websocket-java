@@ -9,7 +9,7 @@ import com.visualization.foxglove.schema.LocationFix;
 import com.visualization.foxglove.schema.Timestamp;
 import com.visualization.foxglove.thread.SendDataThread;
 import com.visualization.foxglove.util.DateUtil;
-import com.visualization.foxglove.util.GPSConverterUtils;
+import com.visualization.foxglove.util.GPSUtils;
 import com.visualization.foxglove.util.KafkaUtil;
 import com.visualization.foxglove.util.SysConstant;
 import lombok.extern.slf4j.Slf4j;
@@ -73,7 +73,7 @@ public class SendMapKafkaThread extends SendDataThread {
         String chassisCode = data[0];
         double latitude = Double.parseDouble(data[3]) / 1_000_000;
         double longitude = Float.parseFloat(data[4]) / 1_000_000;
-        GPS gps = GPSConverterUtils.transform(latitude, longitude);
+        GPS gps = GPSUtils.transform(latitude, longitude);
 
         Timestamp timestamp = DateUtil.createTimestamp(data[1]);
 

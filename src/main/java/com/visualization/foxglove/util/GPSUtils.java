@@ -2,7 +2,7 @@ package com.visualization.foxglove.util;
 
 import com.visualization.foxglove.entity.GPS;
 
-public class GPSConverterUtils {
+public class GPSUtils {
     public static final String BAIDU_LBS_TYPE = "bd09ll";
     public static double pi = 3.1415926535897932384626;
     public static double a = 6378245.0;
