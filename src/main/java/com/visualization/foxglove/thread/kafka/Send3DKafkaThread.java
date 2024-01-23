@@ -2,6 +2,8 @@ package com.visualization.foxglove.thread.kafka;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.visualization.foxglove.config.AppCtxUtil;
+import com.visualization.foxglove.config.KafkaConfig;
 import com.visualization.foxglove.schema.CubePrimitive;
 import com.visualization.foxglove.schema.SceneEntity;
 import com.visualization.foxglove.schema.SceneUpdate;
@@ -14,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.yeauty.pojo.Session;
 
 import java.time.Duration;
@@ -28,18 +29,19 @@ import static com.visualization.foxglove.util.DataUtil.getFormattedBytes;
 @Slf4j
 public class Send3DKafkaThread extends SendDataThread {
 
-    private String topic;
-    private String group;
+    private KafkaConfig kafkaConfig;
 
-    public Send3DKafkaThread(int index, int frequency, Session session, String topic, String group) {
+    private String topic;
+
+    public Send3DKafkaThread(int index, int frequency, Session session, String topic) {
         super(index, frequency, session);
         this.topic = topic;
-        this.group = group;
+        this.kafkaConfig = AppCtxUtil.getBean(KafkaConfig.class);
     }
 
     @Override
     public void run() {
-        Properties props = KafkaUtil.getConsumerProperties(group, StringDeserializer.class.getName());
+        Properties props = KafkaUtil.getConsumerProperties(kafkaConfig);
 
         long gpsTime = 0L;
         Timestamp timestamp;

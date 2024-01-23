@@ -1,6 +1,8 @@
 package com.visualization.foxglove.thread.kafka;
 
 import com.alibaba.fastjson.JSONObject;
+import com.visualization.foxglove.config.AppCtxUtil;
+import com.visualization.foxglove.config.KafkaConfig;
 import com.visualization.foxglove.schema.ControlData;
 import com.visualization.foxglove.thread.SendDataThread;
 import com.visualization.foxglove.util.KafkaUtil;
@@ -22,17 +24,17 @@ import static com.visualization.foxglove.util.DataUtil.getFormattedBytes;
 public class SendMessageKafkaThread extends SendDataThread {
 
     private String topic;
-    private String group;
+    private KafkaConfig kafkaConfig;
 
-    public SendMessageKafkaThread(int index, int frequency, Session session, String topic, String group) {
+    public SendMessageKafkaThread(int index, int frequency, Session session, String topic) {
         super(index, frequency, session);
         this.topic = topic;
-        this.group = group;
+        this.kafkaConfig = AppCtxUtil.getBean(KafkaConfig.class);
     }
 
     @Override
     public void run() {
-        Properties props = KafkaUtil.getConsumerProperties(group, StringDeserializer.class.getName());
+        Properties props = KafkaUtil.getConsumerProperties(kafkaConfig);
         try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
             consumer.subscribe(Arrays.asList(topic));
             while (running) {

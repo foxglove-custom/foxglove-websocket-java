@@ -1,6 +1,8 @@
 package com.visualization.foxglove.thread.kafka;
 
 import com.alibaba.fastjson.JSONObject;
+import com.visualization.foxglove.config.AppCtxUtil;
+import com.visualization.foxglove.config.KafkaConfig;
 import com.visualization.foxglove.entity.GPS;
 import com.visualization.foxglove.schema.LocationFix;
 import com.visualization.foxglove.schema.Timestamp;
@@ -27,17 +29,17 @@ import static com.visualization.foxglove.util.DataUtil.getFormattedBytes;
 public class SendGPSKafkaThread extends SendDataThread {
 
     private String topic;
-    private String group;
+    private KafkaConfig kafkaConfig;
 
-    public SendGPSKafkaThread(int index, int frequency, Session session, String topic, String group) {
+    public SendGPSKafkaThread(int index, int frequency, Session session, String topic) {
         super(index, frequency, session);
         this.topic = topic;
-        this.group = group;
+        this.kafkaConfig = AppCtxUtil.getBean(KafkaConfig.class);
     }
 
     @Override
     public void run() {
-        Properties props = KafkaUtil.getConsumerProperties(group, StringDeserializer.class.getName());
+        Properties props = KafkaUtil.getConsumerProperties(kafkaConfig);
         try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
             TopicPartition partition = new TopicPartition(topic, 0);
             consumer.assign(Arrays.asList(partition));

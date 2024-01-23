@@ -1,2 +1,3 @@
-config:
-  rtsp: rtsp://127.0.0.1:8554/demo
+kafka:
+  server: 10.10.2.98:9004
+  group: test-1

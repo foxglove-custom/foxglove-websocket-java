@@ -63,11 +63,11 @@ public class ChannelUtil {
             case 0:
                 return new SendChassisThread(id, frequency, session);
             case 1:
-                return new SendMessageKafkaThread(id, frequency, session, "DFICP_0X8001106S_HIVE_TOPIC", group);
+                return new SendMessageKafkaThread(id, frequency, session, "DFICP_0X8001106S_HIVE_TOPIC");
             case 2:
-                return new Send3DKafkaThread(id, frequency, session, "DFICP_0X800110AS_HIVE_TOPIC", group);
+                return new Send3DKafkaThread(id, frequency, session, "DFICP_0X800110AS_HIVE_TOPIC");
             case 3:
-                return new SendGPSKafkaThread(id, frequency, session, "DFICP_0X8001102S_HIVE_TOPIC", group);
+                return new SendGPSKafkaThread(id, frequency, session, "DFICP_0X8001102S_HIVE_TOPIC");
             case 4:
                 String rtsp = "rtsp://127.0.0.1:8554/demo1";
                 return new SendImageThread(id, frequency, session, rtsp);

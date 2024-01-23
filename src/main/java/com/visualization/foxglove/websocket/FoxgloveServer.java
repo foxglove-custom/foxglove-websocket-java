@@ -145,6 +145,7 @@ public class FoxgloveServer {
         for (Subscription sub : subscribeList) {
             Integer channelId = sub.getChannelId();
             int frequency = channelId == 4 ? 50 : 100;
+
             SendDataThread thread = ChannelUtil.getKafkaSendThread(sub.getId(), channelId, frequency, session);
             String threadName = "thread-" + channelId + "-" + RandomStringUtils.randomAlphabetic(6).toLowerCase();
             thread.setName(threadName);
