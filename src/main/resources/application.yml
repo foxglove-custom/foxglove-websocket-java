@@ -20,3 +20,7 @@ message:
     frequency: 120
     pollDuration: 10
     topic: DFICP_0X800110AS_HIVE_TOPIC
+
+  rtsp:
+    frequency: 130
+    url: rtsp://127.0.0.1:8554/demo

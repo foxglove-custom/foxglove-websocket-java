@@ -12,6 +12,7 @@ public class DataConfig {
     private Text text;
     private Map map;
     private ThreeDim threeDim;
+    private RTSP rtsp;
 
     @Data
     public static class Text {
@@ -32,5 +33,11 @@ public class DataConfig {
         private int frequency;
         private String topic;
         private int pollDuration;
+    }
+
+    @Data
+    public static class RTSP {
+        private int frequency;
+        private String url;
     }
 }

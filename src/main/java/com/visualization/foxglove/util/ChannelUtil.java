@@ -65,8 +65,7 @@ public class ChannelUtil {
             case 3:
                 return new SendMapKafkaThread(id, session);
             case 4:
-                String rtsp = "rtsp://127.0.0.1:8554/demo1";
-                return new SendImageThread(id, frequency, session, rtsp);
+                return new SendImageThread(id, session);
             default:
                 return null;
         }

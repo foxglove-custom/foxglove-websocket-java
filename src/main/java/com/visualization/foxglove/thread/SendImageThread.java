@@ -2,12 +2,13 @@ package com.visualization.foxglove.thread;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.visualization.foxglove.config.AppCtxUtil;
+import com.visualization.foxglove.config.DataConfig;
 import com.visualization.foxglove.schema.CompressedImage;
 import com.visualization.foxglove.schema.Timestamp;
 import com.visualization.foxglove.util.DataUtil;
 import com.visualization.foxglove.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
@@ -15,20 +16,19 @@ import org.yeauty.pojo.Session;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Base64;
 
 @Slf4j
 public class SendImageThread extends SendDataThread {
 
-    private int MAX_COUNT = 1445;
+    private DataConfig dataConfig;
 
-    private String rtsp;
-
-    public SendImageThread(int index, int frequency, Session session, String rtsp) {
+    public SendImageThread(int index, Session session) {
         super(index, session);
-        this.rtsp = rtsp;
-        this.frequency = frequency;
+        this.dataConfig = AppCtxUtil.getBean(DataConfig.class);
+        this.frequency = dataConfig.getRtsp().getFrequency();
     }
 
     @Override
@@ -39,7 +39,8 @@ public class SendImageThread extends SendDataThread {
     private void sendImageByRTSP() {
         FFmpegFrameGrabber grabber = null;
         try {
-            grabber = FFmpegFrameGrabber.createDefault(rtsp);
+            DataConfig.RTSP rtsp = dataConfig.getRtsp();
+            grabber = FFmpegFrameGrabber.createDefault(rtsp.getUrl());
             grabber.setOption("rtsp_transport", "tcp"); // 使用tcp的方式，不然会丢包很严重
             grabber.setOption("stimeout", "50000000");
             //设置缓存大小，提高画质、减少卡顿花屏
@@ -92,43 +93,6 @@ public class SendImageThread extends SendDataThread {
                 e.printStackTrace();
             }
         }
-    }
-
-    private void sendImageByLocal() {
-        try {
-            int count = 0;
-            while (running) {
-                count++;
-                if (count > MAX_COUNT) {
-                    count = count % MAX_COUNT;
-                }
-                CompressedImage rawImage = readImageLocal(count);
-                JSONObject jsonObject = (JSONObject) JSON.toJSON(rawImage);
-                byte[] bytes = DataUtil.getFormattedBytes(jsonObject.toJSONString().getBytes(), index);
-                this.session.sendBinary(bytes);
-                Thread.sleep(frequency);
-            }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private CompressedImage readImageLocal(int index) {
-        CompressedImage image = new CompressedImage();
-        String filePath = "E:\\foxglove\\image_rtsp\\" + index + ".png";
-        try (InputStream is = new FileInputStream(filePath)) {
-
-            byte[] bytes = IOUtils.toByteArray(is);
-            image.setFormat("jpeg");
-            byte[] encode = Base64.getEncoder().encode(bytes);
-            String data = new String(encode);
-            image.setData(data);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return image;
     }
 
 }
