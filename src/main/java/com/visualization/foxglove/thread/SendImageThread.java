@@ -4,8 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.visualization.foxglove.schema.CompressedImage;
 import com.visualization.foxglove.schema.Timestamp;
-import com.visualization.foxglove.util.DateUtil;
 import com.visualization.foxglove.util.DataUtil;
+import com.visualization.foxglove.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
@@ -18,8 +18,6 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Base64;
 
-import static com.visualization.foxglove.util.DataUtil.getFormattedBytes;
-
 @Slf4j
 public class SendImageThread extends SendDataThread {
 
@@ -27,9 +25,10 @@ public class SendImageThread extends SendDataThread {
 
     private String rtsp;
 
-    public SendImageThread(int index, int frequency, Session session,String rtsp) {
-        super(index, frequency, session);
+    public SendImageThread(int index, int frequency, Session session, String rtsp) {
+        super(index, session);
         this.rtsp = rtsp;
+        this.frequency = frequency;
     }
 
     @Override
