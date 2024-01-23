@@ -42,7 +42,7 @@ public class Send3DKafkaThread extends SendDataThread {
 
     @Override
     public void run() {
-        Properties props = KafkaUtil.getConsumerProperties(kafkaConfig);
+        Properties props = KafkaUtil.getConsumerProperties(kafkaConfig, dataConfig.getThreeDim());
 
         long gpsTime = 0L;
         Timestamp timestamp;

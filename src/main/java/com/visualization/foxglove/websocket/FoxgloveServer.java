@@ -8,7 +8,6 @@ import com.visualization.foxglove.entity.ServerInfo;
 import com.visualization.foxglove.entity.Subscription;
 import com.visualization.foxglove.thread.SendDataThread;
 import com.visualization.foxglove.util.ChannelUtil;
-import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +19,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.visualization.foxglove.util.ChannelUtil.getChannelName;
+import static com.visualization.foxglove.util.ChannelUtil.getKafkaSendThread;
 
 /**
  * @ClassName FoxgloveServer
@@ -118,36 +120,14 @@ public class FoxgloveServer {
         }
     }
 
-    @OnEvent
-    public void onEvent(Session session, Object evt) {
-        if (evt instanceof IdleStateEvent) {
-            IdleStateEvent idleStateEvent = (IdleStateEvent) evt;
-            switch (idleStateEvent.state()) {
-                case READER_IDLE:
-                    log.info("read idle");
-                    break;
-                case WRITER_IDLE:
-                    log.info("write idle");
-                    break;
-                case ALL_IDLE:
-                    log.info("all idle");
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
     private void createThread(JSONObject msg) {
         List<Subscription> subscribeList = msg.getObject("subscriptions", new TypeReference<List<Subscription>>() {
         });
         log.info("============开始创建基于channel的数据发送线程==============" + subscribeList);
         for (Subscription sub : subscribeList) {
             Integer channelId = sub.getChannelId();
-            int frequency = channelId == 4 ? 50 : 100;
-
-            SendDataThread thread = ChannelUtil.getKafkaSendThread(sub.getId(), channelId, frequency, session);
-            String threadName = "thread-" + channelId + "-" + RandomStringUtils.randomAlphabetic(6).toLowerCase();
+            SendDataThread thread = getKafkaSendThread(sub.getId(), channelId, session);
+            String threadName = "thread-" + getChannelName(channelId) + "-" + RandomStringUtils.randomAlphabetic(6).toLowerCase();
             thread.setName(threadName);
             thread.setChassisCode(chassisCode == null ? EMPTY_CHASSIS_CODE : chassisCode);
             thread.start();

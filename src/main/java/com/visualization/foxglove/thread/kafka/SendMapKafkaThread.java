@@ -16,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.common.TopicPartition;
 import org.yeauty.pojo.Session;
 
 import java.time.Duration;
@@ -40,13 +39,12 @@ public class SendMapKafkaThread extends SendDataThread {
 
     @Override
     public void run() {
-        Properties props = KafkaUtil.getConsumerProperties(kafkaConfig);
+        Properties props = KafkaUtil.getConsumerProperties(kafkaConfig, dataConfig.getMap());
         try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
             DataConfig.Map config = dataConfig.getMap();
             String topic = config.getTopic();
             int pollDuration = config.getPollDuration();
-            TopicPartition partition = new TopicPartition(topic, 0);
-            consumer.assign(Arrays.asList(partition));
+            consumer.subscribe(Arrays.asList(topic));
             while (running) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(pollDuration));
                 for (ConsumerRecord<String, String> record : records) {

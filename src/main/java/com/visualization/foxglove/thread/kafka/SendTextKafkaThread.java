@@ -26,7 +26,7 @@ public class SendTextKafkaThread extends SendDataThread {
     private DataConfig dataConfig;
     private KafkaConfig kafkaConfig;
 
-    public SendTextKafkaThread(int index,  Session session) {
+    public SendTextKafkaThread(int index, Session session) {
         super(index, session);
         this.kafkaConfig = AppCtxUtil.getBean(KafkaConfig.class);
         this.dataConfig = AppCtxUtil.getBean(DataConfig.class);
@@ -35,7 +35,7 @@ public class SendTextKafkaThread extends SendDataThread {
 
     @Override
     public void run() {
-        Properties props = KafkaUtil.getConsumerProperties(kafkaConfig);
+        Properties props = KafkaUtil.getConsumerProperties(kafkaConfig, dataConfig.getMap());
         DataConfig.Text config = dataConfig.getText();
         String topic = config.getTopic();
         int pollDuration = config.getPollDuration();

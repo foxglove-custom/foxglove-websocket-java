@@ -1,6 +1,8 @@
 package com.visualization.foxglove.thread;
 
 import com.alibaba.fastjson.JSONObject;
+import com.visualization.foxglove.config.AppCtxUtil;
+import com.visualization.foxglove.config.DataConfig;
 import com.visualization.foxglove.schema.ChassisInfo;
 import com.visualization.foxglove.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -13,10 +15,12 @@ import static com.visualization.foxglove.util.DataUtil.getFormattedBytes;
 public class SendChassisThread extends SendDataThread {
 
     private String oldCode;
+    private DataConfig dataConfig;
 
-    public SendChassisThread(int index, int frequency, Session session) {
+    public SendChassisThread(int index, Session session) {
         super(index, session);
-        this.frequency = frequency;
+        this.dataConfig = AppCtxUtil.getBean(DataConfig.class);
+        this.frequency = dataConfig.getChassis().getFrequency();
     }
 
     @Override

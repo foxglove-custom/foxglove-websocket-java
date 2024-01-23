@@ -54,10 +54,10 @@ public class ChannelUtil {
         return channelList;
     }
 
-    public static SendDataThread getKafkaSendThread(int id, int channelId, int frequency, Session session) {
+    public static SendDataThread getKafkaSendThread(int id, int channelId, Session session) {
         switch (channelId) {
             case 0:
-                return new SendChassisThread(id, frequency, session);
+                return new SendChassisThread(id, session);
             case 1:
                 return new SendTextKafkaThread(id, session);
             case 2:
@@ -66,6 +66,23 @@ public class ChannelUtil {
                 return new SendMapKafkaThread(id, session);
             case 4:
                 return new SendImageThread(id, session);
+            default:
+                return null;
+        }
+    }
+
+    public static String getChannelName(int channelId) {
+        switch (channelId) {
+            case 0:
+                return "chassis";
+            case 1:
+                return "text";
+            case 2:
+                return "3d";
+            case 3:
+                return "map";
+            case 4:
+                return "image";
             default:
                 return null;
         }

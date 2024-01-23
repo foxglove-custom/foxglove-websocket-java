@@ -9,30 +9,37 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "message")
 public class DataConfig {
 
+    private Chassis chassis;
     private Text text;
     private Map map;
     private ThreeDim threeDim;
     private RTSP rtsp;
 
     @Data
-    public static class Text {
+    public static class Chassis {
+        private int frequency;
+        private String group;
+    }
+
+    @Data
+    public static class BaseMQ {
+        private int partition;
         private int frequency;
         private String topic;
+        private String group;
         private int pollDuration;
     }
 
     @Data
-    public static class Map {
-        private int frequency;
-        private String topic;
-        private int pollDuration;
+    public static class Text extends BaseMQ {
     }
 
     @Data
-    public static class ThreeDim {
-        private int frequency;
-        private String topic;
-        private int pollDuration;
+    public static class Map extends BaseMQ {
+    }
+
+    @Data
+    public static class ThreeDim extends BaseMQ {
     }
 
     @Data

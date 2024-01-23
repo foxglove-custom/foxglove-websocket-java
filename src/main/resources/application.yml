@@ -1,26 +1,39 @@
 # 服务器配置
 kafka:
   server: 10.10.2.98:9004
-  group: test-a-1
 
 # 消息配置
 message:
+
+  # 设置底盘号
+  chassis:
+    frequency: 100
+
   # 纯文本
   text:
+    partition: 0
     frequency: 100
     pollDuration: 10
+    group: orienlink-view-text
     topic: DFICP_0X8001106S_HIVE_TOPIC
 
+  # 地图
   map:
+    partition: 0
     frequency: 110
     pollDuration: 10
+    group: orienlink-view-map
     topic: DFICP_0X8001102S_HIVE_TOPIC
 
+  # 3D
   threeDim:
+    partition: 0
     frequency: 120
     pollDuration: 10
+    group: orienlink-view-3d
     topic: DFICP_0X800110AS_HIVE_TOPIC
 
+  # RTSP视频流
   rtsp:
     frequency: 130
     url: rtsp://127.0.0.1:8554/demo

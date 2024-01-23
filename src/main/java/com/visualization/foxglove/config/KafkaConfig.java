@@ -9,7 +9,5 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "kafka")
 public class KafkaConfig {
 
-    private String group;
-
     private String server;
 }
