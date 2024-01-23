@@ -15,4 +15,6 @@ public class KafkaConfig {
      * 是否消费最新消息
      */
     private boolean latest;
+
+    private String group;
 }

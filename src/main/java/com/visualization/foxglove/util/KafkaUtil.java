@@ -14,10 +14,10 @@ import static org.apache.kafka.clients.consumer.OffsetResetStrategy.EARLIEST;
 @Slf4j
 public class KafkaUtil {
 
-    public static Properties getConsumerProperties(KafkaConfig serverConfig, DataConfig.BaseMQ dataConfig) {
+    public static Properties getConsumerProperties(KafkaConfig serverConfig) {
         Properties props = new Properties();
         props.put("bootstrap.servers", serverConfig.getServer());
-        props.put("group.id", dataConfig.getGroup());
+        props.put("group.id", serverConfig.getGroup());
         props.put("auto.commit.interval.ms", "1000");
         props.put("session.timeout.ms", "30000");
         props.put("max.poll.records", "100");

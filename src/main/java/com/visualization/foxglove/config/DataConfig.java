@@ -26,7 +26,6 @@ public class DataConfig {
         private int partition;
         private int frequency;
         private String topic;
-        private String group;
         private int pollDuration;
     }
 

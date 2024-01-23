@@ -37,7 +37,7 @@ public class SendTextKafkaThread extends SendDataThread {
 
     @Override
     public void run() {
-        Properties props = KafkaUtil.getConsumerProperties(kafkaConfig, dataConfig.getMap());
+        Properties props = KafkaUtil.getConsumerProperties(kafkaConfig);
         DataConfig.Text config = dataConfig.getText();
         String topic = config.getTopic();
         int pollDuration = config.getPollDuration();

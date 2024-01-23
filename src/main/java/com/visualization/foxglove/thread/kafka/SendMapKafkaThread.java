@@ -41,7 +41,7 @@ public class SendMapKafkaThread extends SendDataThread {
 
     @Override
     public void run() {
-        Properties props = KafkaUtil.getConsumerProperties(kafkaConfig, dataConfig.getMap());
+        Properties props = KafkaUtil.getConsumerProperties(kafkaConfig);
         try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
             DataConfig.Map config = dataConfig.getMap();
             String topic = config.getTopic();
