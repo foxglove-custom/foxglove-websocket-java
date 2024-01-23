@@ -2,6 +2,7 @@ package com.visualization.foxglove.thread.kafka;
 
 import com.alibaba.fastjson.JSONObject;
 import com.visualization.foxglove.config.AppCtxUtil;
+import com.visualization.foxglove.config.DataConfig;
 import com.visualization.foxglove.config.KafkaConfig;
 import com.visualization.foxglove.schema.ControlData;
 import com.visualization.foxglove.thread.SendDataThread;
@@ -11,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.yeauty.pojo.Session;
 
 import java.time.Duration;
@@ -21,20 +21,22 @@ import java.util.Properties;
 import static com.visualization.foxglove.util.DataUtil.getFormattedBytes;
 
 @Slf4j
-public class SendMessageKafkaThread extends SendDataThread {
+public class SendTextKafkaThread extends SendDataThread {
 
-    private String topic;
+    private DataConfig dataConfig;
     private KafkaConfig kafkaConfig;
 
-    public SendMessageKafkaThread(int index, int frequency, Session session, String topic) {
-        super(index, frequency, session);
-        this.topic = topic;
+    public SendTextKafkaThread(int index,  Session session) {
+        super(index, session);
         this.kafkaConfig = AppCtxUtil.getBean(KafkaConfig.class);
+        this.dataConfig = AppCtxUtil.getBean(DataConfig.class);
+        this.frequency = dataConfig.getText().getFrequency();
     }
 
     @Override
     public void run() {
         Properties props = KafkaUtil.getConsumerProperties(kafkaConfig);
+        String topic = dataConfig.getText().getTopic();
         try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
             consumer.subscribe(Arrays.asList(topic));
             while (running) {

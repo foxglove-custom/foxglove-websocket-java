@@ -15,7 +15,8 @@ public class SendChassisThread extends SendDataThread {
     private String oldCode;
 
     public SendChassisThread(int index, int frequency, Session session) {
-        super(index, frequency, session);
+        super(index, session);
+        this.frequency = frequency;
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.visualization.foxglove.thread.kafka;
 
 import com.alibaba.fastjson.JSONObject;
 import com.visualization.foxglove.config.AppCtxUtil;
+import com.visualization.foxglove.config.DataConfig;
 import com.visualization.foxglove.config.KafkaConfig;
 import com.visualization.foxglove.entity.GPS;
 import com.visualization.foxglove.schema.LocationFix;
@@ -16,7 +17,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.yeauty.pojo.Session;
 
 import java.time.Duration;
@@ -26,21 +26,23 @@ import java.util.Properties;
 import static com.visualization.foxglove.util.DataUtil.getFormattedBytes;
 
 @Slf4j
-public class SendGPSKafkaThread extends SendDataThread {
+public class SendMapKafkaThread extends SendDataThread {
 
-    private String topic;
+    private DataConfig dataConfig;
     private KafkaConfig kafkaConfig;
 
-    public SendGPSKafkaThread(int index, int frequency, Session session, String topic) {
-        super(index, frequency, session);
-        this.topic = topic;
+    public SendMapKafkaThread(int index, Session session) {
+        super(index, session);
         this.kafkaConfig = AppCtxUtil.getBean(KafkaConfig.class);
+        this.dataConfig = AppCtxUtil.getBean(DataConfig.class);
+        this.frequency = dataConfig.getMap().getFrequency();
     }
 
     @Override
     public void run() {
         Properties props = KafkaUtil.getConsumerProperties(kafkaConfig);
         try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
+            String topic = dataConfig.getMap().getTopic();
             TopicPartition partition = new TopicPartition(topic, 0);
             consumer.assign(Arrays.asList(partition));
             while (running) {

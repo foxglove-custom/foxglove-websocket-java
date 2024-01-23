@@ -18,10 +18,9 @@ public class SendDataThread extends Thread {
 
     private static final int PRINT_LOG_THRESHOLD = 200;
 
-    public SendDataThread(int index, int frequency, Session session) {
+    public SendDataThread(int index, Session session) {
         this.index = index;
         this.session = session;
-        this.frequency = frequency;
     }
 
 

@@ -3,6 +3,7 @@ package com.visualization.foxglove.thread.kafka;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.visualization.foxglove.config.AppCtxUtil;
+import com.visualization.foxglove.config.DataConfig;
 import com.visualization.foxglove.config.KafkaConfig;
 import com.visualization.foxglove.schema.CubePrimitive;
 import com.visualization.foxglove.schema.SceneEntity;
@@ -30,13 +31,13 @@ import static com.visualization.foxglove.util.DataUtil.getFormattedBytes;
 public class Send3DKafkaThread extends SendDataThread {
 
     private KafkaConfig kafkaConfig;
+    private DataConfig dataConfig;
 
-    private String topic;
-
-    public Send3DKafkaThread(int index, int frequency, Session session, String topic) {
-        super(index, frequency, session);
-        this.topic = topic;
+    public Send3DKafkaThread(int index, Session session) {
+        super(index, session);
         this.kafkaConfig = AppCtxUtil.getBean(KafkaConfig.class);
+        this.dataConfig = AppCtxUtil.getBean(DataConfig.class);
+        this.frequency = dataConfig.getThreeDim().getFrequency();
     }
 
     @Override
@@ -49,6 +50,7 @@ public class Send3DKafkaThread extends SendDataThread {
         List<CubePrimitive> cubeList = new ArrayList<>();
 
         try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
+            String topic = dataConfig.getThreeDim().getTopic();
             consumer.subscribe(Arrays.asList(topic));
             while (running) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));

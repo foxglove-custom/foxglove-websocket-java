@@ -5,13 +5,11 @@ import com.visualization.foxglove.thread.SendChassisThread;
 import com.visualization.foxglove.thread.SendDataThread;
 import com.visualization.foxglove.thread.SendImageThread;
 import com.visualization.foxglove.thread.kafka.Send3DKafkaThread;
-import com.visualization.foxglove.thread.kafka.SendGPSKafkaThread;
-import com.visualization.foxglove.thread.kafka.SendMessageKafkaThread;
+import com.visualization.foxglove.thread.kafka.SendMapKafkaThread;
+import com.visualization.foxglove.thread.kafka.SendTextKafkaThread;
 import org.yeauty.pojo.Session;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class ChannelUtil {
@@ -57,17 +55,15 @@ public class ChannelUtil {
     }
 
     public static SendDataThread getKafkaSendThread(int id, int channelId, int frequency, Session session) {
-        String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-        String group = "kafka-view-group-" + timestamp;
         switch (channelId) {
             case 0:
                 return new SendChassisThread(id, frequency, session);
             case 1:
-                return new SendMessageKafkaThread(id, frequency, session, "DFICP_0X8001106S_HIVE_TOPIC");
+                return new SendTextKafkaThread(id, session);
             case 2:
-                return new Send3DKafkaThread(id, frequency, session, "DFICP_0X800110AS_HIVE_TOPIC");
+                return new Send3DKafkaThread(id, session);
             case 3:
-                return new SendGPSKafkaThread(id, frequency, session, "DFICP_0X8001102S_HIVE_TOPIC");
+                return new SendMapKafkaThread(id, session);
             case 4:
                 String rtsp = "rtsp://127.0.0.1:8554/demo1";
                 return new SendImageThread(id, frequency, session, rtsp);
