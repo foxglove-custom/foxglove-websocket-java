@@ -1,19 +1,22 @@
 # 服务器配置
 kafka:
   server: 10.10.2.98:9004
-  group: test-1
+  group: test-a-1
 
 # 消息配置
 message:
   # 纯文本
   text:
     frequency: 100
+    pollDuration: 10
     topic: DFICP_0X8001106S_HIVE_TOPIC
 
   map:
     frequency: 110
+    pollDuration: 10
     topic: DFICP_0X8001102S_HIVE_TOPIC
 
   threeDim:
     frequency: 120
+    pollDuration: 10
     topic: DFICP_0X800110AS_HIVE_TOPIC

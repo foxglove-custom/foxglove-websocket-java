@@ -50,10 +50,12 @@ public class Send3DKafkaThread extends SendDataThread {
         List<CubePrimitive> cubeList = new ArrayList<>();
 
         try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
-            String topic = dataConfig.getThreeDim().getTopic();
+            DataConfig.ThreeDim config = dataConfig.getThreeDim();
+            String topic = config.getTopic();
+            int pollDuration = config.getPollDuration();
             consumer.subscribe(Arrays.asList(topic));
             while (running) {
-                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
+                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(pollDuration));
                 for (ConsumerRecord<String, String> record : records) {
                     String[] data = record.value().split("\\001");
                     String chassisCode = data[0];

@@ -36,11 +36,13 @@ public class SendTextKafkaThread extends SendDataThread {
     @Override
     public void run() {
         Properties props = KafkaUtil.getConsumerProperties(kafkaConfig);
-        String topic = dataConfig.getText().getTopic();
+        DataConfig.Text config = dataConfig.getText();
+        String topic = config.getTopic();
+        int pollDuration = config.getPollDuration();
         try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
             consumer.subscribe(Arrays.asList(topic));
             while (running) {
-                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
+                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(pollDuration));
                 for (ConsumerRecord<String, String> record : records) {
                     String[] data = record.value().split(SysConstant.DF_KAFKA_DATA_SEPARATOR);
                     String chassisCode = data[0];

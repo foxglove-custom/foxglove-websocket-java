@@ -17,17 +17,20 @@ public class DataConfig {
     public static class Text {
         private int frequency;
         private String topic;
+        private int pollDuration;
     }
 
     @Data
     public static class Map {
         private int frequency;
         private String topic;
+        private int pollDuration;
     }
 
     @Data
     public static class ThreeDim {
         private int frequency;
         private String topic;
+        private int pollDuration;
     }
 }

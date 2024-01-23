@@ -42,11 +42,13 @@ public class SendMapKafkaThread extends SendDataThread {
     public void run() {
         Properties props = KafkaUtil.getConsumerProperties(kafkaConfig);
         try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
-            String topic = dataConfig.getMap().getTopic();
+            DataConfig.Map config = dataConfig.getMap();
+            String topic = config.getTopic();
+            int pollDuration = config.getPollDuration();
             TopicPartition partition = new TopicPartition(topic, 0);
             consumer.assign(Arrays.asList(partition));
             while (running) {
-                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
+                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(pollDuration));
                 for (ConsumerRecord<String, String> record : records) {
                     String[] data = record.value().split(SysConstant.DF_KAFKA_DATA_SEPARATOR);
                     String chassisCode = data[0];
