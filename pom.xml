@@ -8,11 +8,13 @@
         <version>2.7.15</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.jiaruiblog</groupId>
-    <artifactId>foxglove-websocket-java</artifactId>
+
+    <groupId>com.visualization</groupId>
+    <artifactId>foxglove-websocket</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>foxglove-websocket-java</name>
-    <description>Demo project for Spring Boot</description>
+    <description>Java project for Foxglove</description>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -95,6 +97,17 @@
                         </exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
