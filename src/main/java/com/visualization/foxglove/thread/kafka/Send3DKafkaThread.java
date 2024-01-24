@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Properties;
 
 import static com.visualization.foxglove.util.DataUtil.getFormattedBytes;
+import static com.visualization.foxglove.util.SysConstant.DF_KAFKA_DATA_SEPARATOR;
 
 @Slf4j
 public class Send3DKafkaThread extends SendDataThread {
@@ -67,7 +68,7 @@ public class Send3DKafkaThread extends SendDataThread {
                 }
                 chassisHasData = false;
                 for (ConsumerRecord<String, String> record : records) {
-                    String[] data = record.value().split("\\001");
+                    String[] data = record.value().split(DF_KAFKA_DATA_SEPARATOR);
                     String chassisCode = data[0];
                     if (!this.chassisCode.equals(chassisCode)) {
                         continue;
