@@ -17,4 +17,9 @@ public class KafkaConfig {
     private boolean latest;
 
     private String group;
+
+    /**
+     * 单词最大拉取数量
+     */
+    private int maxPollRecords;
 }

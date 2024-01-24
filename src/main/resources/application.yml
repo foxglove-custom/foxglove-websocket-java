@@ -3,6 +3,7 @@ kafka:
   server: 10.10.2.98:9004
   latest: false
   group: orienlink-test-1
+  maxPollRecords: 100
 
 # 消息配置
 message:

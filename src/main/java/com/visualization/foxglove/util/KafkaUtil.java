@@ -1,6 +1,5 @@
 package com.visualization.foxglove.util;
 
-import com.visualization.foxglove.config.DataConfig;
 import com.visualization.foxglove.config.KafkaConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -18,9 +17,9 @@ public class KafkaUtil {
         Properties props = new Properties();
         props.put("bootstrap.servers", serverConfig.getServer());
         props.put("group.id", serverConfig.getGroup());
+        props.put("max.poll.records", serverConfig.getMaxPollRecords());
         props.put("auto.commit.interval.ms", "1000");
         props.put("session.timeout.ms", "30000");
-        props.put("max.poll.records", "100");
         props.put("group.max.session.timeout.ms", "35000");
         props.put("batch.size", "10240");
         props.put("buffer.memory", "40960");

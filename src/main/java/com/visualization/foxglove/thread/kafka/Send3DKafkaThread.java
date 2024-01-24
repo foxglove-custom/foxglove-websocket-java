@@ -63,8 +63,9 @@ public class Send3DKafkaThread extends SendDataThread {
             while (running) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(pollDuration));
                 if (records.isEmpty()) {
-                    super.printChassisNoDataMessage();
+                    super.printKafkaNoDataMessage();
                 }
+                chassisHasData = false;
                 for (ConsumerRecord<String, String> record : records) {
                     String[] data = record.value().split("\\001");
                     String chassisCode = data[0];
@@ -93,6 +94,9 @@ public class Send3DKafkaThread extends SendDataThread {
                         CubePrimitive cube = DFSceneUtil.createCube(data);
                         cubeList.add(cube);
                     }
+                }
+                if (!chassisHasData) {
+                    super.printChassisNoDataMessage();
                 }
             }
         } catch (InterruptedException e) {

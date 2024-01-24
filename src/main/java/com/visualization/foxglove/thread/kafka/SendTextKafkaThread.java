@@ -51,8 +51,9 @@ public class SendTextKafkaThread extends SendDataThread {
             while (running) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(pollDuration));
                 if (records.isEmpty()) {
-                    super.printChassisNoDataMessage();
+                    super.printKafkaNoDataMessage();
                 }
+                chassisHasData = false;
                 for (ConsumerRecord<String, String> record : records) {
                     String[] data = record.value().split(SysConstant.DF_KAFKA_DATA_SEPARATOR);
                     String chassisCode = data[0];
@@ -65,6 +66,9 @@ public class SendTextKafkaThread extends SendDataThread {
                     this.session.sendBinary(bytes);
                     Thread.sleep(frequency);
                     super.printLog();
+                }
+                if (!chassisHasData) {
+                    super.printChassisNoDataMessage();
                 }
             }
         } catch (InterruptedException e) {
