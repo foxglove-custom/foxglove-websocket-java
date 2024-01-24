@@ -54,6 +54,9 @@ public class SendMapKafkaThread extends SendDataThread {
             }
             while (running) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(pollDuration));
+                if (records.isEmpty()) {
+                    super.printChassisNoDataMessage();
+                }
                 for (ConsumerRecord<String, String> record : records) {
                     String[] data = record.value().split(SysConstant.DF_KAFKA_DATA_SEPARATOR);
                     String chassisCode = data[0];

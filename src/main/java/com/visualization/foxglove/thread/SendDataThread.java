@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.yeauty.pojo.Session;
 
+import java.util.concurrent.TimeUnit;
+
 @Data
 @Slf4j
 public class SendDataThread extends Thread {
@@ -13,6 +15,8 @@ public class SendDataThread extends Thread {
     protected Session session;
     protected volatile String chassisCode;
     protected volatile boolean running = true;
+
+    protected int CHASSIS_NO_DATA_SLEEP = 10;
 
     protected int count = 0;
 
@@ -44,5 +48,10 @@ public class SendDataThread extends Thread {
 
     public void stopThread() {
         this.running = false;
+    }
+
+    protected void printChassisNoDataMessage() throws InterruptedException {
+        log.info("===================" + Thread.currentThread().getName() + "没有获取到数据=========================");
+        TimeUnit.SECONDS.sleep(CHASSIS_NO_DATA_SLEEP);
     }
 }
