@@ -18,7 +18,6 @@ public class DataConfig {
     @Data
     public static class Chassis {
         private int frequency;
-        private String group;
     }
 
     @Data
