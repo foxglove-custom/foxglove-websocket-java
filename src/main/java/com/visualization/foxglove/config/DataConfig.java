@@ -15,6 +15,8 @@ public class DataConfig {
     private ThreeDim threeDim;
     private RTSP rtsp;
 
+    private int noDataSleepCount;
+
     @Data
     public static class Chassis {
         private int frequency;

@@ -37,6 +37,7 @@ public class SendMapKafkaThread extends SendDataThread {
         this.kafkaConfig = AppCtxUtil.getBean(KafkaConfig.class);
         this.dataConfig = AppCtxUtil.getBean(DataConfig.class);
         this.frequency = dataConfig.getMap().getFrequency();
+        this.noDataSleepCount = dataConfig.getNoDataSleepCount();
     }
 
     @Override

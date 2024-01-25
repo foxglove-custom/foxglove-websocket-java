@@ -24,7 +24,7 @@ public class SendDataThread extends Thread {
     protected int loopCount = 0;
 
     protected int chassisNoDataCount = 0;
-    protected int CHASSIS_NO_DATA_PRINT_COUNT = 10;
+    protected int noDataSleepCount;
 
     private static final int PRINT_LOG_THRESHOLD = 200;
 
@@ -64,14 +64,13 @@ public class SendDataThread extends Thread {
     }
 
     protected void printChassisNoDataMessage() throws InterruptedException {
+        // 排除空底盘号
         if (StringUtils.equals(chassisCode, EMPTY_CHASSIS_CODE)) {
             return;
         }
         chassisNoDataCount++;
-        if (chassisNoDataCount == 1) {
+        if (chassisNoDataCount == noDataSleepCount) {
             log.info("===================" + Thread.currentThread().getName() + "在" + chassisCode + "下没有获取到数据=========================");
-        }
-        if (chassisNoDataCount == CHASSIS_NO_DATA_PRINT_COUNT) {
             chassisNoDataCount = 0;
             TimeUnit.SECONDS.sleep(NO_DATA_SLEEP);
         }

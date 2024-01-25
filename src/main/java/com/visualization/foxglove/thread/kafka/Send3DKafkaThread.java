@@ -40,6 +40,7 @@ public class Send3DKafkaThread extends SendDataThread {
         this.kafkaConfig = AppCtxUtil.getBean(KafkaConfig.class);
         this.dataConfig = AppCtxUtil.getBean(DataConfig.class);
         this.frequency = dataConfig.getThreeDim().getFrequency();
+        this.noDataSleepCount = dataConfig.getNoDataSleepCount();
     }
 
     @Override

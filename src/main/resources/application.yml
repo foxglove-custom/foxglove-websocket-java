@@ -8,6 +8,9 @@ kafka:
 # 消息配置
 message:
 
+  # 没有数据时的睡眠时间
+  noDataSleepCount: 100
+
   # 设置底盘号
   chassis:
     frequency: 100
